@@ -2,6 +2,11 @@
 
 이 프로젝트는 React 프로젝트입니다. Radix UI의 다양한 UI 컴포넌트와 Tailwind CSS를 사용하여 스타일링되었습니다.
 
+## .zip파일(또는 유사한 파일)을 통해 Windows 환경에서 시작하는 경우
+
+.zip 또는 비슷한 유형의 파일로 Windows 환경에서 시작하는 경우 RUNNING_PROJECT.md [https://github.com/samsicjo/MyShoppingFairy/blob/main/RUNNING_PROJECT.md] 에 자세하게 설명되어 있습니다.
+자세한 설명이 필요한 경우 RUNNING_PROJECT.md 파일을 참고하시길 바랍니다.
+
 ## 시작하기
 
 로컬 환경에서 프로젝트를 설정하고 실행하려면 다음 단계를 따르세요.
