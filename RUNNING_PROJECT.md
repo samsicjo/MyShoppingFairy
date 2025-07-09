@@ -1,33 +1,33 @@
 ## Git 없이 압축 파일로 프로젝트 실행하기 (Windows 환경)
 
-`node_modules` 폴더를 제외한 프로젝트 압축 파일을 받으셨을 경우, 다음 절차에 따라 프로젝트를 실행할 수 있습니다.
-
 ### 1. 압축 파일 해제
 
 *   전달받은 `.zip` (또는 유사한 형식) 압축 파일을 원하는 위치에 해제합니다.
-*   예시: `C:\Projects\my-v0-project` 와 같이 프로젝트 폴더가 생성됩니다.
+*   예시: `C:\Projects\MyShoppingFairy` 와 같이 프로젝트 폴더가 생성됩니다.
 
 ### 2. 터미널 열기 및 프로젝트 폴더로 이동
 
-*   Windows 검색창에 `cmd` 또는 `PowerShell`을 입력하여 명령 프롬프트 또는 PowerShell을 엽니다.
+*   Windows 검색창에 `cmd` 또는 `PowerShell`을 입력하여 명령 프롬프트 또는 PowerShell을 엽니다. 사용하실 환경에 따라 선택하시길 바랍니다.
+*   PowerShell을 사용했을 때 간혹 명령어들이 정상적으로 작동하지 않을 수도 있습니다. 이 경우 PowerShell을 관리자 권한으로 실행해보거나 cmd(명령 프롬프트) 환경에서 실행하면 대부분의 경우 정상작동합니다. 작성자는 모든 명령어를 cmd(명령 프롬프트)에서 진행했기 때문에 cmd(명령 프롬프트)를 권장합니다.
 *   `cd` 명령어를 사용하여 압축을 해제한 프로젝트 폴더로 이동합니다.
-    ```bash
-    cd C:\Projects\my-v0-project
+    ```cmd / PowerShell
+    cd C:\Projects\MyShoppingFairy
     ```
     (위 경로는 예시이며, 실제 압축을 해제한 경로로 변경해야 합니다.)
 
 ### 3. 필수 도구 확인 및 설치
 
 *   **Node.js:** Node.js가 설치되어 있는지 확인합니다. 설치되어 있지 않다면 [nodejs.org](https://nodejs.org/)에서 다운로드하여 설치합니다.
+*   PowerShell을 사용했을 때 간혹 명령어들이 정상적으로 작동하지 않을 수도 있습니다. 이 경우 PowerShell을 관리자 권한으로 실행해보거나 cmd(명령 프롬프트) 환경에서 실행하면 대부분의 경우 정상작동합니다. 작성자는 모든 명령어를 cmd(명령 프롬프트)에서 진행했기 때문에 cmd(명령 프롬프트)를 권장합니다.
 *   **pnpm:** 이 프로젝트는 `pnpm`을 패키지 관리자로 사용합니다. `pnpm`이 설치되어 있지 않다면, 다음 명령어를 사용하여 설치합니다:
-    ```bash
+    ```cmd / PowerShell
     npm install -g pnpm
     ```
 
 ### 4. 프로젝트 의존성 설치
 
 *   프로젝트 폴더(터미널에서 현재 위치)에서 다음 명령어를 실행하여 모든 의존성 모듈을 설치합니다.
-    ```bash
+    ```cmd / PowerShell
     pnpm install
     ```
     이 과정은 `node_modules` 폴더를 생성하고 `package.json`에 명시된 모든 라이브러리를 다운로드합니다. 인터넷 연결 상태에 따라 시간이 다소 소요될 수 있습니다.
@@ -35,19 +35,22 @@
 ### 5. 개발 서버 실행
 
 *   의존성 설치가 완료되면, 다음 명령어를 실행하여 개발 서버를 시작합니다.
-    ```bash
+    ```cmd / PowerShell
     pnpm dev
+    또는
+    pnpm run dev
     ```
+*   Next.js 개발 서버가 시작되면서 .next 폴더가 자동으로 다시 생성됩니다.
 *   서버가 성공적으로 시작되면, 웹 브라우저를 열고 `http://localhost:3000`으로 접속하여 프로젝트를 확인할 수 있습니다.
 
 ### 6. 기타 유용한 명령어
 
 *   **프로덕션 빌드:**
-    ```bash
+    ```cmd / PowerShell
     pnpm build
     ```
 *   **린팅:**
-    ```bash
+    ```cmd / PowerShell
     pnpm lint
     ```
 
