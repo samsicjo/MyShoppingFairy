@@ -23,10 +23,9 @@
 
 1.  **저장소 복제:**
     ```bash / cmd
-    git clone <your-repository-url>
-    cd my-v0-project
+    git clone https://github.com/samsicjo/MyShoppingFairy.git
+    cd MyShoppingFairy
     ```
-    (이 프로젝트가 Git 저장소에 있다면 `<your-repository-url>`을 실제 URL로 바꾸세요.)
 
 2.  **의존성 설치:**
     ```bash / cmd
