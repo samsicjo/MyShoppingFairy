@@ -1,6 +1,6 @@
-# My v0 Project
+# My Shopping Fairy
 
-이 프로젝트는 `create-next-app`으로 시작된 Next.js 프로젝트입니다. Radix UI의 다양한 UI 컴포넌트와 Tailwind CSS를 사용하여 스타일링되었습니다.
+이 프로젝트는 `create-next-app`으로 시작된 Next.js / React 프로젝트입니다. Radix UI의 다양한 UI 컴포넌트와 Tailwind CSS를 사용하여 스타일링되었습니다.
 
 ## 시작하기
 
