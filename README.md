@@ -1,6 +1,6 @@
 # My Shopping Fairy
 
-이 프로젝트는 `create-next-app`으로 시작된 Next.js / React 프로젝트입니다. Radix UI의 다양한 UI 컴포넌트와 Tailwind CSS를 사용하여 스타일링되었습니다.
+이 프로젝트는 React 프로젝트입니다. Radix UI의 다양한 UI 컴포넌트와 Tailwind CSS를 사용하여 스타일링되었습니다.
 
 ## 시작하기
 
@@ -10,21 +10,21 @@
 
 *   **Node.js:** Node.js가 설치되어 있는지 확인하세요 (버전 18 이상 권장). [nodejs.org](https://nodejs.org/)에서 다운로드할 수 있습니다.
 *   **pnpm:** 이 프로젝트는 `pnpm`을 패키지 관리자로 사용합니다. `pnpm`이 설치되어 있지 않다면, npm을 통해 설치할 수 있습니다:
-    ```bash
+    ```bash / cmd
     npm install -g pnpm
     ```
 
 ### 설치
 
 1.  **저장소 복제:**
-    ```bash
+    ```bash / cmd
     git clone <your-repository-url>
     cd my-v0-project
     ```
     (이 프로젝트가 Git 저장소에 있다면 `<your-repository-url>`을 실제 URL로 바꾸세요.)
 
 2.  **의존성 설치:**
-    ```bash
+    ```bash / cmd
     pnpm install
     ```
     이 명령은 `package.json`에 나열된 모든 필수 프로젝트 의존성을 설치합니다.
@@ -33,8 +33,8 @@
 
 개발 서버를 시작하려면:
 
-```bash
-pnpm dev
+```bash / cmd
+pnpm run dev
 ```
 
 이 명령은 `http://localhost:3000`에서 Next.js 개발 서버를 시작합니다.
@@ -43,7 +43,7 @@ pnpm dev
 
 프로덕션용으로 프로젝트를 빌드하려면:
 
-```bash
+```bash / cmd
 pnpm build
 ```
 
@@ -53,7 +53,7 @@ pnpm build
 
 린터를 실행하려면:
 
-```bash
+```bash / cmd
 pnpm lint
 ```
 
