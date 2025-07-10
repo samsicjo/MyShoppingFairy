@@ -73,7 +73,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -82,7 +82,7 @@ export default function SignupPage() {
               <span className="text-white font-bold text-lg">S</span>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              StyleGenius
+              My Shopping Fairy
             </span>
           </div>
           <p className="text-gray-600">나만의 퍼스널 스타일링 서비스</p>
@@ -95,7 +95,7 @@ export default function SignupPage() {
               <User className="h-8 w-8 text-purple-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">회원가입</h1>
-            <p className="text-gray-600">StyleGenius에 가입하여 맞춤형 스타일링을 받아보세요</p>
+            <p className="text-gray-600">My Shopping Fairy에 가입하여 맞춤형 스타일링을 받아보세요</p>
           </CardHeader>
 
           <CardContent className="space-y-6">
