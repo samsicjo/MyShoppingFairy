@@ -189,6 +189,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/personal-color-diagnosis")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Brain className="h-5 w-5" />
             <span className="text-xs">진단</span>
@@ -196,6 +197,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/styling-step1")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Shirt className="h-5 w-5" />
             <span className="text-xs">스타일링</span>
@@ -203,6 +205,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/my-page")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Heart className="h-5 w-5" />
             <span className="text-xs">마이페이지</span>
