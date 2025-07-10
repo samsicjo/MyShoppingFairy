@@ -166,6 +166,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-purple-100 py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">S</span>
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                My Shopping Fairy
+              </span>
+            </div>
+            <div className="text-gray-600 text-sm">© 2024 My Shopping Fairy. All rights reserved.</div>
+          </div>
+        </div>
+      </footer>
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">
@@ -173,7 +189,6 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/personal-color-diagnosis")}
             className="flex flex-col items-center space-y-1 text-purple-600"
-            style={{height: '40px', width: '55.2px'}}
           >
             <Brain className="h-5 w-5" />
             <span className="text-xs">진단</span>
@@ -181,7 +196,6 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/styling-step1")}
             className="flex flex-col items-center space-y-1 text-purple-600"
-            style={{height: '40px', width: '55.2px'}}
           >
             <Shirt className="h-5 w-5" />
             <span className="text-xs">스타일링</span>
@@ -189,7 +203,6 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/my-page")}
             className="flex flex-col items-center space-y-1 text-purple-600"
-            style={{height: '40px', width: '55.2px'}}
           >
             <Heart className="h-5 w-5" />
             <span className="text-xs">마이페이지</span>
