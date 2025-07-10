@@ -68,7 +68,7 @@ export default function StylingSummary() {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <Header activePage="styling" />
 
@@ -137,7 +137,7 @@ export default function StylingSummary() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">기본 정보</h3>
               </div>
-              <p className="text-gray-600 mb-4">Step 1에서 입력하신 기본 정보</p>
+              <p className="text-gray-600 mb-4">입력하신 기본 정보</p>
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
@@ -168,7 +168,7 @@ export default function StylingSummary() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">예산 및 사이즈</h3>
               </div>
-              <p className="text-gray-600 mb-4">Step 2에서 설정하신 예산과 사이즈 정보</p>
+              <p className="text-gray-600 mb-4">설정하신 예산과 사이즈 정보</p>
 
               <div className="space-y-4">
                 <div>
@@ -230,7 +230,7 @@ export default function StylingSummary() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">스타일 선호도</h3>
               </div>
-              <p className="text-gray-600 mb-4">Step 3에서 선택하신 선호 스타일</p>
+              <p className="text-gray-600 mb-4">선택하신 선호 스타일</p>
 
               <div className="flex flex-wrap gap-2">
                 {stylingData.userPreferredStyle?.map((style) => (
