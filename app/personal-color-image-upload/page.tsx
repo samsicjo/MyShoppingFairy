@@ -96,9 +96,9 @@ export default function PersonalColorImageUpload() {
         setDescriptionResult(RRCJsonObject.description)
       }
       
-      // 3초 후 메인페이지로 이동
+      // 3초 후 드레이프 테스트 페이지로 이동
       setTimeout(() => {
-        router.push("/styling-step1")
+        router.push("/personal-color-drape-test")
       }, 1000)
     }, 3000)
   }
@@ -108,7 +108,7 @@ export default function PersonalColorImageUpload() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <Header activePage="personal-color" />
 
