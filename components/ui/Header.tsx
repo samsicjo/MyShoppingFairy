@@ -25,10 +25,10 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
             <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+              <img src='./favicon.ico'></img>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                StyleGenius
+                My Shopping Fairy
               </span>
           </div>
 
