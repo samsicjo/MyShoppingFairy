@@ -166,22 +166,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-sm border-t border-purple-100 py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                My Shopping Fairy
-              </span>
-            </div>
-            <div className="text-gray-600 text-sm">© 2024 My Shopping Fairy. All rights reserved.</div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer -> 삭제 - 컴포넌트화 시켜서 ClientLayout에 넣어둠*/}
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">
