@@ -30,12 +30,12 @@ export default function PersonalColorSelect() {
           colorNames: selectedColorData.colorsName,
         }));
       }
-      router.push("/styling-step1")
+      router.push("/personal-color-drape-test")
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <Header activePage="personal-color" />
 
