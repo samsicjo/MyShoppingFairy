@@ -99,17 +99,39 @@ export default function StylingStep2() {
   const isFormValid = selectedSituations.length > 0 && topSize && waistSize && shoeSize;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header activePage="styling" /> {/* MODIFIED */}
+      <Header activePage="styling" />
 
-      {/* Progress Bar */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-purple-600">Step 2 of 3</span>
-          <span className="text-sm text-gray-500">67% 완료</span>
+      {/* Progress Steps (Step 2 활성화) */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-center mb-12">
+          <div className="flex items-center space-x-8">
+            {/* Step 1 - Completed */}
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold">
+                1
+              </div>
+              <span className="ml-3 text-purple-600 font-medium">기본 정보</span>
+            </div>
+
+            {/* Step 2 - Active */}
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold">
+                2
+              </div>
+              <span className="ml-3 text-purple-600 font-medium">예산 & 사이즈</span>
+            </div>
+
+            {/* Step 3 - Inactive */}
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                3
+              </div>
+              <span className="ml-3 text-gray-500">스타일 선호도</span>
+            </div>
+          </div>
         </div>
-        <Progress value={67} className="h-2" />
       </div>
 
       {/* Main Content */}
