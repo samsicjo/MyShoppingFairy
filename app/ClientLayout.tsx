@@ -6,8 +6,11 @@ import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from '../components/theme-provider';
 import { StylingProvider } from './context/StylingContext';
+
+import { AuthProvider } from './context/AuthContext';
+import { StyleDataProvider } from './context/StyleDataContext';
+
 import { Footer } from "@/components/ui/Footer";
 
 const inter = Inter({ subsets: ["latin"] })
@@ -22,10 +25,14 @@ export default function ClientLayout({ children, }: { children: React.ReactNode 
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col min-h-screen`}>
-        <StylingProvider>
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </StylingProvider>
+        <AuthProvider>
+          <StyleDataProvider>
+            <StylingProvider>
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </StylingProvider>
+          </StyleDataProvider>
+        </AuthProvider>
       </body>
     </html>
   )
