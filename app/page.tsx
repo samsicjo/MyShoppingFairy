@@ -1,21 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
-import { Brain, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react" 
+import { Brain, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react"
+import { useAuth } from "./context/AuthContext";
 
 export default function HomePage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const router = useRouter()
-
-  useEffect(() => {
-    // 로그인 상태 체크 (실제로는 토큰이나 세션 확인)
-    const loginStatus = localStorage.getItem("isLoggedIn")
-    setIsLoggedIn(loginStatus === "true")
-  }, [])
+  const { isLoggedIn } = useAuth();
 
   const handleNavigation = (path: string) => {
     if (!isLoggedIn) {
@@ -23,15 +17,6 @@ export default function HomePage() {
       return
     }
     router.push(path)
-  }
-
-  const handleLogin = () => {
-    router.push("/login")
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn")
-    setIsLoggedIn(false)
   }
 
   return (
@@ -166,7 +151,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer -> 삭제 - 컴포넌트화 시켜서 ClientLayout에 넣어둠*/}
+      
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">
@@ -174,6 +159,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/personal-color-diagnosis")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Brain className="h-5 w-5" />
             <span className="text-xs">진단</span>
@@ -181,6 +167,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/styling-step1")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Shirt className="h-5 w-5" />
             <span className="text-xs">스타일링</span>
@@ -188,6 +175,7 @@ export default function HomePage() {
           <button
             onClick={() => handleNavigation("/my-page")}
             className="flex flex-col items-center space-y-1 text-purple-600"
+            style={{height: '40px', width: '55.2px'}}
           >
             <Heart className="h-5 w-5" />
             <span className="text-xs">마이페이지</span>
