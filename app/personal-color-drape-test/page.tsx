@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Header } from "@/components/ui/Header";
 import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw } from "lucide-react" // Scissors, Loader2 아이콘 제거
 
 interface ColorSwatch {
@@ -280,50 +281,8 @@ export default function PersonalColorDrapeTest() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              {/* 로고 클릭 시 메인 페이지로 이동하는 로직 추가 */}
-              <button
-                onClick={() => router.push("/")} // 로고 클릭 시 메인 페이지('/')로 이동
-                className="flex items-center space-x-2 cursor-pointer"
-              >
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">S</span>
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  My Shopping Fairy
-                </span>
-              </button>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-8">
-              <button className="text-purple-600 font-medium">퍼스널컬러</button>
-              <button
-                onClick={() => router.push("/styling-step1")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                스타일링
-              </button>
-              <button
-                onClick={() => router.push("/my-page")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                마이페이지
-              </button>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/")}
-                className="border-purple-200 text-purple-600 bg-transparent"
-              >
-                로그아웃
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      <Header activePage="personal-color" />
+      
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Title */}
