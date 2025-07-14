@@ -1,9 +1,10 @@
 "use client"
 
-import React from 'react';
-
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+
+import { useAuth } from '@/app/context/AuthContext'; // useAuth 훅 임포트
 
 interface HeaderProps {
   activePage: 'home' | 'personal-color' | 'styling' | 'my-page';
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export const Header = React.memo(({ activePage }: HeaderProps) => {
   const router = useRouter()
+  const { isLoggedIn, logout } = useAuth(); // useAuth 훅 사용
 
   const getButtonClass = (page: 'home' | 'personal-color' | 'styling' | 'my-page') => {
     if (page === activePage) {
@@ -25,7 +27,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
             <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-              <img src='./favicon.ico'></img>
+              <img src='/favicon.ico'></img>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 My Shopping Fairy
@@ -51,15 +53,26 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
             >
               마이페이지
             </button>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/")}
-              className="border-purple-200 text-purple-600 bg-transparent"
-            >
-              로그인
-            </Button>
+            {isLoggedIn ? (
+              <Button
+                variant="outline"
+                onClick={logout} // logout 함수 사용
+                className="border-purple-200 text-purple-600 bg-transparent"
+              >
+                로그아웃
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => router.push("/login")}
+                className="border-purple-200 text-purple-600 bg-transparent"
+              >
+                로그인
+              </Button>
+            )}
           </nav>
         </div>
       </div>
     </header>
-  )})
+  )
+})
