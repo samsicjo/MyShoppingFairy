@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { User, Eye, EyeOff, Lock } from "lucide-react"
 
+import { useAuth } from "@/app/context/AuthContext";
+
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     username: "",
@@ -18,6 +20,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { login } = useAuth();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -29,15 +32,13 @@ export default function LoginPage() {
 
     // 간단한 로그인 시뮬레이션 (실제로는 API 호출)
     setTimeout(() => {
-      localStorage.setItem("isLoggedIn", "true")
-      localStorage.setItem("userInfo", JSON.stringify({ username: formData.username }))
+      login(formData.username);
       setIsLoading(false)
-      router.push("/")
     }, 1000)
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
