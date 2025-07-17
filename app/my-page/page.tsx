@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "../context/AuthContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,27 +12,31 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera } from "lucide-react"
+import { Header } from '@/components/ui/Header';
 
-interface UserProfile {
-  name: string
-  email: string
-  phone: string
-  address: string
-  bio: string
-  height: string
-  gender: string
-  stylingRequest: string
-  budget: number
-  topSize: string
-  bottomSize: string
-  shoeSize: string
-  occasions: string[]
-  bodyTypes: string[]
-  selectedStyles: string[]
+import { Item } from "../context/StyleDataContext"
+
+interface MyPageUserProfile {
+  username: string;
+  name: string;
+  email: string;
+  phone?: string; // 더미 데이터로 유지
+  address?: string; // 더미 데이터로 유지
+  bio?: string; // 더미 데이터로 유지
+  budget: number;
+  occasion: string;
+  height: number;
+  gender: string;
+  top_size: string;
+  bottom_size: number;
+  shoe_size: number;
+  body_feature: string[];
+  preferred_styles: string[];
 }
 
 interface SavedOutfit {
   id: string
+  userId?: string
   title: string
   items: Array<{
     name: string
@@ -43,151 +48,184 @@ interface SavedOutfit {
   category: string
 }
 
-interface FavoriteItem {
-  id: string
-  name: string
-  brand: string
-  price: string
-  image: string
-  category: string
-  savedAt: string
-}
-
 export default function MyPage() {
   const [activeTab, setActiveTab] = useState("profile")
   const [isEditing, setIsEditing] = useState(false)
-  const [userProfile, setUserProfile] = useState<UserProfile>({
+  const [userProfile, setUserProfile] = useState<MyPageUserProfile>({
+    username: "",
     name: "",
     email: "",
-    phone: "",
-    address: "",
-    bio: "",
-    height: "",
-    gender: "",
-    stylingRequest: "",
+    phone: "", // 더미 데이터로 유지
+    address: "", // 더미 데이터로 유지
+    bio: "", // 더미 데이터로 유지
     budget: 0,
-    topSize: "",
-    bottomSize: "",
-    shoeSize: "",
-    occasions: [],
-    bodyTypes: [],
-    selectedStyles: [],
+    occasion: "",
+    height: 0,
+    gender: "",
+    top_size: "",
+    bottom_size: 0,
+    shoe_size: 0,
+    body_feature: [],
+    preferred_styles: [],
   })
 
   const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([])
-  const [favoriteItems, setFavoriteItems] = useState<FavoriteItem[]>([])
+  const [favoriteItems, setFavoriteItems] = useState<Item[]>([])
   const router = useRouter()
-
+  const { userId } = useAuth()
+  const NEXT_PUBLIC_API_URL = 'http://127.0.0.1:8000'
   useEffect(() => {
-    // Load user data from localStorage
-    const signupData = localStorage.getItem("signupData")
-    const step1Data = localStorage.getItem("stylingStep1Data")
-    const step2Data = localStorage.getItem("stylingStep2Data")
-    const step3Data = localStorage.getItem("stylingStep3Data")
-    const savedOutfitsData = localStorage.getItem("savedOutfits")
-    const favoriteItemsData = localStorage.getItem("favoriteItems")
+    const fetchUserData = async () => {
+      if (userId) {
+        try {
+          // Fetch user profile
+          const userResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/user_info?user_id=${userId}`)
+          let userData = null;
+          if (userResponse.ok) {
+            userData = await userResponse.json()
+          } else {
+            console.error("Failed to fetch user data:", userResponse.statusText)
+          }
 
-    if (signupData) {
-      const signup = JSON.parse(signupData)
-      setUserProfile((prev) => ({
-        ...prev,
-        name: signup.name || "",
-        email: signup.email || "",
-      }))
+          // Fetch styling data
+          const stylingResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/styling_summary_info?user_id=${userId}`)
+          let stylingData = null;
+          if (stylingResponse.ok) {
+            stylingData = await stylingResponse.json()
+          } else {
+            console.error("Failed to fetch styling data:", stylingResponse.statusText)
+          }
+
+          if (userData && stylingData) {
+            setUserProfile({
+              username: userData.username || "",
+              name: userData.name || "",
+              email: userData.email || "",
+              phone: userProfile.phone || "", // 기존 값 유지 또는 빈 문자열
+              address: userProfile.address || "", // 기존 값 유지 또는 빈 문자열
+              bio: userProfile.bio || "", // 기존 값 유지 또는 빈 문자열
+              budget: stylingData.budget || 0,
+              occasion: stylingData.occasion || "",
+              height: stylingData.height || 0,
+              gender: stylingData.gender || "",
+              top_size: stylingData.top_size || "",
+              bottom_size: stylingData.bottom_size || 0,
+              shoe_size: stylingData.shoe_size || 0,
+              body_feature: stylingData.body_feature || [],
+              preferred_styles: stylingData.preferred_styles || [],
+            })
+          }
+                                                                                                        //Debug
+          
+          
+          // Fetch favorite items
+          const favoritesResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/favorites?user_id=${userId}`)
+          if (favoritesResponse.ok) {
+            const favoritesData = await favoritesResponse.json()
+            console.log(favoritesData)
+            setFavoriteItems(favoritesData)
+          } else {
+            console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
+          }
+
+        } catch (error) {
+          console.error("Error fetching data:", error)
+        }
+      }
     }
 
-    if (step1Data) {
-      const step1 = JSON.parse(step1Data)
-      setUserProfile((prev) => ({
-        ...prev,
-        height: step1.height || "",
-        gender: step1.gender || "",
-        stylingRequest: step1.stylingRequest || "",
-      }))
+    fetchUserData()
+    console.log(userProfile)
+  }, [userId])
+
+  const handleSave = async () => {
+    if (!userId) {
+      console.error("User not authenticated.")
+      return
     }
 
-    if (step2Data) {
-      const step2 = JSON.parse(step2Data)
-      setUserProfile((prev) => ({
-        ...prev,
-        budget: step2.budget?.[0] || 0,
-        topSize: step2.topSize || "",
-        bottomSize: step2.bottomSize || "",
-        shoeSize: step2.shoeSize || "",
-        occasions: step2.occasions || [],
-        bodyTypes: step2.bodyTypes || [],
-      }))
+    try {
+      // Update user profile
+      const userUpdateResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/user_update?user_id=${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: userProfile.name,
+          email: userProfile.email,
+        }),
+      })
+
+      if (!userUpdateResponse.ok) {
+        console.error("Failed to update user profile:", userUpdateResponse.statusText)
+      }
+
+      // Update styling data
+      const stylingUpdateResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/styling_summary_update?user_id=${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          budget: userProfile.budget,
+          occasion: userProfile.occasion,
+          height: userProfile.height,
+          gender: userProfile.gender,
+          top_size: userProfile.top_size,
+          bottom_size: userProfile.bottom_size,
+          shoe_size: userProfile.shoe_size,
+          body_feature: userProfile.body_feature,
+          preferred_styles: userProfile.preferred_styles,
+        }),
+      })
+
+      if (!stylingUpdateResponse.ok) {
+        console.error("Failed to update styling data:", stylingUpdateResponse.statusText)
+      }
+
+      setIsEditing(false)
+    } catch (error) {
+      console.error("Error saving data:", error)
     }
-
-    if (step3Data) {
-      const step3 = JSON.parse(step3Data)
-      setUserProfile((prev) => ({
-        ...prev,
-        selectedStyles: step3.selectedStyles || [],
-      }))
-    }
-
-    if (savedOutfitsData) {
-      setSavedOutfits(JSON.parse(savedOutfitsData))
-    }
-
-    if (favoriteItemsData) {
-      setFavoriteItems(JSON.parse(favoriteItemsData))
-    }
-  }, [])
-
-  const handleSave = () => {
-    // Save updated profile to localStorage
-    const signupData = {
-      name: userProfile.name,
-      email: userProfile.email,
-    }
-
-    const step1Data = {
-      height: userProfile.height,
-      gender: userProfile.gender,
-      stylingRequest: userProfile.stylingRequest,
-    }
-
-    const step2Data = {
-      budget: [userProfile.budget],
-      topSize: userProfile.topSize,
-      bottomSize: userProfile.bottomSize,
-      shoeSize: userProfile.shoeSize,
-      occasions: userProfile.occasions,
-      bodyTypes: userProfile.bodyTypes,
-    }
-
-    const step3Data = {
-      selectedStyles: userProfile.selectedStyles,
-    }
-
-    localStorage.setItem("signupData", JSON.stringify(signupData))
-    localStorage.setItem("stylingStep1Data", JSON.stringify(step1Data))
-    localStorage.setItem("stylingStep2Data", JSON.stringify(step2Data))
-    localStorage.setItem("stylingStep3Data", JSON.stringify(step3Data))
-
-    setIsEditing(false)
   }
 
   const handleViewOutfit = (outfitId: string) => {
     router.push(`/outfit-detail/${outfitId}`)
   }
 
-  const handleViewWearingShots = (itemId: string) => {
-    router.push(`/wearing-shots/${itemId}`)
+  const handleViewWearingShots = (productId: number) => {
+    router.push(`/wearing-shots/${productId}`)
   }
 
-  const handleDeleteOutfit = (outfitId: string) => {
-    const updatedOutfits = savedOutfits.filter((outfit) => outfit.id !== outfitId)
-    setSavedOutfits(updatedOutfits)
-    localStorage.setItem("savedOutfits", JSON.stringify(updatedOutfits))
+  const handleDeleteOutfit = async (outfitId: string) => {
+    try {
+      const response = await fetch(`${NEXT_PUBLIC_API_URL}/outfits/${outfitId}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        setSavedOutfits(savedOutfits.filter((outfit) => outfit.id !== outfitId))
+      } else {
+        console.error("Failed to delete outfit:", response.statusText)
+      }
+    } catch (error) {
+      console.error("Error deleting outfit:", error)
+    }
   }
 
-  const handleDeleteFavorite = (itemId: string) => {
-    const updatedFavorites = favoriteItems.filter((item) => item.id !== itemId)
-    setFavoriteItems(updatedFavorites)
-    localStorage.setItem("favoriteItems", JSON.stringify(updatedFavorites))
+  const handleDeleteFavorite = async (productId: number) => {
+    try {
+      const response = await fetch(`${NEXT_PUBLIC_API_URL}/users/favorites/${productId}?user_id=${userId}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        setFavoriteItems(favoriteItems.filter((item) => item.product_id !== productId))
+      } else {
+        console.error("Failed to delete favorite item:", response.statusText)
+      }
+    } catch (error) {
+      console.error("Error deleting favorite item:", error)
+    }
   }
 
   const occasionLabels: { [key: string]: string } = {
@@ -229,43 +267,8 @@ export default function MyPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                StyleGenius
-              </span>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-8">
-              <button
-                onClick={() => router.push("/personal-color-diagnosis")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                퍼스널컬러
-              </button>
-              <button
-                onClick={() => router.push("/styling-step1")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                스타일링
-              </button>
-              <button className="text-purple-600 font-medium">마이페이지</button>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/")}
-                className="border-purple-200 text-purple-600 bg-transparent"
-              >
-                로그아웃
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header activePage="home" />
+      
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -413,7 +416,7 @@ export default function MyPage() {
                             <Input
                               id="height"
                               value={userProfile.height}
-                              onChange={(e) => setUserProfile({ ...userProfile, height: e.target.value })}
+                              onChange={(e) => setUserProfile({ ...userProfile, height: Number(e.target.value) })}
                               disabled={!isEditing}
                             />
                           </div>
@@ -421,15 +424,7 @@ export default function MyPage() {
                             <Label htmlFor="gender">성별</Label>
                             <Input
                               id="gender"
-                              value={
-                                userProfile.gender === "male"
-                                  ? "남성"
-                                  : userProfile.gender === "female"
-                                    ? "여성"
-                                    : userProfile.gender === "other"
-                                      ? "기타"
-                                      : ""
-                              }
+                              value={userProfile.gender}
                               disabled
                             />
                           </div>
@@ -449,35 +444,35 @@ export default function MyPage() {
                           <Label>사이즈 정보</Label>
                           <div className="grid grid-cols-3 gap-4 mt-2">
                             <div>
-                              <Label htmlFor="topSize" className="text-sm">
+                              <Label htmlFor="top_size" className="text-sm">
                                 상의
                               </Label>
                               <Input
-                                id="topSize"
-                                value={userProfile.topSize}
-                                onChange={(e) => setUserProfile({ ...userProfile, topSize: e.target.value })}
+                                id="top_size"
+                                value={userProfile.top_size}
+                                onChange={(e) => setUserProfile({ ...userProfile, top_size: e.target.value })}
                                 disabled={!isEditing}
                               />
                             </div>
                             <div>
-                              <Label htmlFor="bottomSize" className="text-sm">
+                              <Label htmlFor="bottom_size" className="text-sm">
                                 하의
                               </Label>
                               <Input
-                                id="bottomSize"
-                                value={userProfile.bottomSize}
-                                onChange={(e) => setUserProfile({ ...userProfile, bottomSize: e.target.value })}
+                                id="bottom_size"
+                                value={userProfile.bottom_size}
+                                onChange={(e) => setUserProfile({ ...userProfile, bottom_size: Number(e.target.value) })}
                                 disabled={!isEditing}
                               />
                             </div>
                             <div>
-                              <Label htmlFor="shoeSize" className="text-sm">
+                              <Label htmlFor="shoe_size" className="text-sm">
                                 신발
                               </Label>
                               <Input
-                                id="shoeSize"
-                                value={userProfile.shoeSize}
-                                onChange={(e) => setUserProfile({ ...userProfile, shoeSize: e.target.value })}
+                                id="shoe_size"
+                                value={userProfile.shoe_size}
+                                onChange={(e) => setUserProfile({ ...userProfile, shoe_size: Number(e.target.value) })}
                                 disabled={!isEditing}
                               />
                             </div>
@@ -485,11 +480,11 @@ export default function MyPage() {
                         </div>
 
                         <div>
-                          <Label htmlFor="stylingRequest">스타일링 요청사항</Label>
+                          <Label htmlFor="occasion">스타일링 요청사항</Label>
                           <Textarea
-                            id="stylingRequest"
-                            value={userProfile.stylingRequest}
-                            onChange={(e) => setUserProfile({ ...userProfile, stylingRequest: e.target.value })}
+                            id="occasion"
+                            value={userProfile.occasion}
+                            onChange={(e) => setUserProfile({ ...userProfile, occasion: e.target.value })}
                             disabled={!isEditing}
                             rows={3}
                           />
@@ -536,7 +531,7 @@ export default function MyPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {savedOutfits.map((outfit, index) => (
-                        <Card key={`${outfit.id}-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
+                        <Card key={outfit.id || `saved-outfit-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
                           <CardContent className="p-4">
                             <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                               {outfit.items && outfit.items.length > 0 ? (
@@ -606,38 +601,27 @@ export default function MyPage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {favoriteItems.map((item) => (
-                        <Card key={item.id} className="border-purple-100 hover:shadow-lg transition-shadow">
+                      {favoriteItems.map((item, index) => (
+                        <Card key={item.product_id || `favorite-item-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
                           <CardContent className="p-4">
                             <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                               <img
-                                src={item.image || "/placeholder.svg?height=200&width=200"}
-                                alt={item.name}
+                                src={item.image_url || "/placeholder.svg?height=200&width=200"}
+                                alt={item.product_name}
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
-                            <p className="text-sm text-gray-600 mb-2">{item.brand}</p>
-                            <p className="text-lg font-bold text-purple-600 mb-3">{item.price}</p>
-                            <p className="text-xs text-gray-400 mb-3">
-                              찜한 날: {new Date(item.savedAt).toLocaleDateString()}
-                            </p>
+                            <h3 className="font-semibold text-gray-900 mb-1">{item.product_name}</h3>
+                            <p className="text-lg font-bold text-purple-600 mb-3">{item.price} 원</p>
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => handleViewWearingShots(item.id)}
-                                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                              >
-                                <Camera className="h-4 w-4 mr-1" />
-                                착용샷
-                              </Button>
-                              <Button
-                                size="sm"
                                 variant="outline"
-                                onClick={() => handleDeleteFavorite(item.id)}
-                                className="border-red-200 text-red-600 hover:bg-red-50"
+                                onClick={() => handleDeleteFavorite(item.product_id)}
+                                className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                삭제
                               </Button>
                             </div>
                           </CardContent>
