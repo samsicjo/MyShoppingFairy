@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
 import { Brain, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react"
 import { useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const router = useRouter()
   const { isLoggedIn } = useAuth();
 
-    //간단한 백엔드 확인용 코드
+  //간단한 백엔드 확인용 코드
   useEffect(() => {
     const url = 'http://localhost:8000'
     const checkBE = async () => {
@@ -33,7 +34,7 @@ export default function HomePage() {
     checkBE()
   }, [])
 
-  
+
   const handleNavigation = (path: string) => {
     if (!isLoggedIn) {
       router.push("/login")
