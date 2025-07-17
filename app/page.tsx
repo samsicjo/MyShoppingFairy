@@ -14,7 +14,7 @@ export default function HomePage() {
 
   //간단한 백엔드 확인용 코드
   useEffect(() => {
-    const url = 'http://localhost:8000/'
+    const url = 'https://d1a59fdce125.ngrok-free.app/'
     const checkBE = async () => {
       try {
         const response = await fetch(url)
