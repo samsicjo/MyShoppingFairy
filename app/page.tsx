@@ -13,26 +13,26 @@ export default function HomePage() {
   const { isLoggedIn } = useAuth();
 
   //간단한 백엔드 확인용 코드
-  useEffect(() => {
-    const url = 'http://localhost:8000'
-    const checkBE = async () => {
-      try {
-        const response = await fetch(url)
+  // useEffect(() => {
+  //   const url = 'http://localhost:8000'
+  //   const checkBE = async () => {
+  //     try {
+  //       const response = await fetch(url)
 
-        if(response.ok){
-          const data = await response.json()
-          console.log('연결 성공 : ', JSON.stringify(data))
-        }
-        else{
-          console.log('연결 실패 ', response.status, response.statusText)
-        }
+  //       if(response.ok){
+  //         const data = await response.json()
+  //         console.log('연결 성공 : ', JSON.stringify(data))
+  //       }
+  //       else{
+  //         console.log('연결 실패 ', response.status, response.statusText)
+  //       }
         
-      }catch(error){
-        console.error('백엔드 연결 중 오류 발생 : ', error)
-      }
-    }
-    checkBE()
-  }, [])
+  //     }catch(error){
+  //       console.error('백엔드 연결 중 오류 발생 : ', error)
+  //     }
+  //   }
+  //   checkBE()
+  // }, [])
 
 
   const handleNavigation = (path: string) => {
