@@ -35,6 +35,12 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
+          <button
+              onClick={() => router.push("/")}
+              className={getButtonClass('home')}
+            >
+              홈
+            </button>
             <button
               onClick={() => router.push("/personal-color-diagnosis")}
               className={getButtonClass('personal-color')}
