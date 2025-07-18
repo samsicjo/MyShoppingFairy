@@ -95,40 +95,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
-
-      {/* Stats Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4">
-                <Star className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">98%</div>
-              <div className="text-gray-600">만족도</div>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4">
-                <TrendingUp className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">50K+</div>
-              <div className="text-gray-600">추천 횟수</div>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4">
-                <Heart className="h-8 w-8 text-purple-600" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">25K+</div>
-              <div className="text-gray-600">찜한 코디</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      
-
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -149,9 +115,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
         </div>
-      </section>
-
-      
+      </section>  
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">
