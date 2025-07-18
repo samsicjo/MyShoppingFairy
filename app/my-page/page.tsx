@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { Header } from "@/components/ui/Header";
 import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera } from "lucide-react"
 
 interface UserProfile {
@@ -229,43 +230,7 @@ export default function MyPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                StyleGenius
-              </span>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-8">
-              <button
-                onClick={() => router.push("/personal-color-diagnosis")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                퍼스널컬러
-              </button>
-              <button
-                onClick={() => router.push("/styling-step1")}
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                스타일링
-              </button>
-              <button className="text-purple-600 font-medium">마이페이지</button>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/")}
-                className="border-purple-200 text-purple-600 bg-transparent"
-              >
-                로그아웃
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header activePage="home" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -674,7 +639,6 @@ export default function MyPage() {
                   </div>
 
                   <Separator />
-
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">개인정보</h3>
                     <div className="space-y-3">
