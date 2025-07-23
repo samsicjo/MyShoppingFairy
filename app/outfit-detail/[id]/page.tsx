@@ -2,36 +2,65 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Image from 'next/image';
+import { OutfitImageCarousel } from '@/components/OutfitImageCarousel';
 import { useStyleData, Look, Item } from '@/app/context/StyleDataContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/ui/Header';
-import { Heart, Share2, Loader2 } from 'lucide-react';
+import { Share2, Loader2 } from 'lucide-react';
+import { FavoriteButton } from '@/components/FavoriteButton';
+import Image from 'next/image';
 
 export default function OutfitDetail() {
   const params = useParams();
   const router = useRouter();
-  const { recommendations, isInitializing, error } = useStyleData();
-
-  const [likedItems, setLikedItems] = useState<number[]>([]);
+  const { recommendations } = useStyleData();
+  const [look, setLook] = useState<Look | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedLikedItems = localStorage.getItem('likedItems');
-    if (savedLikedItems) {
-      setLikedItems(JSON.parse(savedLikedItems));
+    const id = params.id ? decodeURIComponent(params.id as string) : null;
+    if (!id) {
+      setError('유효하지 않은 ID입니다.');
+      setIsLoading(false);
+      return;
     }
-  }, []);
 
-  const toggleItemLike = (productId: number) => {
-    const newLikedItems = likedItems.includes(productId)
-      ? likedItems.filter((id) => id !== productId)
-      : [...likedItems, productId];
-    setLikedItems(newLikedItems);
-    localStorage.setItem('likedItems', JSON.stringify(newLikedItems));
-  };
+    // ID가 숫자로 변환 가능한지 확인
+    const isNumericId = !isNaN(Number(id));
 
-  if (isInitializing) {
+    if (isNumericId) {
+      // my-page에서 온 경우: API로 데이터 요청
+      const fetchLookDetail = async () => {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/users/looks/${id}`);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || '코디 정보를 불러오는 데 실패했습니다.');
+          }
+          const data = await response.json();
+          setLook(data);
+        } catch (e: any) {
+          setError(e.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchLookDetail();
+    } else {
+      // styling-results에서 온 경우: 컨텍스트에서 데이터 검색
+      const existingLook = recommendations.find(r => r.look_name === id);
+      if (existingLook) {
+        setLook(existingLook);
+      } else {
+        setError('해당 코디 정보를 찾을 수 없습니다.');
+      }
+      setIsLoading(false);
+    }
+  }, [params.id, recommendations]);
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
@@ -39,9 +68,6 @@ export default function OutfitDetail() {
       </div>
     );
   }
-
-  const lookName = params.id ? decodeURIComponent(params.id as string) : null;
-  const look = recommendations.find((l) => l.look_name === lookName) || null;
 
   if (error || !look) {
     return (
@@ -71,13 +97,7 @@ export default function OutfitDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
             <Card className="overflow-hidden">
-              <Image
-                src={mainImageUrl}
-                alt={look.look_name}
-                width={500}
-                height={600}
-                className="w-full h-[600px] object-cover"
-              />
+              <OutfitImageCarousel items={look.items} altText={look.look_name} className="w-full h-full" />
             </Card>
           </div>
 
@@ -92,7 +112,7 @@ export default function OutfitDetail() {
                         <div className="relative flex-shrink-0">
                           <Image
                             src={item.image_url}
-                            alt={item.product_name}
+                            alt={item.product_name || '상품 이미지'}
                             width={80}
                             height={80}
                             className="w-20 h-20 object-cover rounded-lg bg-white"
@@ -110,15 +130,7 @@ export default function OutfitDetail() {
                             <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => window.open(`https://store.musinsa.com/app/goods/${item.product_id}`, '_blank')}>
                               구매하기
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => toggleItemLike(item.product_id)}
-                              className={likedItems.includes(item.product_id) ? 'text-red-500 border-red-500' : ''}
-                            >
-                              <Heart className={`h-4 w-4 mr-1 ${likedItems.includes(item.product_id) ? 'fill-current' : ''}`} />
-                              찜하기
-                            </Button>
+                            <FavoriteButton item={item} />
                           </div>
                         </div>
                       </div>

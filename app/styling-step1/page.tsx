@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/ui/Header";
 import { User, ArrowLeft } from "lucide-react"
-import { Gender, useStyling } from '../context/StylingContext'
+import { useStyling, Gender } from '../context/StylingContext'
 
 const heightOptions = Array.from({ length: 61 }, (_, i) => 140 + i);
 
@@ -23,19 +23,28 @@ export default function StylingStep1() {
     stylingRequest: "",
   })
   const router = useRouter()
-  const [height, setHeight] = useState<number | ''>('')
-  const [gender, setGender] = useState<Gender | null>(null)
-  const [memo, setMemo] = useState('')
+  const [height, setHeight] = useState<number | ''>(stylingData.height || '')
+  const [gender, setGender] = useState<string | null>(stylingData.gender || null)
+  const [memo, setMemo] = useState(stylingData.occasion || '')
   const isButtonDisabled = height === '' || gender === null;
 
 
   useEffect(() => {
-    console.log("stylingData : ", stylingData)
+    console.log("StylingStep1: stylingData on mount", stylingData);
     if (!stylingData.personalColor) {
       alert('퍼스널 컬러에 대한 정보가 없습니다! 퍼스널 컬러 정보를 입력해주세요!');
       router.push('/personal-color-diagnosis');
     }
+    sessionStorage.removeItem('styleRecommendations');//sessionStorage.removeItem('stylingData');
+    console.log("step1 : ", stylingData)
+    console.log("StylingStep1: sessionStorage cleared for 'styleRecommendations'.");
   }, [stylingData, router])
+
+  useEffect(() => {
+    setHeight(stylingData.height || '');
+    setGender(stylingData.gender || null);
+    setMemo(stylingData.occasion || '');
+  }, [stylingData]);
 
 
 
@@ -46,9 +55,9 @@ export default function StylingStep1() {
     }
     setStylingData(prevData => ({ // setStylingData를 사용해서 새로운 데이터 추가.
       ...prevData, // 이전 단계(퍼스널 컬러)에서 저장된 데이터를 그대로 유지
-      userHeight: height,
-      userGender: gender,
-      userStylingMemo: memo,
+      height: height,
+      gender: gender,
+      style_request: memo,
     }));
     router.push('/styling-step2'); // 다음 페이지로 이동
   }
@@ -187,7 +196,7 @@ export default function StylingStep1() {
                   maxLength={225}
                 />
                 <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-                  {formData.stylingRequest.length}/225자
+                  {memo.length}/225자
                 </div>
               </div>
               <p className="text-xs text-gray-500">

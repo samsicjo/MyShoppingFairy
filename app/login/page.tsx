@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,22 +19,51 @@ export default function LoginPage() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showSignupSuccessMessage, setShowSignupSuccessMessage] = useState(false);
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState(''); // 아이디 오류 메시지 상태 추가
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState(''); // 비밀번호 오류 메시지 상태 추가
   const router = useRouter()
+  const searchParams = useSearchParams();
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (searchParams.get('signupSuccess') === 'true') {
+      setShowSignupSuccessMessage(true);
+    }
+  }, [searchParams]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    // 입력 변경 시 관련 오류 메시지 초기화
+    if (field === 'username') {
+      setUsernameErrorMessage('');
+    }
+    if (field === 'password') {
+      setPasswordErrorMessage('');
+    }
   }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // 간단한 로그인 시뮬레이션 (실제로는 API 호출)
-    setTimeout(() => {
-      login(formData.username);
-      setIsLoading(false)
-    }, 1000)
+    try {
+      await login(formData.username, formData.password);
+    } catch (error: any) {
+      let errorMessage = error.message || '로그인 중 알 수 없는 오류가 발생했습니다.';
+
+      if (errorMessage.includes("사용자를 찾을 수 없습니다.")) {
+        setUsernameErrorMessage('사용자를 찾을 수 없습니다.');
+      } else if (errorMessage.includes("비밀번호가 일치하지 않습니다.")) {
+        setPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
+      } else {
+        // 그 외의 오류는 alert으로 표시
+        alert(errorMessage);
+      }
+      console.error("Login failed in LoginPage:", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -56,6 +85,11 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl">
+          {showSignupSuccessMessage && (
+            <div className="bg-green-100 text-green-800 p-3 text-center rounded-t-lg font-medium">
+              회원가입이 완료되었습니다! 환영해요!
+            </div>
+          )}
           <CardHeader className="text-center pb-6">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4 mx-auto">
               <User className="h-8 w-8 text-purple-600" />
@@ -83,6 +117,11 @@ export default function LoginPage() {
                     required
                   />
                 </div>
+                {usernameErrorMessage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {usernameErrorMessage}
+                  </p>
+                )}
               </div>
 
               {/* 비밀번호 입력 */}
@@ -109,6 +148,11 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {passwordErrorMessage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {passwordErrorMessage}
+                  </p>
+                )}
               </div>
 
               {/* 로그인 버튼 */}

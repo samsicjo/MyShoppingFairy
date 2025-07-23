@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { OutfitImageCarousel } from '@/components/OutfitImageCarousel';
+import Image from 'next/image';
 import { useStyling } from '@/app/context/StylingContext';
 import { useStyleData, Look } from '@/app/context/StyleDataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Header } from '@/components/ui/Header';
 import { Badge } from '@/components/ui/badge';
 import { Heart, RefreshCw, Share2, Loader2, Check, Palette, Sparkles, Camera } from 'lucide-react';
-import Image from 'next/image';
+
 import { useAuth } from '@/app/context/AuthContext';
 
 const categoryNames = ["아우터", "상의", "하의", "신발"];
@@ -488,7 +488,7 @@ export default function StylingResults() {
                         </Button>
                       </div>
                       <div className="relative h-48 bg-gray-200">
-                        <OutfitImageCarousel items={look.items} altText={look.look_name} className="w-full h-full" />
+                        <Image src={Object.values(look.items).find(item => item?.image_url)?.image_url || "/placeholder.svg"} alt={look.look_name} width={250} height={300} className="w-full h-full object-cover" />
                       </div>
                     </div>
                     <CardContent className="p-4">

@@ -9,11 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
 import { Camera, Upload, Sparkles, CheckCircle } from "lucide-react"
 import { useStyling } from '../context/StylingContext'
+import { useAuth } from '@/app/context/AuthContext'
 import { personalColorTypes } from "@/lib/personalColorData"
 
 export default function PersonalColorImageUpload() {
   const { stylingData, setStylingData } = useStyling()  
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [colorResult, setColorResult] = useState<string[]>([])
@@ -29,6 +31,8 @@ export default function PersonalColorImageUpload() {
   } | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  const { userId } = useAuth()
 
   useEffect(() => {
     if (personalColorResult && colorResult.length > 0) {
@@ -46,6 +50,8 @@ export default function PersonalColorImageUpload() {
     const file = event.target.files?.[0]
     if (!file) return
 
+    setImageFile(file) // 파일 객체 저장
+
     const reader = new FileReader()
     reader.onloadend = () => {
       setUploadedImage(reader.result as string)
@@ -54,53 +60,60 @@ export default function PersonalColorImageUpload() {
   }
 
   const handleDiagnosis = async () => {
-    if (!uploadedImage) return
+    if (!imageFile || !userId) {
+      alert("이미지를 업로드하거나 로그인해야 합니다.");
+      return;
+    }
 
-    setIsAnalyzing(true)
+    setIsAnalyzing(true);
 
-    // 3초 후 결과 표시 (실제로는 AI 분석 API 호출)
-    setTimeout(() => {
-      const randomResultType = personalColorTypes[Math.floor(Math.random() * personalColorTypes.length)];
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("user_id", String(userId));
 
-      const analysisResult = {
-        personalColor: randomResultType.name,
-        confidence: Math.floor(Math.random() * 20) + 80,
-        description: randomResultType.description,
-        recommendedColors: randomResultType.colors,
-        colorNames: randomResultType.colorsName
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/personal/analyze-all`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.personal_color_analysis || 'AI 분석 실패');
       }
 
-      setResult(analysisResult)
-      setIsAnalyzing(false)
-      setShowResult(true)
+      const responseData = await response.json();
+      const analysisResult = JSON.parse(responseData.personal_color_analysis); // FastAPI 응답 파싱
 
-      // 결과를 localStorage에 저장 (styling-summary에서 사용)
+      setResult(analysisResult);
+      setIsAnalyzing(false);
+      setShowResult(true);
+
       localStorage.setItem(
         "personalColorAnalysis",
         JSON.stringify({
-          type: randomResultType.name,
-          description: randomResultType.description,
-          colors: randomResultType.colors,
-          colorNames: randomResultType.colorsName,
+          type: analysisResult.personalColor,
+          description: analysisResult.description,
+          colors: analysisResult.recommendedColors,
+          colorNames: analysisResult.colorNames,
           confidence: analysisResult.confidence,
           analyzedAt: new Date().toISOString(),
         }),
-      )
+      );
 
-      const RRCJsonString = localStorage.getItem("personalColorAnalysis");
-      if(RRCJsonString){
-        const RRCJsonObject = JSON.parse(RRCJsonString)
-        setPersonalColorResult(RRCJsonObject.type)
-        setColorResult(RRCJsonObject.colors)
-        setColorNameResult(RRCJsonObject.colorNames)
-        setDescriptionResult(RRCJsonObject.description)
-      }
-      
-      // 3초 후 드레이프 테스트 페이지로 이동
+      setPersonalColorResult(analysisResult.personalColor);
+      setColorResult(analysisResult.recommendedColors);
+      setColorNameResult(analysisResult.colorNames);
+      setDescriptionResult(analysisResult.description);
+
       setTimeout(() => {
-        router.push("/personal-color-drape-test")
-      }, 1000)
-    }, 3000)
+        router.push("/personal-color-drape-test");
+      }, 1000);
+    } catch (error: any) {
+      alert(error.message);
+      console.error('AI analysis failed:', error);
+      setIsAnalyzing(false);
+    }
   }
 
   const triggerImageUpload = () => {

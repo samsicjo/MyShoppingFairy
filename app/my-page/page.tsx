@@ -11,10 +11,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera } from "lucide-react"
+import { OutfitImageCarousel } from "@/components/OutfitImageCarousel";
 import { Header } from '@/components/ui/Header';
-
-import { Item } from "../context/StyleDataContext"
+import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera } from "lucide-react"
+import { Item, Look } from "../context/StyleDataContext"
 
 interface MyPageUserProfile {
   username: string;
@@ -32,20 +32,6 @@ interface MyPageUserProfile {
   shoe_size: number;
   body_feature: string[];
   preferred_styles: string[];
-}
-
-interface SavedOutfit {
-  id: string
-  userId?: string
-  title: string
-  items: Array<{
-    name: string
-    price: string
-    image: string
-  }>
-  savedAt: string
-  matchRate: number
-  category: string
 }
 
 export default function MyPage() {
@@ -69,17 +55,17 @@ export default function MyPage() {
     preferred_styles: [],
   })
 
-  const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([])
+  const [savedOutfits, setSavedOutfits] = useState<Look[]>([])
   const [favoriteItems, setFavoriteItems] = useState<Item[]>([])
   const router = useRouter()
   const { userId } = useAuth()
-  const NEXT_PUBLIC_API_URL = 'http://127.0.0.1:8000'
+  
   useEffect(() => {
     const fetchUserData = async () => {
       if (userId) {
         try {
           // Fetch user profile
-          const userResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/user_info?user_id=${userId}`)
+          const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
           let userData = null;
           if (userResponse.ok) {
             userData = await userResponse.json()
@@ -88,7 +74,7 @@ export default function MyPage() {
           }
 
           // Fetch styling data
-          const stylingResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/styling_summary_info?user_id=${userId}`)
+          const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
           let stylingData = null;
           if (stylingResponse.ok) {
             stylingData = await stylingResponse.json()
@@ -119,13 +105,23 @@ export default function MyPage() {
           
           
           // Fetch favorite items
-          const favoritesResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/favorites?user_id=${userId}`)
+          const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
           if (favoritesResponse.ok) {
             const favoritesData = await favoritesResponse.json()
             console.log(favoritesData)
             setFavoriteItems(favoritesData)
           } else {
             console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
+          }
+
+          // Fetch favorite looks
+          const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
+          if (looksResponse.ok) {
+            const looksData = await looksResponse.json()
+            console.log("Fetched looks:", looksData.looks)
+            setSavedOutfits(looksData.looks)
+          } else {
+            console.error("Failed to fetch favorite looks:", looksResponse.statusText)
           }
 
         } catch (error) {
@@ -146,7 +142,7 @@ export default function MyPage() {
 
     try {
       // Update user profile
-      const userUpdateResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/user_update?user_id=${userId}`, {
+      const userUpdateResponse = await fetch(`http://127.0.0.1:8000/users/user_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +158,7 @@ export default function MyPage() {
       }
 
       // Update styling data
-      const stylingUpdateResponse = await fetch(`${NEXT_PUBLIC_API_URL}/users/styling_summary_update?user_id=${userId}`, {
+      const stylingUpdateResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -190,21 +186,21 @@ export default function MyPage() {
     }
   }
 
-  const handleViewOutfit = (outfitId: string) => {
-    router.push(`/outfit-detail/${outfitId}`)
+  const handleViewOutfit = (look_id: number) => {
+    router.push(`/outfit-detail/${look_id}`)
   }
 
   const handleViewWearingShots = (productId: number) => {
     router.push(`/wearing-shots/${productId}`)
   }
 
-  const handleDeleteOutfit = async (outfitId: string) => {
+  const handleDeleteOutfit = async (look_id: number) => {
     try {
-      const response = await fetch(`${NEXT_PUBLIC_API_URL}/outfits/${outfitId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/looks/${look_id}`, {
         method: "DELETE",
       })
       if (response.ok) {
-        setSavedOutfits(savedOutfits.filter((outfit) => outfit.id !== outfitId))
+        setSavedOutfits(savedOutfits.filter((outfit) => outfit.look_id !== look_id))
       } else {
         console.error("Failed to delete outfit:", response.statusText)
       }
@@ -215,7 +211,7 @@ export default function MyPage() {
 
   const handleDeleteFavorite = async (productId: number) => {
     try {
-      const response = await fetch(`${NEXT_PUBLIC_API_URL}/users/favorites/${productId}?user_id=${userId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/favorites/?product_id=${productId}&user_id=${userId}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -531,39 +527,15 @@ export default function MyPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {savedOutfits.map((outfit, index) => (
-                        <Card key={outfit.id || `saved-outfit-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
+                        <Card key={outfit.look_id || `saved-outfit-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
                           <CardContent className="p-4">
-                            <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
-                              {outfit.items && outfit.items.length > 0 ? (
-                                <img src={outfit.items[0].image} alt={outfit.title} className="w-full h-full object-cover"/>
-                              ) : (
-                                // 그렇지 않으면 (배열이 비어있거나 없으면) 플레이스홀더를 보여줍니다.
-                                <img src="/placeholder.svg?height=200&width=200" alt="No image available"
-                                className="w-full h-full object-cover"/>
-                              )}
-                            </div>
-                            <h3 className="font-semibold text-gray-900 mb-2">{outfit.title}</h3>
-                            <div className="flex items-center justify-between mb-3">
-                              <Badge
-                                className={
-                                  outfit.category === "business"
-                                    ? "bg-green-100 text-green-800"
-                                    : outfit.category === "casual"
-                                      ? "bg-blue-100 text-blue-800"
-                                      : "bg-purple-100 text-purple-800"
-                                }
-                              >
-                                {outfit.category}
-                              </Badge>
-                              <span className="text-sm text-gray-500">{outfit.matchRate}% 매치</span>
-                            </div>
-                            <p className="text-xs text-gray-400 mb-3">
-                              저장일: {new Date(outfit.savedAt).toLocaleDateString()}
-                            </p>
+                            <OutfitImageCarousel items={outfit.items} altText={outfit.look_name} />
+                            <h3 className="font-semibold text-gray-900 mt-4 mb-2">{outfit.look_name}</h3>
+                            <p className="text-sm text-gray-600 mb-3">{outfit.look_description}</p>
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => handleViewOutfit(outfit.id)}
+                                onClick={() => handleViewOutfit(outfit.look_id)}
                                 className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                               >
                                 <Eye className="h-4 w-4 mr-1" />
@@ -572,7 +544,7 @@ export default function MyPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleDeleteOutfit(outfit.id)}
+                                onClick={() => handleDeleteOutfit(outfit.look_id)}
                                 className="border-red-200 text-red-600 hover:bg-red-50"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -606,8 +578,12 @@ export default function MyPage() {
                           <CardContent className="p-4">
                             <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                               <img
-                                src={item.image_url || "/placeholder.svg?height=200&width=200"}
-                                alt={item.product_name}
+                                src={
+                                  item && item.image_url && typeof item.image_url === 'string' && item.image_url.length > 0
+                                    ? item.image_url
+                                    : "/placeholder.svg?height=200&width=200"
+                                }
+                                alt={item.product_name || "상품 이미지"}
                                 className="w-full h-full object-cover"
                               />
                             </div>

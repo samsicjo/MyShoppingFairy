@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
+import { FavoriteProvider } from "./context/FavoriteContext";
 
 import { StylingProvider } from "./context/StylingContext";
 import { StyleDataProvider } from "./context/StyleDataContext";
@@ -22,11 +23,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <StyleDataProvider>
-            <StylingProvider>
-              {children}
-            </StylingProvider>
-          </StyleDataProvider>
+          <FavoriteProvider>
+            <StyleDataProvider>
+              <StylingProvider>
+                {children}
+              </StylingProvider>
+            </StyleDataProvider>
+          </FavoriteProvider>
         </AuthProvider>
       </body>
     </html>

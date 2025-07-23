@@ -27,15 +27,75 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
+  const [usernameCheckStatus, setUsernameCheckStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
+  const [emailErrorMessage, setEmailErrorMessage] = useState(''); // 이메일 오류 메시지 상태 추가
   const router = useRouter()
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    if (field === 'username') {
+      setUsernameCheckMessage(''); // 아이디 변경 시 메시지 초기화
+      setUsernameCheckStatus('idle');
+    }
+    if (field === 'email') {
+      setEmailErrorMessage(''); // 이메일 변경 시 메시지 초기화
+    }
   }
 
   const handleAgreementChange = (field: string, checked: boolean) => {
     setAgreements((prev) => ({ ...prev, [field]: checked }))
   }
+
+  const handleUsernameCheck = async () => {
+    if (!formData.username) {
+      setUsernameCheckMessage('아이디를 입력해주세요.');
+      setUsernameCheckStatus('error');
+      return;
+    }
+
+    setUsernameCheckStatus('checking');
+    setUsernameCheckMessage('');
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/users/user_create_check?username=${formData.username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const isAvailable = await response.json();
+        if (isAvailable === true) {
+          setUsernameCheckMessage('사용할 수 있는 아이디입니다.');
+          setUsernameCheckStatus('available');
+        } else {
+          // Should not happen based on API spec, but for safety
+          setUsernameCheckMessage('아이디 확인 중 알 수 없는 오류가 발생했습니다.');
+          setUsernameCheckStatus('error');
+        }
+      } else if (response.status === 400) {
+        const errorData = await response.json();
+        if (errorData.detail === "이미 존재하는 아이디입니다.") {
+          setUsernameCheckMessage('이미 존재하는 아이디입니다.');
+          setUsernameCheckStatus('taken');
+        } else {
+          setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${errorData.detail || response.statusText}`);
+          setUsernameCheckStatus('error');
+        }
+      } else {
+        setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${response.statusText}`);
+        setUsernameCheckStatus('error');
+      }
+    } catch (error) {
+      console.error('아이디 확인 실패:', error);
+      setUsernameCheckMessage('네트워크 오류 또는 서버에 연결할 수 없습니다.');
+      setUsernameCheckStatus('error');
+    } finally {
+      // No need to set loading state to false here, as status handles it
+    }
+  };
 
   const isFormValid = () => {
     return (
@@ -46,7 +106,8 @@ export default function SignupPage() {
       formData.confirmPassword &&
       formData.password === formData.confirmPassword &&
       agreements.terms &&
-      agreements.privacy
+      agreements.privacy &&
+      usernameCheckStatus === 'available' // 아이디 확인 상태 추가
     )
   }
 
@@ -56,20 +117,47 @@ export default function SignupPage() {
 
     setIsLoading(true)
 
-    // 간단한 회원가입 시뮬레이션 (실제로는 API 호출)
-    setTimeout(() => {
-      localStorage.setItem("isLoggedIn", "true")
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify({
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/users/user_create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           username: formData.username,
           name: formData.name,
           email: formData.email,
+          password: formData.password,
         }),
-      )
-      setIsLoading(false)
-      router.push("/")
-    }, 1500)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        let errorMessage = '회원가입 실패';
+        if (errorData && errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            errorMessage = errorData.detail.map((err: any) => err.msg).join(', ');
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          }
+        }
+
+        // 이메일 중복 오류 처리
+        if (errorMessage.includes("이미 존재하는 사용자명 또는 이메일입니다.")) {
+          setEmailErrorMessage('이미 존재하는 이메일입니다!');
+          return; // alert 대신 필드 옆에 메시지 표시
+        }
+
+        throw errorMessage; // Error 객체 대신 메시지 문자열 자체를 던집니다.
+      }
+
+      router.push("/login?signupSuccess=true"); // 회원가입 성공 후 로그인 페이지로 이동
+    } catch (error: any) {
+      alert(error); // error 객체 대신 메시지 문자열을 직접 alert
+      console.error('Signup failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -105,7 +193,7 @@ export default function SignupPage() {
                 <Label htmlFor="username" className="text-sm font-medium text-gray-700">
                   아이디 <span className="text-red-500">*</span>
                 </Label>
-                <div className="relative">
+                <div className="relative flex items-center space-x-2">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     id="username"
@@ -113,10 +201,25 @@ export default function SignupPage() {
                     placeholder="아이디를 입력하세요"
                     value={formData.username}
                     onChange={(e) => handleInputChange("username", e.target.value)}
-                    className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500 flex-grow"
                     required
                   />
+                  <Button
+                    type="button"
+                    onClick={handleUsernameCheck}
+                    disabled={usernameCheckStatus === 'checking' || !formData.username}
+                    className="h-12 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm"
+                  >
+                    {usernameCheckStatus === 'checking' ? '확인 중...' : '아이디 확인'}
+                  </Button>
                 </div>
+                {usernameCheckMessage && (
+                  <p
+                    className={`text-sm ${usernameCheckStatus === 'available' ? 'text-green-600' : 'text-red-500'}`}
+                  >
+                    {usernameCheckMessage}
+                  </p>
+                )}
               </div>
 
               {/* 이름 입력 */}
@@ -152,6 +255,11 @@ export default function SignupPage() {
                     required
                   />
                 </div>
+                {emailErrorMessage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {emailErrorMessage}
+                  </p>
+                )}
               </div>
 
               {/* 비밀번호 입력 */}

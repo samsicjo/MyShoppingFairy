@@ -2,12 +2,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { BodyType } from '@/app/context/StylingContext';
 
 interface BodyTypeSectionProps {
-  selectedBodyTypes: BodyType[];
-  onBodyTypeChange: (bodyTypeId: BodyType) => void;
-  bodyTypeOptions: { id: BodyType; label: string }[];
+  selectedBodyTypes: string[];
+  onBodyTypeChange: (bodyTypeId: string) => void;
+  bodyTypeOptions: { id: string; label: string }[];
 }
 
 const BodyTypeSection: React.FC<BodyTypeSectionProps> = React.memo(

@@ -1,14 +1,22 @@
 "use client"
 
+
+import { useEffect } from 'react';
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
 import { Camera, Palette } from "lucide-react"
-
+import { useStyleData } from '../context/StyleDataContext';
 
 export default function PersonalColorDiagnosis() {
   const router = useRouter()
+  const { clearRecommendations } = useStyleData();
+
+  useEffect(() => {
+    // 진단 프로세스의 첫 단계이므로, 이전 추천 데이터를 모두 초기화합니다.
+    clearRecommendations();
+  }, []); // 페이지가 처음 마운트될 때 한 번만 실행합니다.
 
   const handleAIDiagnosis = () => {
     router.push("/personal-color-image-upload")
@@ -121,3 +129,4 @@ export default function PersonalColorDiagnosis() {
     </div>
   )
 }
+

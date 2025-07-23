@@ -3,7 +3,7 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useStyling, MajorStyleSituation, TopSize, BodyType } from '../context/StylingContext'
+import { useStyling } from '../context/StylingContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -18,24 +18,24 @@ import BodyTypeSection from '@/components/BodyTypeSection';
 import { Header } from '@/components/ui/Header'; // ADDED
 
 const situationOptions = [
-  { id: MajorStyleSituation.workStyle, label: "출근/업무", icon: "💼" },
-  { id: MajorStyleSituation.date, label: "데이트", icon: "💕" },
-  { id: MajorStyleSituation.daily, label: "일상/집", icon: "🏠" },
-  { id: MajorStyleSituation.Party, label: "파티/행사", icon: "🎉" },
-  { id: MajorStyleSituation.Travel, label: "여행", icon: "✈️" },
-  { id: MajorStyleSituation.Active, label: "운동/액티비티", icon: "🏃‍" }
+  { id: "출근/업무", label: "출근/업무", icon: "💼" },
+  { id: "데이트", label: "데이트", icon: "💕" },
+  { id: "일상/집", label: "일상/집", icon: "🏠" },
+  { id: "파티/행사", label: "파티/행사", icon: "🎉" },
+  { id: "여행", label: "여행", icon: "✈️" },
+  { id: "운동/액티비티", label: "운동/액티비티", icon: "🏃‍" }
 ]
 
 
 const bodyTypeOptions = [
-  { id: BodyType.UpperBodyDominant, label: "상체가 발달한 편" },
-  { id: BodyType.LowerBodyDominant, label: "하체가 발달한 편" },  { id: BodyType.Balanced, label: "전체적으로 균형잡힌 편" },
-  { id: BodyType.Slim, label: "마른 편" },
-  { id: BodyType.Chubby, label: "통통한 편" },
-  { id: BodyType.Tall, label: "키가 큰 편" },
+  { id: "상체가 발달한 편", label: "상체가 발달한 편" },
+  { id: "하체가 발달한 편", label: "하체가 발달한 편" },  { id: "전체적으로 균형잡힌 편", label: "전체적으로 균형잡힌 편" },
+  { id: "마른 편", label: "마른 편" },
+  { id: "통통한 편", label: "통통한 편" },
+  { id: "키가 큰 편", label: "키가 큰 편" },
 ]
 
-const topSizeOptions = Object.values(TopSize)
+const topSizeOptions = ["XS", "S", "M", "L", "XL", "XXL"]
 const waistSizeOptions = Array.from({ length: 13 }, (_, i) => String(24 + i)) // 24-36
 const shoeSizeOptions = Array.from({ length: 13 }, (_, i) => String(220 + i * 5)) // 220-280
 
@@ -44,16 +44,25 @@ export default function StylingStep2() {
   const { stylingData, setStylingData } = useStyling()
   const router = useRouter()
 
-  const [localBudget, setLocalBudget] = useState([50]);
-  const [selectedSituations, setSelectedSituations] = useState<MajorStyleSituation[]>([])
-  const [topSize, setTopSize] = useState<TopSize | ''>('');
+  const [localBudget, setLocalBudget] = useState([stylingData.budget ? stylingData.budget / 10000 : 50]);
+  const [selectedSituations, setSelectedSituations] = useState<string[]>(stylingData.user_situation || [])
+  const [topSize, setTopSize] = useState<string | ''>('');
   const [waistSize, setWaistSize] = useState<number | ''>('');
   const [shoeSize, setShoeSize] = useState<number | ''>('');
-  const [selectedBodyTypes, setSelectedBodyTypes] = useState<BodyType[]>([]);
+  const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(stylingData.body_feature || []);
+
+  useEffect(() => {
+    setLocalBudget([stylingData.budget ? stylingData.budget / 10000 : 50]);
+    setSelectedSituations(stylingData.user_situation || []);
+    setTopSize(stylingData.top_size || '');
+    setWaistSize(stylingData.bottom_size || '');
+    setShoeSize(stylingData.shoe_size || '');
+    setSelectedBodyTypes(stylingData.body_feature || []);
+  }, [stylingData]);
 
 
   useEffect(() => {
-    if (!stylingData.userHeight) {
+    if (!stylingData.height) {
       alert('이전 단계의 정보가 없습니다. 1단계부터 다시 진행해주세요.');
       router.push('/styling-step1');
     }
@@ -61,7 +70,7 @@ export default function StylingStep2() {
 
 
   // 이벤트 핸들러들을 Context 로직에 맞게 수정합니다.
-  const handleSituationChange = React.useCallback((situationId: MajorStyleSituation) => {
+  const handleSituationChange = React.useCallback((situationId: string) => {
     setSelectedSituations(prev =>
       prev.includes(situationId)
         ? prev.filter(id => id !== situationId)
@@ -70,7 +79,7 @@ export default function StylingStep2() {
   }, []);
 
 
-  const handleBodyTypeChange = React.useCallback((bodyTypeId: BodyType) => {
+  const handleBodyTypeChange = React.useCallback((bodyTypeId: string) => {
     setSelectedBodyTypes(prev =>
       prev.includes(bodyTypeId)
         ? prev.filter(id => id !== bodyTypeId)
@@ -82,12 +91,12 @@ export default function StylingStep2() {
   const handleNext = () => {
     setStylingData(prevData => ({
       ...prevData,
-      userBudget: localBudget[0]*10000,
-      userMajorStyleSituations: selectedSituations,
-      userTopSize: topSize as TopSize,
-      userWaistSize: waistSize as number,
-      userShoeSize: shoeSize as number,
-      userBodyType: selectedBodyTypes,
+      budget: localBudget[0]*10000,
+      user_situation: selectedSituations,
+      top_size: topSize,
+      bottom_size: waistSize as number,
+      shoe_size: shoeSize as number,
+      body_feature: selectedBodyTypes,
     }));
     router.push("/styling-step3");
   };

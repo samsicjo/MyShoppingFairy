@@ -6,10 +6,39 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
 import { Brain, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react"
 import { useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
+import { useStyling } from './context/StylingContext'
 
 export default function HomePage() {
   const router = useRouter()
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, userId } = useAuth();
+  const { stylingData, setStylingData} = useStyling()
+
+  //간단한 백엔드 확인용 코드
+  useEffect(() => {
+    
+    console.log(isLoggedIn)
+    if(isLoggedIn){
+      console.log('초기 stylingData : ', stylingData)
+      const getUserStylingSummaryInfo = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/users/styling_summary_info?user_id=${userId}`)
+          if(response.ok){
+            
+            const data = await response.json()
+            console.log('User Styling Summary Info : ', data)
+            setStylingData(data)
+          } else{
+            console.error("Fetch styling data 실패 : ", response.status, response.statusText)
+          }
+        }
+        catch(error){
+          console.log('getUserStylingSummaryInfo Error : ', error)
+        }
+      }
+      getUserStylingSummaryInfo()
+    }
+    }, [isLoggedIn])
 
   const handleNavigation = (path: string) => {
     if (!isLoggedIn) {

@@ -2,12 +2,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { MajorStyleSituation } from '@/app/context/StylingContext';
 
 interface OccasionsSectionProps {
-  selectedSituations: MajorStyleSituation[];
-  onSituationChange: (situationId: MajorStyleSituation) => void;
-  situationOptions: { id: MajorStyleSituation; label: string; icon: string }[];
+  selectedSituations: string[];
+  onSituationChange: (situationId: string) => void;
+  situationOptions: { id: string; label: string; icon: string }[];
 }
 
 const OccasionsSection: React.FC<OccasionsSectionProps> = React.memo(

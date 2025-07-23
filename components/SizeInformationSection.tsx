@@ -2,11 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TopSize } from '@/app/context/StylingContext';
 
 interface SizeInformationSectionProps {
-  topSize: TopSize | '';
-  setTopSize: (value: TopSize | '') => void;
+  topSize: string | '';
+  setTopSize: (value: string | '') => void;
   waistSize: number | '';
   setWaistSize: (value: number | '') => void;
   shoeSize: number | '';
