@@ -28,7 +28,10 @@ export default function HomePage() {
             const data = await response.json()
             console.log('User Styling Summary Info : ', data)
             setStylingData(data)
-          } else{
+          } else if (response.status === 404) {
+            console.log("No styling data found for user (404). This is expected for new users.");
+            setStylingData({}); // Set to an empty object or appropriate default
+          } else {
             console.error("Fetch styling data 실패 : ", response.status, response.statusText)
           }
         }
@@ -158,49 +161,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mt-8 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg overflow-hidden">
-            <CardContent className="p-0">
-              <div className="relative">
-                {/* 배경 그라데이션 효과 */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-pink-100 opacity-80"></div>
-
-                {/* 장식용 원형 요소들 */}
-                <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-purple-200/30 blur-xl"></div>
-                <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-pink-200/30 blur-xl"></div>
-
-                {/* 콘텐츠 영역 */}
-                <div className="relative p-12 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
-                    </svg>
-                  </div>
-
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">지금 바로 시작해보세요!</h2>
-
-                  <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-sm mb-8 max-w-2xl mx-auto">
-                    <p className="text-lg md:text-xl text-gray-700">
-                      몇 분만 투자하여 평생 써먹을 스타일 가이드를 얻을 수 있어요
-                    </p>
-                  </div>
-
-                  <Button
-                    onClick={() => handleNavigation("/login")}
-                    size="lg"
-                    className="bg-[#f5a6c6] hover:bg-[#C7585E] text-white hover:text-white px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg"
-                  >
-                    <span className="mr-3">무료로 시작하기</span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      
 
       {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">

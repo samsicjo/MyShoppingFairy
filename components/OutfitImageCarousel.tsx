@@ -18,7 +18,7 @@ export function OutfitImageCarousel({ items, altText, className }: OutfitImageCa
 
   const imageUrls = useMemo(() => 
     Object.values(items)
-      .filter((item): item is Item => item !== null && !!item.image_url)
+      .filter((item): item is Item => item !== null && item.image_url && item.image_url.length > 0)
       .map(item => item.image_url),
     [items]
   );
@@ -55,16 +55,16 @@ export function OutfitImageCarousel({ items, altText, className }: OutfitImageCa
 
   return (
     <div className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden group ${className}`}>
-      <div className="embla" ref={emblaRef}>
+      <div className="embla h-full" ref={emblaRef}>
         <div className="embla__container h-full flex">
           {imageUrls.map((url, index) => (
-            <div className="embla__slide h-full flex-shrink-0 w-full flex items-center justify-center" key={index}>
+            <div className="embla__slide h-full flex-shrink-0 w-full flex items-center justify-center relative" key={index}>
               <Image
                 src={url}
                 alt={`${altText} - Image ${index + 1}`}
-                width={500}
-                height={500}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
               />
             </div>
           ))}

@@ -8,14 +8,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
-import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb } from "lucide-react"
+import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2 } from "lucide-react"
 import { colorCategories } from "@/components/data/personalColorData"
 
 export default function PersonalColorDrapeTest() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  // const [processedImage, setProcessedImage] = useState<string | null>(null) // 삭제
-  // const [useProcessedImage, setUseProcessedImage] = useState(false) // 삭제
-  // const [isProcessing, setIsProcessing] = useState(false) // 삭제
+  const [isProcessing, setIsProcessing] = useState(false) // Add processing state
   const [backgroundColor, setBackgroundColor] = useState("#e0e0e0")
   const [currentScale, setCurrentScale] = useState(1)
   const [currentOffsetX, setCurrentOffsetX] = useState(0)
@@ -56,19 +54,38 @@ export default function PersonalColorDrapeTest() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      const imageDataUrl = e.target?.result as string
-      setUploadedImage(imageDataUrl)
-      // setProcessedImage(null) // 삭제
-      // setUseProcessedImage(false) // 삭제
+    setIsProcessing(true); // Start processing
+    setUploadedImage(null); // Clear previous image
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/personal/extract-face-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to extract face image: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const imageBlob = await response.blob();
+      const imageUrl = URL.createObjectURL(imageBlob);
+      setUploadedImage(imageUrl);
 
       // 이미지 업로드 시 변형 값 초기화
-      setCurrentScale(1)
-      setCurrentOffsetX(0)
-      setCurrentOffsetY(0)
+      setCurrentScale(1);
+      setCurrentOffsetX(0);
+      setCurrentOffsetY(0);
+
+    } catch (error) {
+      console.error("Error uploading image or extracting face:", error);
+      alert(`이미지 처리 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsProcessing(false); // End processing
     }
-    reader.readAsDataURL(file)
   }
 
   // handleRemoveBackground 함수 삭제
@@ -211,7 +228,12 @@ export default function PersonalColorDrapeTest() {
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseUp}
                       >
-                        {currentDisplayImage ? (
+                        {isProcessing ? (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center animate-pulse">
+                            <Loader2 className="h-12 w-12 text-gray-500" />
+                            <p className="text-gray-500 text-sm ml-2">얼굴 추출 중...</p>
+                          </div>
+                        ) : currentDisplayImage ? (
                           <img
                             ref={faceImageRef}
                             src={currentDisplayImage || "/placeholder.svg"}

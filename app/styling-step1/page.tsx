@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/ui/Header";
+import { OptimizedTextarea } from "@/components/OptimizedTextarea"; // Import the new component
 import { User, ArrowLeft } from "lucide-react"
 import { useStyling, Gender } from '../context/StylingContext'
 
@@ -25,7 +26,6 @@ export default function StylingStep1() {
   const router = useRouter()
   const [height, setHeight] = useState<number | ''>(stylingData.height || '')
   const [gender, setGender] = useState<string | null>(stylingData.gender || null)
-  const [memo, setMemo] = useState(stylingData.occasion || '')
   const isButtonDisabled = height === '' || gender === null;
 
 
@@ -43,8 +43,14 @@ export default function StylingStep1() {
   useEffect(() => {
     setHeight(stylingData.height || '');
     setGender(stylingData.gender || null);
-    setMemo(stylingData.occasion || '');
   }, [stylingData]);
+
+  const handleMemoSave = (value: string) => {
+    setStylingData(prevData => ({
+      ...prevData,
+      occasion: value,
+    }));
+  };
 
 
 
@@ -57,7 +63,6 @@ export default function StylingStep1() {
       ...prevData, // 이전 단계(퍼스널 컬러)에서 저장된 데이터를 그대로 유지
       height: height,
       gender: gender,
-      style_request: memo,
     }));
     router.push('/styling-step2'); // 다음 페이지로 이동
   }
@@ -182,27 +187,15 @@ export default function StylingStep1() {
             </div>
 
             {/* 스타일링 요청/메모 */}
-            <div className="space-y-2">
-              <Label htmlFor="stylingRequest" className="text-sm font-medium text-gray-700">
-                스타일링 요청/메모
-              </Label>
-              <div className="relative">
-                <Textarea
-                  id="requests"
-                  placeholder="특별한 요청사항이나 선호하는 스타일에 대해 자유롭게 작성해주세요..."
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  className="min-h-[120px] border-gray-200 focus:border-purple-500 focus:ring-purple-500 resize-none"
-                  maxLength={225}
-                />
-                <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-                  {memo.length}/225자
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">
-                원하는 스타일, 피하고 싶은 스타일, 특별한 요청사항 등을 자유롭게 작성해주세요
-              </p>
-            </div>
+            <OptimizedTextarea
+              id="stylingRequest"
+              label="스타일링 요청/메모"
+              placeholder="특별한 요청사항이나 선호하는 스타일에 대해 자유롭게 작성해주세요..."
+              initialValue={stylingData.occasion || ''}
+              maxLength={225}
+              onSave={handleMemoSave}
+              description="원하는 스타일, 피하고 싶은 스타일, 특별한 요청사항 등을 자유롭게 작성해주세요"
+            />
 
             {/* 다음 단계 버튼 */}
             <Button

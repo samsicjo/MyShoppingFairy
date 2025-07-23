@@ -34,6 +34,7 @@ interface StyleDataContextType {
   error: string | null;
   fetchRecommendations: () => Promise<void>;
   clearRecommendations: () => void;
+  resetFetchAttempt: () => void; // Add this line
 }
 
 // 3. 컨텍스트 생성
@@ -56,6 +57,11 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     console.log("StyleDataContext: Cleared recommendations, error, and fetch flag.");
   };
 
+  const resetFetchAttempt = () => {
+    setHasFetchBeenAttempted(false);
+    console.log("StyleDataContext: Reset fetch attempt flag.");
+  };
+
   const fetchRecommendations = useCallback(async () => {
     if (hasFetchBeenAttempted) {
       console.log("StyleDataContext: Fetch already attempted, aborting.");
@@ -76,11 +82,11 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      console.log(`StyleDataContext: Fetching from http://127.0.0.1:8000/crawling/analyze-item?user_id=1&filter=0`);
+      console.log(`StyleDataContext: Fetching from http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 200000); // 200 seconds timeout
 
-      const response = await fetch(`http://127.0.0.1:8000/crawling/analyze-item?user_id=1&filter=0`, {
+      const response = await fetch(`http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`, {
         method: 'POST',
         signal: controller.signal,
       });
@@ -130,7 +136,7 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     console.log("StyleDataContext: isInitializing set to false after initial load attempt.");
   }, []);
 
-  const value = { recommendations, isLoading, isInitializing, error, fetchRecommendations, clearRecommendations };
+  const value = { recommendations, isLoading, isInitializing, error, fetchRecommendations, clearRecommendations, resetFetchAttempt };
 
   return (
     <StyleDataContext.Provider value={value}>

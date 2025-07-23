@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useStyling } from "@/app/context/StylingContext"
+import { useAuth } from '@/app/context/AuthContext'; // useAuth 훅 임포트
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +12,7 @@ import { personalColorTypes } from "@/lib/personalColorData"
 
 export default function PersonalColorSelect() {
   const { setStylingData } = useStyling()
+  const { userId } = useAuth(); // userId 가져오기
   const [selectedColor, setSelectedColor] = useState<string>("")
   const router = useRouter()
 
@@ -18,10 +20,39 @@ export default function PersonalColorSelect() {
     setSelectedColor(colorId)
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedColor) {
       const selectedColorData = personalColorTypes.find((color) => color.id === selectedColor)
       if (selectedColorData) {
+        // API 호출
+        if (userId) {
+          const encodedColorName = encodeURIComponent(selectedColorData.nameForDB);
+          try {
+            const response = await fetch(`http://127.0.0.1:8000/users/user_personal_color_update?user_id=${userId}&personal_color_name=${encodedColorName}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              console.error("Failed to update personal color:", errorData);
+              alert("퍼스널 컬러 업데이트에 실패했습니다.");
+              return;
+            }
+            console.log("Personal color updated successfully!");
+          } catch (error) {
+            console.error("Error updating personal color:", error);
+            alert("퍼스널 컬러 업데이트 중 오류가 발생했습니다.");
+            return;
+          }
+        } else {
+          alert("로그인이 필요합니다.");
+          router.push("/login");
+          return;
+        }
+
         setStylingData(prevData => ({
           ...prevData,
           personalColor: selectedColorData.name,

@@ -108,10 +108,7 @@ export function StylingProvider({ children }: { children: ReactNode }) {
             const savedStylingData = sessionStorage.getItem('stylingData');
             const initialData = savedStylingData ? JSON.parse(savedStylingData) : {};
 
-            // occasion이 배열이 아니면 배열로 변환
-            if (!Array.isArray(initialData.occasion)) {
-                initialData.occasion = initialData.occasion ? [initialData.occasion] : [];
-            }
+            
             // body_feature가 배열이 아니면 배열로 변환
             if (!Array.isArray(initialData.body_feature)) {
                 initialData.body_feature = initialData.body_feature ? [initialData.body_feature] : [];

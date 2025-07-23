@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { OutfitImageCarousel } from '@/components/OutfitImageCarousel';
 import { useStyleData, Look, Item } from '@/app/context/StyleDataContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import Image from 'next/image';
 export default function OutfitDetail() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams(); // Add this line
   const { recommendations } = useStyleData();
   const [look, setLook] = useState<Look | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,9 +85,11 @@ export default function OutfitDetail() {
   const allItems: [string, Item][] = Object.entries(look.items).filter((entry): entry is [string, Item] => entry[1] !== null);
   const mainImageUrl = allItems.length > 0 ? allItems[0][1].image_url : '/placeholder.svg';
 
+  const activeHeaderPage = searchParams.get('from') === 'my-page' ? 'my-page' : 'styling';
+
   return (
     <div className="min-h-screen bg-white">
-      <Header activePage="styling" />
+      <Header activePage={activeHeaderPage as 'my-page' | 'styling'} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
@@ -97,7 +100,7 @@ export default function OutfitDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
             <Card className="overflow-hidden">
-              <OutfitImageCarousel items={look.items} altText={look.look_name} className="w-full h-full" />
+              <OutfitImageCarousel items={look.items} altText={look.look_name} className="w-full" />
             </Card>
           </div>
 
@@ -107,11 +110,11 @@ export default function OutfitDetail() {
                 <h3 className="text-xl font-bold text-gray-900 mb-6">구성 아이템</h3>
                 <div className="space-y-6">
                   {allItems.map(([category, item]) => (
-                    <div key={item.product_id} className="border rounded-lg p-4 bg-gray-50">
+                    <div key={category} className="border rounded-lg p-4 bg-gray-50">
                       <div className="flex gap-4">
                         <div className="relative flex-shrink-0">
                           <Image
-                            src={item.image_url}
+                            src={item.image_url && item.image_url.length > 0 ? item.image_url : "/placeholder.svg"}
                             alt={item.product_name || '상품 이미지'}
                             width={80}
                             height={80}

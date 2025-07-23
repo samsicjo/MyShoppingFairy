@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { OutfitImageCarousel } from "@/components/OutfitImageCarousel";
 import { Header } from '@/components/ui/Header';
-import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera } from "lucide-react"
+import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera, Loader2 } from "lucide-react"
 import { Item, Look } from "../context/StyleDataContext"
 
 interface MyPageUserProfile {
@@ -57,6 +57,8 @@ export default function MyPage() {
 
   const [savedOutfits, setSavedOutfits] = useState<Look[]>([])
   const [favoriteItems, setFavoriteItems] = useState<Item[]>([])
+  const [isLoadingOutfits, setIsLoadingOutfits] = useState(true); // Add loading state
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true); // Add loading state for favorites
   const router = useRouter()
   const { userId } = useAuth()
   
@@ -78,11 +80,14 @@ export default function MyPage() {
           let stylingData = null;
           if (stylingResponse.ok) {
             stylingData = await stylingResponse.json()
+          } else if (stylingResponse.status === 404) {
+            console.log("No styling data found for user (404) in my-page. This is expected for new users.");
+            stylingData = null; // Explicitly set to null if 404
           } else {
-            console.error("Failed to fetch styling data:", stylingResponse.statusText)
+            console.error("Failed to fetch styling data:", stylingResponse.status, stylingResponse.statusText)
           }
 
-          if (userData && stylingData) {
+          if (userData) { // Check if userData exists
             setUserProfile({
               username: userData.username || "",
               name: userData.name || "",
@@ -90,21 +95,22 @@ export default function MyPage() {
               phone: userProfile.phone || "", // 기존 값 유지 또는 빈 문자열
               address: userProfile.address || "", // 기존 값 유지 또는 빈 문자열
               bio: userProfile.bio || "", // 기존 값 유지 또는 빈 문자열
-              budget: stylingData.budget || 0,
-              occasion: stylingData.occasion || "",
-              height: stylingData.height || 0,
-              gender: stylingData.gender || "",
-              top_size: stylingData.top_size || "",
-              bottom_size: stylingData.bottom_size || 0,
-              shoe_size: stylingData.shoe_size || 0,
-              body_feature: stylingData.body_feature || [],
-              preferred_styles: stylingData.preferred_styles || [],
+              budget: stylingData?.budget || 0,
+              occasion: stylingData?.occasion || "",
+              height: stylingData?.height || 0,
+              gender: stylingData?.gender || "",
+              top_size: stylingData?.top_size || "",
+              bottom_size: stylingData?.bottom_size || 0,
+              shoe_size: stylingData?.shoe_size || 0,
+              body_feature: stylingData?.body_feature || [],
+              preferred_styles: stylingData?.preferred_styles || [],
             })
           }
                                                                                                         //Debug
           
           
           // Fetch favorite items
+          setIsLoadingFavorites(true); // Set loading to true before fetch
           const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
           if (favoritesResponse.ok) {
             const favoritesData = await favoritesResponse.json()
@@ -112,9 +118,12 @@ export default function MyPage() {
             setFavoriteItems(favoritesData)
           } else {
             console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
+            setFavoriteItems([]); // Ensure favoriteItems is empty on error
           }
+          setIsLoadingFavorites(false); // Set loading to false after fetch
 
           // Fetch favorite looks
+          setIsLoadingOutfits(true); // Set loading to true before fetch
           const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
           if (looksResponse.ok) {
             const looksData = await looksResponse.json()
@@ -122,10 +131,14 @@ export default function MyPage() {
             setSavedOutfits(looksData.looks)
           } else {
             console.error("Failed to fetch favorite looks:", looksResponse.statusText)
+            setSavedOutfits([]); // Ensure savedOutfits is empty on error
           }
+          setIsLoadingOutfits(false); // Set loading to false after fetch
 
         } catch (error) {
           console.error("Error fetching data:", error)
+          setIsLoadingOutfits(false); // Set loading to false on error
+          setIsLoadingFavorites(false); // Set loading to false on error
         }
       }
     }
@@ -187,7 +200,7 @@ export default function MyPage() {
   }
 
   const handleViewOutfit = (look_id: number) => {
-    router.push(`/outfit-detail/${look_id}`)
+    router.push(`/outfit-detail/${look_id}?from=my-page`)
   }
 
   const handleViewWearingShots = (productId: number) => {
@@ -263,7 +276,7 @@ export default function MyPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header activePage="home" />
+      <Header activePage="my-page" />
       
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -518,7 +531,12 @@ export default function MyPage() {
                   <CardTitle className="text-2xl font-bold text-gray-900">저장된 코디</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {savedOutfits.length === 0 ? (
+                  {isLoadingOutfits ? (
+                    <div className="text-center py-12">
+                      <Loader2 className="h-16 w-16 text-purple-600 mx-auto mb-4 animate-spin" />
+                      <p className="text-gray-500 text-lg">저장된 코디 불러오는 중...</p>
+                    </div>
+                  ) : savedOutfits.length === 0 ? (
                     <div className="text-center py-12">
                       <ShoppingBag className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                       <p className="text-gray-500 text-lg">저장된 코디가 없습니다</p>
@@ -565,7 +583,12 @@ export default function MyPage() {
                   <CardTitle className="text-2xl font-bold text-gray-900">찜한 아이템</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {favoriteItems.length === 0 ? (
+                  {isLoadingFavorites ? (
+                    <div className="text-center py-12">
+                      <Loader2 className="h-16 w-16 text-purple-600 mx-auto mb-4 animate-spin" />
+                      <p className="text-gray-500 text-lg">찜한 아이템 불러오는 중...</p>
+                    </div>
+                  ) : favoriteItems.length === 0 ? (
                     <div className="text-center py-12">
                       <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                       <p className="text-gray-500 text-lg">찜한 아이템이 없습니다</p>

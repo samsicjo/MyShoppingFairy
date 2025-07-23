@@ -71,7 +71,7 @@ export default function PersonalColorImageUpload() {
     formData.append("user_id", String(userId));
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/personal/analyze-all`, {
+      const response = await fetch(`http://127.0.0.1:8000/personal/analyze-all?user_id=${userId}`, {
         method: 'POST',
         body: formData,
       });
@@ -82,7 +82,22 @@ export default function PersonalColorImageUpload() {
       }
 
       const responseData = await response.json();
-      const analysisResult = JSON.parse(responseData.personal_color_analysis); // FastAPI 응답 파싱
+      let analysisResult;
+
+      try {
+        // 백엔드에서 JSON 문자열을 반환할 것으로 예상하고 파싱 시도
+        analysisResult = JSON.parse(responseData.personal_color_analysis);
+      } catch (e) {
+        // JSON 파싱 실패 시, personal_color_analysis가 단순 문자열이라고 가정하고 객체 구성
+        console.warn("personal_color_analysis is not valid JSON. Treating as plain personal color name.", responseData.personal_color_analysis);
+        analysisResult = {
+          personalColor: responseData.personal_color_analysis, // 단순 문자열을 personalColor로 사용
+          description: "분석 결과 설명이 제공되지 않았습니다.", // 기본 설명
+          recommendedColors: [], // 빈 배열
+          colorNames: [], // 빈 배열
+          confidence: 0, // 기본값
+        };
+      }
 
       setResult(analysisResult);
       setIsAnalyzing(false);
@@ -105,9 +120,9 @@ export default function PersonalColorImageUpload() {
       setColorNameResult(analysisResult.colorNames);
       setDescriptionResult(analysisResult.description);
 
-      setTimeout(() => {
-        router.push("/personal-color-drape-test");
-      }, 1000);
+      // setTimeout(() => {
+      //   router.push("/personal-color-drape-test");
+      // }, 60000);
     } catch (error: any) {
       alert(error.message);
       console.error('AI analysis failed:', error);

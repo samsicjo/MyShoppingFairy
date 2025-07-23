@@ -52,7 +52,7 @@ export default function PersonalColorDiagnosis() {
                   
                   <button
                     onClick={handleAIDiagnosis}
-                    className="bg-gray-200 rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-gray-300 font-semibold"
+                    className="bg-[#E8B5B8] rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-[#d9a6a9] text-white font-semibold"
                     type="button"
                   >
                     사진으로 시작하기
@@ -83,8 +83,8 @@ export default function PersonalColorDiagnosis() {
                     </ul>
                   
                   <button
-                    onClick={handleDirectSelection}
-                    className="bg-gray-200 rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-gray-300 font-semibold"
+                    onClick={handleAIDiagnosis}
+                    className="bg-[#E8B5B8] rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-[#d9a6a9] text-white font-semibold"
                     type="button"
                   >
                     직접 선택하기

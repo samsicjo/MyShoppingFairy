@@ -31,7 +31,7 @@ export default function StylingSummary() {
 
     const dataToSave = {
       budget: stylingData.budget || 0,
-      occasion: stylingData.occasion || '',
+      occasion: Array.isArray(stylingData.occasion) ? stylingData.occasion.join(', ') : stylingData.occasion || '',
       height: stylingData.height || 0,
       gender: stylingData.gender || "",
       top_size: stylingData.top_size || "",

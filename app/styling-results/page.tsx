@@ -17,7 +17,7 @@ const categoryNames = ["아우터", "상의", "하의", "신발"];
 
 export default function StylingResults() {
   const { stylingData } = useStyling();
-  const { recommendations, isLoading, error, fetchRecommendations } = useStyleData();
+  const { recommendations, isLoading, error, fetchRecommendations, resetFetchAttempt } = useStyleData();
   const { userId } = useAuth();
   const router = useRouter();
 
@@ -479,7 +479,7 @@ export default function StylingResults() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {recommendations.map((look: Look, index: number) => (
-                  <Card key={look.look_name} className="overflow-hidden hover:shadow-lg transition-shadow bg-white cursor-pointer border-gray-200" onClick={() => router.push(`/outfit-detail/${encodeURIComponent(look.look_name)}`)}>
+                  <Card key={look.look_name} className="overflow-hidden hover:shadow-lg transition-shadow bg-white cursor-pointer border-gray-200" onClick={() => router.push(`/outfit-detail/${encodeURIComponent(look.look_name)}?from=styling-results`)}>
                     <div className="relative">
                       <div className="absolute top-3 left-3 z-10"><div className="bg-white rounded-full px-2 py-1 text-xs font-bold text-gray-900">#{index + 1}</div></div>
                       <div className="absolute top-3 right-3 z-10">
@@ -524,7 +524,10 @@ export default function StylingResults() {
         </div>
 
         <div className="flex justify-between mt-12">
-          <Button variant="outline" onClick={() => router.push('/styling-step1')} className="flex items-center px-6 py-3 bg-transparent border-gray-200"><RefreshCw className="h-4 w-4 mr-2" />다시 진단하기</Button>
+          <Button variant="outline" onClick={() => {
+            resetFetchAttempt(); // Reset the fetch flag
+            router.push('/styling-step1');
+          }} className="flex items-center px-6 py-3 bg-transparent border-gray-200"><RefreshCw className="h-4 w-4 mr-2" />다시 진단하기</Button>
           <Button onClick={() => router.push('/my-page')} className="flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"><Heart className="h-4 w-4 mr-2" />저장된 코디 보기</Button>
         </div>
       </div>
