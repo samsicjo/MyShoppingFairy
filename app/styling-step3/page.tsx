@@ -56,8 +56,19 @@ export default function StylingStep3() {
 
   // 선호 스타일 체크박스 선택을 처리하는 핸들러 함수입니다.
   const handleStyleToggle = (style: string) => {
-    setPreferredStyles(prev => prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]// 이미 있으면 제거 ? 없으면 추가
-  )}
+    setPreferredStyles(prev => {
+      // 이미 선택된 스타일이면 제거
+      if (prev.includes(style)) {
+        return prev.filter(s => s !== style);
+      }
+      // 최대 3개까지만 선택 가능
+      if (prev.length >= 3) {
+        return prev;
+      }
+      // 새로운 스타일 추가
+      return [...prev, style];
+    })
+  }
 
   // '결과 보기' 버튼을 눌렀을 때 Context에 최종 데이터를 저장하고 결과 페이지로 이동합니다.
   const handleComplete = () => {

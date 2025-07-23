@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,7 @@ import { User, Eye, EyeOff, Lock } from "lucide-react"
 
 import { useAuth } from "@/app/context/AuthContext";
 
-export default function LoginPage() {
+function LoginContent() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -189,4 +189,12 @@ export default function LoginPage() {
       </div>
     </div>
   )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
+  );
 }
