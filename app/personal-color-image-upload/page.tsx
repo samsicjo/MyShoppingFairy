@@ -339,7 +339,7 @@ export default function PersonalColorImageUpload() {
                           <p className="text-gray-700 text-lg leading-relaxed">{result.description}</p>
 
                           {/* 퍼스널 컬러 타입별 상세 설명 */}
-                          {personalColorResult?.includes('Spring-Light') && (
+                          {personalColorResult?.includes('Spring Light') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 라이트(Spring-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -350,7 +350,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Spring-Bright') && (
+                          {personalColorResult?.includes('Spring Bright') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 브라이트(Spring-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -361,7 +361,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Summer-Light') && (
+                          {personalColorResult?.includes('Summer Light') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 라이트(Summer-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -372,7 +372,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Summer-Mute') && (
+                          {personalColorResult?.includes('Summer Mute') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 뮤트(Summer-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -383,7 +383,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Autumn-Mute') && (
+                          {personalColorResult?.includes('Autumn Mute') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 뮤트(Autumn-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -394,7 +394,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Autumn-Deep') && (
+                          {personalColorResult?.includes('Autumn Deep') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 딥(Autumn-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -405,7 +405,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Winter-Bright') && (
+                          {personalColorResult?.includes('Winter Bright') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 브라이트(Winter-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
@@ -416,7 +416,7 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
 
-                          {personalColorResult?.includes('Winter-Deep') && (
+                          {personalColorResult?.includes('Winter Deep') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 딥(Winter-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
