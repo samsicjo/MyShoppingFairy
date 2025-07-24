@@ -13,7 +13,7 @@ export interface ColorCategory {
 // 드레이프 테스트에서 사용하는 컬러 팔레트 데이터
 export const colorCategories: ColorCategory[] = [
   {
-    name: "spring-light",
+    name: "Spring Light",
     title: "봄 라이트",
     colors: [
       { color: "#FFB6C1", title: "라이트 핑크" },
@@ -31,7 +31,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "spring-bright",
+    name: "Spring Bright",
     title: "봄 브라이트",
     colors: [
       { color: "#FF69B4", title: "핫 핑크" },
@@ -49,7 +49,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "summer-light",
+    name: "Summer Light",
     title: "여름 라이트",
     colors: [
       { color: "#FADADD", title: "페일 핑크" },
@@ -67,7 +67,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "summer-mute",
+    name: "Summer Mute",
     title: "여름 뮤트",
     colors: [
       { color: "#BC8F8F", title: "더스티 로즈" },
@@ -85,7 +85,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "autumn-mute",
+    name: "Autumn Mute",
     title: "가을 뮤트",
     colors: [
       { color: "#BC8F8F", title: "로지 브라운" },
@@ -103,7 +103,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "autumn-deep",
+    name: "Autumn Deep",
     title: "가을 딥",
     colors: [
       { color: "#8B0000", title: "다크 레드" },
@@ -121,7 +121,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "winter-bright",
+    name: "Winter Bright",
     title: "겨울 브라이트",
     colors: [
       { color: "#FF0000", title: "브라이트 레드" },
@@ -139,7 +139,7 @@ export const colorCategories: ColorCategory[] = [
     ],
   },
   {
-    name: "winter-deep",
+    name: "Winter Deep",
     title: "겨울 딥",
     colors: [
       { color: "#8B0000", title: "다크 레드" },
@@ -161,16 +161,16 @@ export const colorCategories: ColorCategory[] = [
 // 퍼스널 컬러 타입에 따른 반대 컬러 타입 매핑
 export const getOppositeColorType = (personalColor: string): string => {
   const oppositeMap: { [key: string]: string } = {
-    'spring-light': 'winter-deep',
-    'spring-bright': 'summer-mute',
-    'summer-light': 'autumn-deep',
-    'summer-mute': 'spring-bright',
-    'autumn-mute': 'summer-light',
-    'autumn-deep': 'summer-light',
-    'winter-bright': 'autumn-mute',
-    'winter-deep': 'spring-light'
+    'Spring Light': 'Winter Deep',
+    'Spring Bright': 'Summer Mute',
+    'Summer Light': 'Autumn Deep',
+    'Summer Mute': 'Spring Bright',
+    'Autumn Mute': 'Summer Light',
+    'Autumn Deep': 'Summer Light',
+    'Winter Bright': 'Autumn Mute',
+    'Winter Deep': 'Spring Light'
   }
-  return oppositeMap[personalColor] || 'winter-deep'
+  return oppositeMap[personalColor] || 'Winter Deep'
 }
 
 // 특정 퍼스널 컬러 타입의 색상 팔레트를 가져오는 함수

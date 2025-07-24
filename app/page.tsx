@@ -39,6 +39,19 @@ export default function HomePage() {
           console.log('getUserStylingSummaryInfo Error : ', error)
         }
       }
+      // const getUserPersonalColorInfo = async () => {
+      //   try {
+      //     const response = await fetch(`http://localhost:8000/users/user_info_personal?user_id=${userId}`)
+      //     if(response.ok){
+      //       const data = await response.json()
+      //     }
+      //   }catch(e){
+      //   console.log('error : ', e)
+      //   }
+      // }
+
+
+
       getUserStylingSummaryInfo()
     }
     }, [isLoggedIn])

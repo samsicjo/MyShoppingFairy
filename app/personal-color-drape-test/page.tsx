@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
 import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2 } from "lucide-react"
 import { colorCategories } from "@/components/data/personalColorData"
+import { useStyling } from '@/app/context/StylingContext' // useStyling 훅 임포트
 
 export default function PersonalColorDrapeTest() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -28,9 +29,16 @@ export default function PersonalColorDrapeTest() {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const faceImageRef = useRef<HTMLImageElement>(null)
   const router = useRouter()
+  const { stylingData } = useStyling(); // useStyling 훅 사용
 
   useEffect(() => {
-    // 퍼스널컬러 진단 결과 불러오기
+    // StylingContext에서 personalColor를 먼저 확인
+    if (stylingData.personalColor) {
+      setPersonalColorResult(stylingData.personalColor);
+      return;
+    }
+
+    // StylingContext에 없으면 localStorage에서 불러오기 (폴백)
     const personalColorAnalysis = localStorage.getItem("personalColorAnalysis")
     const selectedPersonalColor = localStorage.getItem("selectedPersonalColor")
 
@@ -45,7 +53,7 @@ export default function PersonalColorDrapeTest() {
         setPersonalColorResult(selectedPersonalColor)
       }
     }
-  }, [])
+  }, [stylingData.personalColor])
 
   // 배경 제거 API 호출 함수 (삭제)
   // const removeBackground = useCallback(async (imageDataUrl: string): Promise<string> => { /* ... */ }, [])

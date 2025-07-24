@@ -18,16 +18,13 @@ export default function PersonalColorImageUpload() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const [colorResult, setColorResult] = useState<string[]>([])
-  const [colorNameResult, setColorNameResult] = useState<string[]>([])
-  const [personalColorResult, setPersonalColorResult] = useState<string | undefined>()
-  const [descriptionResult, setDescriptionResult] = useState<string | undefined>()
 
   const [result, setResult] = useState<{
     personalColor: string
     confidence: number
     description: string
     recommendedColors: string[]
+    colorNames?: string[] // colorNames는 선택적일 수 있음
   } | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -35,15 +32,16 @@ export default function PersonalColorImageUpload() {
   const { userId } = useAuth()
 
   useEffect(() => {
-    if (personalColorResult && colorResult.length > 0) {
+    if (result) {
       setStylingData({
-        personalColor: personalColorResult,
-        description: descriptionResult,
-        recommendedColors: colorResult,
-        colorNames: colorNameResult,
+        personalColor: result.personalColor,
+        description: result.description,
+        recommendedColors: result.recommendedColors,
+        colorNames: result.colorNames,
       })
+      console.log(stylingData)
     }
-  }, [personalColorResult, descriptionResult, colorResult, colorNameResult, setStylingData])
+  }, [result, setStylingData])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -115,11 +113,7 @@ export default function PersonalColorImageUpload() {
         }),
       );
 
-      setPersonalColorResult(analysisResult.personalColor);
-      setColorResult(analysisResult.recommendedColors);
-      setColorNameResult(analysisResult.colorNames);
-      setDescriptionResult(analysisResult.description);
-
+      console.log(analysisResult)
       // setTimeout(() => {
       //   router.push("/personal-color-drape-test");
       // }, 60000);
@@ -139,10 +133,6 @@ export default function PersonalColorImageUpload() {
     setShowResult(false)
     setIsAnalyzing(false)
     setResult(null)
-    setColorResult([])
-    setColorNameResult([])
-    setPersonalColorResult(undefined)
-    setDescriptionResult(undefined)
 
     // 상태 초기화 후 이미지 업로드 다이얼로그 열기
     setTimeout(() => {
@@ -310,14 +300,14 @@ export default function PersonalColorImageUpload() {
                       {/* 퍼스널 컬러 타입 결과 */}
                       <div className="text-left mb-8 mx-auto">
                         <h3 className="text-4xl font-bold text-[#F8B8D2] mb-4">
-                          {personalColorResult}
+                          {result?.personalColor}
                         </h3>
                         <div className="p-6 bg-white/70 backdrop-blur-sm rounded-xl shadow-md">
-                          <p className="text-gray-700 text-lg leading-relaxed">{result.description}</p>
+                          {/* <p className="text-gray-700 text-lg leading-relaxed">{result.description}</p> */}
                           
                           {/* 퍼스널 컬러 타입별 상세 설명 */}
-                          {personalColorResult?.includes('Spring-Light') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Spring Light') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 라이트(Spring-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>밝고 화사한 톤으로 생기 넘치는 이미지를 연출합니다.</li>
@@ -327,8 +317,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
                           
-                          {personalColorResult?.includes('Spring-Bright') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Spring Bright') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 브라이트(Spring-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 생동감 있는 톤으로 활기찬 이미지를 연출합니다.</li>
@@ -338,8 +328,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}   
                       
-                          {personalColorResult?.includes('Summer-Light') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Summer Light') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 라이트(Summer-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>부드럽고 시원한 톤으로 청순하고 여성스러운 이미지를 연출합니다.</li>
@@ -349,8 +339,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
                           
-                          {personalColorResult?.includes('Summer-Mute') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Summer Mute') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 뮤트(Summer-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>차분하고 우아한 톤으로 세련된 이미지를 연출합니다.</li>
@@ -360,8 +350,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
                           
-                          {personalColorResult?.includes('Autumn-Mute') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Autumn Mute') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 뮤트(Autumn-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>따뜻하고 차분한 톤으로 편안하고 자연스러운 이미지를 연출합니다.</li>
@@ -371,8 +361,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
                           
-                          {personalColorResult?.includes('Autumn-Deep') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Autumn Deep') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 딥(Autumn-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 진한 톤으로 고급스럽고 강인한 이미지를 연출합니다.</li>
@@ -382,8 +372,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )} 
                         
-                          {personalColorResult?.includes('Winter-Bright') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Winter Bright') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 브라이트(Winter-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 강렬한 톤으로 카리스마 있는 이미지를 연출합니다.</li>
@@ -393,8 +383,8 @@ export default function PersonalColorImageUpload() {
                             </div>
                           )}
                           
-                          {personalColorResult?.includes('Winter-Deep') && (
-                            <div className="mt-4 border-t pt-4 border-gray-200">
+                          {result?.personalColor?.includes('Winter Deep') && (
+                            <div className="border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 딥(Winter-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 세련된 톤으로 도시적이고 세련된 이미지를 연출합니다.</li>
@@ -415,10 +405,10 @@ export default function PersonalColorImageUpload() {
                             잘 어울리는 컬러 타입
                           </h4>
                           <p className="text-gray-700 mb-4">
-                            <span className="font-semibold">{personalColorResult}</span>
+                            <span className="font-semibold">{result?.personalColor}</span>
                           </p>
                           <div className="grid grid-cols-3 gap-2 mb-3">
-                            {getFlexible3x3ColorPalette(personalColorResult || '').map((color, index) => (
+                            {getFlexible3x3ColorPalette(result?.personalColor || '').map((color, index) => (
                               <div
                                 key={index}
                                 className="aspect-square rounded-lg border-2 border-white shadow-md hover:scale-105 transition-transform duration-200"
@@ -442,13 +432,13 @@ export default function PersonalColorImageUpload() {
                           </h4>
                           <p className="text-gray-700 mb-4">
                             <span className="font-semibold">
-                              {personalColorResult && getOppositeColorType(convertToKebabCase(personalColorResult)).split('-').map(word =>
+                              {result?.personalColor && getOppositeColorType(convertToKebabCase(result.personalColor)).split('-').map(word =>
                                 word.charAt(0).toUpperCase() + word.slice(1)
                               ).join('-')}
                             </span>
                           </p>
                           <div className="grid grid-cols-3 gap-2 mb-3">
-                            {personalColorResult && getFlexible3x3ColorPalette(getOppositeColorType(convertToKebabCase(personalColorResult))).map((color, index) => (
+                            {result?.personalColor && getFlexible3x3ColorPalette(getOppositeColorType(convertToKebabCase(result.personalColor))).map((color, index) => (
                               <div
                                 key={index}
                                 className="aspect-square rounded-lg border-2 border-white shadow-md hover:scale-105 transition-transform duration-200"
@@ -477,13 +467,13 @@ export default function PersonalColorImageUpload() {
                           </div>
                           <div>
                             <p className="font-semibold text-gray-800">
-                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ? '웜톤' :
-                                personalColorResult?.includes('Winter-Bright') || personalColorResult?.includes('Summer-Light') ? '뉴트럴' : '쿨톤'}
+                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ? '웜톤' :
+                                result?.personalColor?.includes('Winter-Bright') || result?.personalColor?.includes('Summer-Light') ? '뉴트럴' : '쿨톤'}
                             </p>
                             <p className="text-sm text-gray-600">
-                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
+                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
                                 '따뜻한 느낌의 황금빛이 도는 피부톤입니다.' :
-                                personalColorResult?.includes('Winter-Bright') || personalColorResult?.includes('Summer-Light') ?
+                                result?.personalColor?.includes('Winter-Bright') || result?.personalColor?.includes('Summer-Light') ?
                                   '중간 톤으로 웜톤과 쿨톤의 특성이 모두 있습니다.' :
                                   '차가운 느낌의 핑크빛이 도는 피부톤입니다.'}
                             </p>
@@ -493,7 +483,7 @@ export default function PersonalColorImageUpload() {
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">피부톤 특징</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {personalColorResult?.includes('Spring') && (
+                            {result?.personalColor?.includes('Spring') && (
                               <>
                                 <li>밝고 투명한 피부톤</li>
                                 <li>황금빛이 도는 따뜻한 피부</li>
@@ -501,7 +491,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부 결점이 잘 드러나지 않음</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Summer') && (
+                            {result?.personalColor?.includes('Summer') && (
                               <>
                                 <li>핑크빛이 도는 차가운 피부톤</li>
                                 <li>붉은 기가 살짝 있는 피부</li>
@@ -509,7 +499,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부가 얇고 민감한 편</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Autumn') && (
+                            {result?.personalColor?.includes('Autumn') && (
                               <>
                                 <li>황금빛 또는 올리브 톤의 피부</li>
                                 <li>따뜻한 언더톤이 강함</li>
@@ -517,7 +507,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부가 두꺼운 편</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Winter') && (
+                            {result?.personalColor?.includes('Winter') && (
                               <>
                                 <li>푸른빛이 도는 차가운 피부톤</li>
                                 <li>대비가 강한 피부</li>
@@ -535,7 +525,7 @@ export default function PersonalColorImageUpload() {
                         
                         {/* 헤어 컬러 팔레트 */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                          {personalColorResult?.includes('Spring') ? (
+                          {result?.personalColor?.includes('Spring') ? (
                             // 봄 타입 헤어 컬러
                             [
                               { color: '#D4A76A', name: '골드 브라운' },
@@ -549,7 +539,7 @@ export default function PersonalColorImageUpload() {
                                 <span className="text-xs text-gray-700">{item.name}</span>
                               </div>
                             ))
-                          ) : personalColorResult?.includes('Summer') ? (
+                          ) : result?.personalColor?.includes('Summer') ? (
                             // 여름 타입 헤어 컬러
                             [
                               { color: '#8B7D6B', name: '애쉬 브라운' },
@@ -563,7 +553,7 @@ export default function PersonalColorImageUpload() {
                                 <span className="text-xs text-gray-700">{item.name}</span>
                               </div>
                             ))
-                          ) : personalColorResult?.includes('Autumn') ? (
+                          ) : result?.personalColor?.includes('Autumn') ? (
                             // 가을 타입 헤어 컬러
                             [
                               { color: '#8B4513', name: '다크 브라운' },
@@ -598,7 +588,7 @@ export default function PersonalColorImageUpload() {
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">추천 헤어 스타일</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {personalColorResult?.includes('Spring') && (
+                            {result?.personalColor?.includes('Spring') && (
                               <>
                                 <li>밝고 생기 있는 골드 브라운 계열 염색</li>
                                 <li>자연스러운 웨이브나 볼륨감 있는 스타일</li>
@@ -606,7 +596,7 @@ export default function PersonalColorImageUpload() {
                                 <li>밝은 컬러의 발레아쥬 염색 추천</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Summer') && (
+                            {result?.personalColor?.includes('Summer') && (
                               <>
                                 <li>차가운 애쉬 브라운 계열 염색</li>
                                 <li>부드러운 레이어드 컷</li>
@@ -614,7 +604,7 @@ export default function PersonalColorImageUpload() {
                                 <li>자연스러운 웨이브 스타일</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Autumn') && (
+                            {result?.personalColor?.includes('Autumn') && (
                               <>
                                 <li>따뜻한 다크 브라운, 마호가니 계열 염색</li>
                                 <li>풍성한 질감의 헤어스타일</li>
@@ -622,7 +612,7 @@ export default function PersonalColorImageUpload() {
                                 <li>자연스러운 볼륨감 있는 스타일</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Winter') && (
+                            {result?.personalColor?.includes('Winter') && (
                               <>
                                 <li>블랙, 다크 브라운 계열 염색</li>
                                 <li>깔끔하고 선명한 라인의 헤어컷</li>
@@ -642,7 +632,7 @@ export default function PersonalColorImageUpload() {
                         <div className="mb-4">
                           <h5 className="font-semibold mb-2">추천 금속 소재</h5>
                           <div className="flex flex-wrap gap-3 mb-3">
-                            {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ? (
+                            {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ? (
                               // 웜톤 액세서리
                               ['골드', '로즈 골드', '브라스', '구리'].map((metal, index) => (
                                 <Badge key={index} className="bg-[#DAA520] text-white px-3 py-1">
@@ -659,7 +649,7 @@ export default function PersonalColorImageUpload() {
                             )}
                           </div>
                           <p className="text-sm text-gray-700 mt-2">
-                            {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
+                            {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
                               '따뜻한 골드 계열의 액세서리가 피부톤을 더욱 화사하게 보이게 합니다.' :
                               '차가운 실버나 화이트 골드 계열의 액세서리가 피부톤과 조화롭게 어울립니다.'}
                           </p>
@@ -669,7 +659,7 @@ export default function PersonalColorImageUpload() {
                         <div className="mt-5 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">추천 보석 & 스톤</h5>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                            {personalColorResult?.includes('Spring') ? (
+                            {result?.personalColor?.includes('Spring') ? (
                               // 봄 타입 보석
                               [
                                 { name: '시트린', color: '#E4D00A' },
@@ -682,7 +672,7 @@ export default function PersonalColorImageUpload() {
                                   <span className="text-xs mt-1 block">{gem.name}</span>
                                 </div>
                               ))
-                            ) : personalColorResult?.includes('Summer') ? (
+                            ) : result?.personalColor?.includes('Summer') ? (
                               // 여름 타입 보석
                               [
                                 { name: '로즈 쿼츠', color: '#F7CAC9' },
@@ -695,7 +685,7 @@ export default function PersonalColorImageUpload() {
                                   <span className="text-xs mt-1 block">{gem.name}</span>
                                 </div>
                               ))
-                            ) : personalColorResult?.includes('Autumn') ? (
+                            ) : result?.personalColor?.includes('Autumn') ? (
                               // 가을 타입 보석
                               [
                                 { name: '가넷', color: '#7B1113' },
@@ -729,28 +719,28 @@ export default function PersonalColorImageUpload() {
                         <div className="mt-5">
                           <h5 className="font-semibold mb-2">추천 안경 프레임</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {personalColorResult?.includes('Spring') && (
+                            {result?.personalColor?.includes('Spring') && (
                               <>
                                 <li>밝은 골드, 투명한 프레임</li>
                                 <li>라이트 브라운, 피치 컬러 프레임</li>
                                 <li>둥근 형태의 부드러운 디자인</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Summer') && (
+                            {result?.personalColor?.includes('Summer') && (
                               <>
                                 <li>실버, 라이트 그레이 프레임</li>
                                 <li>투명한 블루, 라벤더 컬러 프레임</li>
                                 <li>부드러운 사각형 또는 타원형 디자인</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Autumn') && (
+                            {result?.personalColor?.includes('Autumn') && (
                               <>
                                 <li>토트쉘, 다크 브라운 프레임</li>
                                 <li>앤티크 골드, 구리색 프레임</li>
                                 <li>클래식하고 두꺼운 디자인</li>
                               </>
                             )}
-                            {personalColorResult?.includes('Winter') && (
+                            {result?.personalColor?.includes('Winter') && (
                               <>
                                 <li>블랙, 다크 네이비 프레임</li>
                                 <li>선명한 컬러의 프레임</li>
@@ -769,12 +759,12 @@ export default function PersonalColorImageUpload() {
                           <h5 className="font-semibold mb-2">베이스 메이크업</h5>
                           <div className="bg-gray-50 p-4 rounded-lg">
                             <p className="text-sm mb-3">
-                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
+                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
                                 '노란빛이 도는 따뜻한 톤의 파운데이션을 선택하세요.' :
                                 '핑크빛이 도는 차가운 톤의 파운데이션을 선택하세요.'}
                             </p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                              {personalColorResult?.includes('Spring') ? (
+                              {result?.personalColor?.includes('Spring') ? (
                                 // 봄 타입 베이스
                                 [
                                   { name: '아이보리 베이지', color: '#FFFDD0' },
@@ -787,7 +777,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{base.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Summer') ? (
+                              ) : result?.personalColor?.includes('Summer') ? (
                                 // 여름 타입 베이스
                                 [
                                   { name: '로즈 베이지', color: '#E8CEBF' },
@@ -800,7 +790,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{base.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Autumn') ? (
+                              ) : result?.personalColor?.includes('Autumn') ? (
                                 // 가을 타입 베이스
                                 [
                                   { name: '골든 베이지', color: '#E6BE8A' },
@@ -837,7 +827,7 @@ export default function PersonalColorImageUpload() {
                           <div>
                             <h5 className="font-semibold mb-2">추천 블러셔</h5>
                             <div className="grid grid-cols-2 gap-2">
-                              {personalColorResult?.includes('Spring') ? (
+                              {result?.personalColor?.includes('Spring') ? (
                                 // 봄 타입 블러셔
                                 [
                                   { name: '코랄', color: '#FF7F50' },
@@ -848,7 +838,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{blush.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Summer') ? (
+                              ) : result?.personalColor?.includes('Summer') ? (
                                 // 여름 타입 블러셔
                                 [
                                   { name: '로즈 핑크', color: '#FF66CC' },
@@ -859,7 +849,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{blush.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Autumn') ? (
+                              ) : result?.personalColor?.includes('Autumn') ? (
                                 // 가을 타입 블러셔
                                 [
                                   { name: '테라코타', color: '#E2725B' },
@@ -889,7 +879,7 @@ export default function PersonalColorImageUpload() {
                           <div>
                             <h5 className="font-semibold mb-2">추천 립 컬러</h5>
                             <div className="grid grid-cols-2 gap-2">
-                              {personalColorResult?.includes('Spring') ? (
+                              {result?.personalColor?.includes('Spring') ? (
                                 // 봄 타입 립
                                 [
                                   { name: '코랄', color: '#FF7F50' },
@@ -900,7 +890,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{lip.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Summer') ? (
+                              ) : result?.personalColor?.includes('Summer') ? (
                                 // 여름 타입 립
                                 [
                                   { name: '로즈', color: '#FF007F' },
@@ -911,7 +901,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{lip.name}</span>
                                   </div>
                                 ))
-                              ) : personalColorResult?.includes('Autumn') ? (
+                              ) : result?.personalColor?.includes('Autumn') ? (
                                 // 가을 타입 립
                                 [
                                   { name: '테라코타', color: '#E2725B' },
@@ -942,19 +932,19 @@ export default function PersonalColorImageUpload() {
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">아이 메이크업 팁</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {personalColorResult?.includes('Light') ? (
+                            {result?.personalColor?.includes('Light') ? (
                               <>
                                 <li>부드러운 브라운이나 피치 계열의 아이섀도우로 자연스러운 눈매를 연출하세요.</li>
                                 <li>너무 진한 아이라인은 피하고 부드러운 브라운 아이라이너를 사용하세요.</li>
                                 <li>마스카라는 브라운 계열이 자연스럽게 어울립니다.</li>
                               </>
-                            ) : personalColorResult?.includes('Bright') ? (
+                            ) : result?.personalColor?.includes('Bright') ? (
                               <>
                                 <li>선명한 컬러의 아이섀도우로 또렷한 눈매를 강조하세요.</li>
                                 <li>블랙 아이라이너로 선명한 라인을 그려주세요.</li>
                                 <li>볼륨감 있는 마스카라로 눈매를 강조하세요.</li>
                               </>
-                            ) : personalColorResult?.includes('Mute') ? (
+                            ) : result?.personalColor?.includes('Mute') ? (
                               <>
                                 <li>차분한 톤의 아이섀도우로 세련된 눈매를 연출하세요.</li>
                                 <li>소프트한 브라운 또는 그레이 아이라이너가 잘 어울립니다.</li>
@@ -1022,7 +1012,7 @@ export default function PersonalColorImageUpload() {
                         "메이크업이 진하지 않은 사진이 더 정확합니다",
                         "고화질 이미지일수록 분석 정확도가 높아집니다"
                       ].map((tip, idx) => (
-                        <div key={idx} className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-start">
+                        <div key={idx} className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-sm flex items-start">
                           <div className="w-8 h-8 bg-[#E8B5B8] rounded-sm flex-shrink-0 mr-4" />
                           <p className="text-[#171212] font-medium leading-relaxed">{tip}</p>
                         </div>
