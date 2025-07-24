@@ -124,8 +124,9 @@ export default function OutfitDetail() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-lg">{category}</h4>
-                              <p className="text-sm text-gray-600 truncate">{item.product_name}</p>
+                              <h4 className="font-bold text-gray-900 text-lg">{item.product_name}</h4>
+                              <p className="text-sm text-gray-600 truncate">{}</p>
+                              {/* category */}
                               <p className="text-md font-semibold text-gray-800 mt-1">₩{item.price.toLocaleString()}</p>
                             </div>
                           </div>

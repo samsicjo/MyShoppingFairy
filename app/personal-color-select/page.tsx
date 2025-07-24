@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
+import { Palette } from "lucide-react"
 import { personalColorTypes } from "@/lib/personalColorData"
 
 export default function PersonalColorSelect() {
@@ -72,15 +73,11 @@ export default function PersonalColorSelect() {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            나에게 어울리는{" "}
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              퍼스널 컬러
-            </span>
-            를 선택해주세요
+        <div className="text-left mb-12">
+          <h1 className="text-4xl font-bold mb-4 text-[#171212]">
+            나에게 어울리는 퍼스널 컬러를 선택해주세요
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-[#82696B]">
             8가지 퍼스널 컬러 중 본인에게 가장 어울리는 컬러를 선택하시면, 맞춤형 스타일링을 제공해드립니다
           </p>
         </div>
@@ -91,7 +88,7 @@ export default function PersonalColorSelect() {
               key={colorType.id}
               className={`cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-white/80 backdrop-blur-sm ${
                 selectedColor === colorType.id
-                  ? "ring-2 ring-purple-500 shadow-xl scale-105 bg-gradient-to-br from-purple-50 to-pink-50"
+                  ? "ring-2 ring-[#E3DEDE] shadow-xl scale-105 bg-[#F5F2F2]"
                   : "hover:shadow-lg border-purple-100"
               }`}
               onClick={() => handleColorSelect(colorType.id)}
@@ -129,7 +126,7 @@ export default function PersonalColorSelect() {
                 <div className="space-y-2">
                   {colorType.characteristics.map((char, index) => (
                     <div key={index} className="flex items-center text-xs text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2"></div>
+                      <div className="w-1.5 h-1.5 bg-[#E3DEDE] rounded-full mr-2"></div>
                       {char}
                     </div>
                   ))}
@@ -137,7 +134,7 @@ export default function PersonalColorSelect() {
 
                 {selectedColor === colorType.id && (
                   <div className="mt-4 text-center">
-                    <div className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-medium rounded-full">
+                    <div className="inline-flex items-center px-3 py-1 bg-[#E8B5B8] text-white text-xs font-medium rounded-full">
                       ✓ 선택됨
                     </div>
                   </div>
@@ -152,24 +149,23 @@ export default function PersonalColorSelect() {
             onClick={handleNext}
             disabled={!selectedColor}
             size="lg"
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-[#E8B5B8] hover:bg-[#d8a5a8] text-white px-12 py-4 text-lg font-semibold rounded-full disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-300"
           >
             다음 단계로 →
           </Button>
         </div>
 
-        {/* Additional Info */}
-        <div className="mt-16 text-center">
-          <Card className="bg-white/60 backdrop-blur-sm border-purple-100 shadow-lg max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">💡 퍼스널 컬러란?</h3>
-              <p className="text-gray-600 leading-relaxed">
-                퍼스널 컬러는 개인의 피부톤, 눈동자, 머리카락 색상과 조화를 이루는 색상을 말합니다. 본인에게 맞는 퍼스널
-                컬러를 알면 더욱 생기있고 세련된 스타일링이 가능합니다.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* 정보 박스 */}
+        <div className="p-4 mt-6 bg-white border border-gray-300 rounded-lg flex items-start gap-3">
+              <Palette className="h-5 w-5 text-gray-600 mt-1" />
+              <div>
+                <h4 className="font-bold text-base mb-1">퍼스널 컬러란?</h4>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  개인의 피부톤, 눈동자, 머리카락 색상과 조화를 이루어 가장 아름답게 보이게 하는 색상 그룹입니다.
+                  올바른 퍼스널컬러를 찾으면 더욱 생기 있고 매력적인 모습을 연출할 수 있어요
+                </p>
+              </div>
+            </div>
       </div>
     </div>
   )

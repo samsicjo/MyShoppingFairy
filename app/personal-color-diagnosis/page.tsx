@@ -37,7 +37,7 @@ export default function PersonalColorDiagnosis() {
             {/* AI 진단 카드 */}
             <div
               onClick={handleAIDiagnosis}
-              className="border border-gray-300 rounded-lg bg-white p-6 mb-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg hover:border-purple-400"
+              className="border border-gray-300 rounded-lg bg-white p-6 mb-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg hover:border-[#82696B]"
             >
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div className="md:flex-1">
@@ -69,7 +69,7 @@ export default function PersonalColorDiagnosis() {
             {/* 직접 선택 카드 */}
             <div
               onClick={handleDirectSelection}
-              className="border border-gray-300 rounded-lg bg-white p-6 mb-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg hover:border-purple-400"
+              className="border border-gray-300 rounded-lg bg-white p-6 mb-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg hover:border-[#82696B]"
             >
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div className="md:flex-1">
@@ -84,7 +84,7 @@ export default function PersonalColorDiagnosis() {
                   
                   <button
                     onClick={handleAIDiagnosis}
-                    className="bg-[#E8B5B8] rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-[#d9a6a9] text-white font-semibold"
+                    className="bg-[#E8B5B8] rounded-xl px-6 py-2 inline-block mt-4 cursor-pointer transition-colors duration-200 hover:bg-[#E3DEDE] text-white font-semibold"
                     type="button"
                   >
                     직접 선택하기

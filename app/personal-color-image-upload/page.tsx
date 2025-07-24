@@ -7,24 +7,28 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
-import { Camera, Upload, Sparkles, CheckCircle, RefreshCw } from "lucide-react"
+import { Camera, Upload, Sparkles, CheckCircle, RefreshCw, Lightbulb } from "lucide-react"
 import { useStyling } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext'
-import { getFlexible3x3ColorPalette, getOppositeColorType, convertToKebabCase } from "@/components/data/personalColorData"
+import { getFlexible3x3ColorPalette, getOppositeColorType, convertToKebabCase, isValidPersonalColorType } from "@/components/data/personalColorData"
 
 export default function PersonalColorImageUpload() {
-  const { stylingData, setStylingData } = useStyling()  
+  const { stylingData, setStylingData } = useStyling()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showResult, setShowResult] = useState(false)
+  const [hasApiResult, setHasApiResult] = useState(false) // API 결과가 있는지 확인
+  const [colorResult, setColorResult] = useState<string[]>([])
+  const [colorNameResult, setColorNameResult] = useState<string[]>([])
+  const [personalColorResult, setPersonalColorResult] = useState<string | undefined>()
+  const [descriptionResult, setDescriptionResult] = useState<string | undefined>()
 
   const [result, setResult] = useState<{
     personalColor: string
     confidence: number
     description: string
     recommendedColors: string[]
-    colorNames?: string[] // colorNames는 선택적일 수 있음
   } | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -32,16 +36,15 @@ export default function PersonalColorImageUpload() {
   const { userId } = useAuth()
 
   useEffect(() => {
-    if (result) {
+    if (personalColorResult && colorResult.length > 0) {
       setStylingData({
-        personalColor: result.personalColor,
-        description: result.description,
-        recommendedColors: result.recommendedColors,
-        colorNames: result.colorNames,
+        personalColor: personalColorResult,
+        description: descriptionResult,
+        recommendedColors: colorResult,
+        colorNames: colorNameResult,
       })
-      console.log(stylingData)
     }
-  }, [result, setStylingData])
+  }, [personalColorResult, descriptionResult, colorResult, colorNameResult, setStylingData])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -97,7 +100,17 @@ export default function PersonalColorImageUpload() {
         };
       }
 
+      // 유효한 퍼스널 컬러 타입인지 검증
+      console.log('API에서 받은 퍼스널 컬러 타입:', analysisResult.personalColor);
+      console.log('유효성 검증 결과:', isValidPersonalColorType(analysisResult.personalColor));
+      
+      if (!isValidPersonalColorType(analysisResult.personalColor)) {
+        console.log('유효하지 않은 퍼스널 컬러 타입:', analysisResult.personalColor);
+        throw new Error('오류가 발생했습니다. 다시 시도해주세요.');
+      }
+
       setResult(analysisResult);
+      setHasApiResult(true); // API 결과가 있음을 표시
       setIsAnalyzing(false);
       setShowResult(true);
 
@@ -113,11 +126,24 @@ export default function PersonalColorImageUpload() {
         }),
       );
 
-      console.log(analysisResult)
+      setPersonalColorResult(analysisResult.personalColor);
+      setColorResult(analysisResult.recommendedColors);
+      setColorNameResult(analysisResult.colorNames);
+      setDescriptionResult(analysisResult.description);
+
       // setTimeout(() => {
       //   router.push("/personal-color-drape-test");
       // }, 60000);
     } catch (error: any) {
+      console.log('API 에러 발생, 모든 상태 초기화 중...');
+      setHasApiResult(false); // API 실패 시 결과가 없음을 표시
+      setShowResult(false); // 결과 화면 숨기기
+      setResult(null); // 결과 객체 초기화
+      setPersonalColorResult(undefined);
+      setColorResult([]);
+      setColorNameResult([]);
+      setDescriptionResult(undefined);
+      console.log('상태 초기화 완료 - hasApiResult: false, showResult: false');
       alert(error.message);
       console.error('AI analysis failed:', error);
       setIsAnalyzing(false);
@@ -127,187 +153,194 @@ export default function PersonalColorImageUpload() {
   const triggerImageUpload = () => {
     imageInputRef.current?.click()
   }
-  
+
+
   const resetUpload = () => {
     setUploadedImage(null)
     setShowResult(false)
     setIsAnalyzing(false)
     setResult(null)
+    setHasApiResult(false)
+    setColorResult([])
+    setColorNameResult([])
+    setPersonalColorResult(undefined)
+    setDescriptionResult(undefined)
 
     // 상태 초기화 후 이미지 업로드 다이얼로그 열기
     setTimeout(() => {
       triggerImageUpload()
     }, 100) // 약간의 지연을 두어 상태 업데이트 후 실행되도록 함
-  }  
-    return (
-      <div className="min-h-screen bg-white">
-        {/* Header */}
-        <Header activePage="personal-color" />
+  }
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <Header activePage="personal-color" />
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-left mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              AI 퍼스널 컬러 분석
-            </h1>
-            <p className="text-lg text-gray-600">사진을 업로드하시면 AI가 당신의 퍼스널 컬러를 정확하게 분석해드립니다</p>
-          </div>
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-left mb-12">
+          <h1 className="text-4xl font-bold mb-4">
+            AI 퍼스널 컬러 분석
+          </h1>
+          <p className="text-lg text-gray-600">사진을 업로드하시면 AI가 당신의 퍼스널 컬러를 정확하게 분석해드립니다</p>
+        </div>
 
-          <div className="max-w-3xl mx-auto">
-            {!uploadedImage ? (
-              /* 업로드 전 - 점선 테두리 */
-              <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
-                <CardContent className="p-0">
-                  <div
-                    className="relative cursor-pointer group border-2 border-dashed border-[#E3DEDE]"
-                    onClick={triggerImageUpload}
-                  >
-                    {/* 업로드 영역 */}
-                    <div className="relative p-16 text-center">
-                      {/* 메인 아이콘 - 배경 없음 */}
-                      <div className="mx-auto mb-10 group-hover:scale-105 transition-transform duration-300">
-                        <Camera className="h-24 w-24 text-[#F8B8D2] mx-auto" />
-                      </div>
-
-                      {/* 텍스트 */}
-                      <h3 className="text-3xl font-bold text-gray-900 mb-4">이미지를 업로드해주세요</h3>
-                      <p className="text-xl text-gray-600 mb-10 max-w-lg mx-auto">
-                        얼굴이 잘 보이는 정면 사진을 업로드하시면 더 정확한 분석이 가능합니다
-                      </p>
-
-                      {/* 버튼 */}
-                      <Button
-                        size="lg"
-                        className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-6 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
-                      >
-                        <Upload className="h-6 w-6 mr-3" />
-                        <span className="text-lg">사진 업로드</span>
-                      </Button>
-
-                      {/* 추가 안내 */}
-                      <p className="mt-6 text-sm text-gray-500">
-                        클릭하거나 이미지를 끌어다 놓으세요
-                      </p>
+        <div className="max-w-3xl mx-auto">
+          {!uploadedImage ? (
+            /* 업로드 전 - 점선 테두리 */
+            <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
+              <CardContent className="p-0">
+                <div
+                  className="relative cursor-pointer group border-2 border-dashed border-[#E3DEDE]"
+                  onClick={triggerImageUpload}
+                >
+                  {/* 업로드 영역 */}
+                  <div className="relative p-16 text-center">
+                    {/* 메인 아이콘 - 배경 없음 */}
+                    <div className="mx-auto mb-10 group-hover:scale-105 transition-transform duration-300">
+                      <Camera className="h-24 w-24 text-[#F8B8D2] mx-auto" />
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              /* 업로드 후 - 실선 테두리 */
-              <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="relative border-2 border-solid border-[#E3DEDE]">
-                    {/* 업로드 영역 */}
-                    <div className="relative p-8 md:p-10">
-                      <div className="flex justify-between items-center mb-6">
-                        <div className="text-center flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2">업로드된 이미지</h3>
-                          <p className="text-gray-600">이미지가 선명하게 업로드되었습니다</p>
-                        </div>
-                        <Button
-                          onClick={resetUpload}
-                          variant="outline"
-                          className="border-[#F8B8D2] text-[#F8B8D2] hover:bg-[#F8B8D2]/10"
-                        >
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          다시 업로드
-                        </Button>
-                      </div>  
 
-                      <div className="relative mb-8">
-                        <div className="p-2 bg-white rounded-xl shadow-lg mx-auto max-w-md">
-                          <img
-                            src={uploadedImage || "/placeholder.svg?height=400&width=400"}
-                            alt="Uploaded"
-                            className="w-full rounded-lg"
-                          />
-                        </div>
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-green-500 text-white px-3 py-1 shadow-md">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            업로드 완료
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="text-center">
-                        <Button
-                          onClick={handleDiagnosis}
-                          disabled={isAnalyzing || showResult}
-                          size="lg"
-                          className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 text-lg"
-                        >
-                          {isAnalyzing ? (
-                            <>
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                              AI 분석 중...
-                            </>
-                          ) : showResult ? (
-                            <>
-                              <CheckCircle className="h-6 w-6 mr-3" />
-                              분석 완료
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="h-6 w-6 mr-3" />
-                              분석하기
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {isAnalyzing && (
-              <div className="mt-8 text-center">
-                <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="animate-pulse flex space-x-2">
-                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
-                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                      </div>
-                    </div>
-                    <p className="text-gray-600">
-                      AI가 당신의 피부톤, 눈동자, 머리카락 색상을 분석하고 있습니다...
+                    {/* 텍스트 */}
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">이미지를 업로드해주세요</h3>
+                    <p className="text-xl text-gray-600 mb-10 max-w-lg mx-auto">
+                      얼굴이 잘 보이는 정면 사진을 업로드하시면 더 정확한 분석이 가능합니다
                     </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" ref={imageInputRef} />          
-            {showResult && result && (
-              <Card className="mt-8 bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="relative">
-                    {/* 배경 그라데이션 효과 */}
-                    <div className="absolute inset-0 bg-white"></div>
 
-                    {/* 결과 영역 */}
-                    <div className="relative p-8 md:p-10">
+                    {/* 버튼 */}
+                    <Button
+                      size="lg"
+                      className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-6 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                    >
+                      <Upload className="h-6 w-6 mr-3" />
+                      <span className="text-lg">사진 업로드</span>
+                    </Button>
 
-                      <div className="text-left mb-8">
-                        <div className="w-20 h-20 bg-[#F8B8D2] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                          <Sparkles className="h-10 w-10 text-white" />
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-3">분석 완료!</h2>
+                    {/* 추가 안내 */}
+                    <p className="mt-6 text-sm text-gray-500">
+                      클릭하거나 이미지를 끌어다 놓으세요
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            /* 업로드 후 - 실선 테두리 */
+            <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative border-2 border-solid border-[#E3DEDE]">
+                  {/* 업로드 영역 */}
+                  <div className="relative p-8 md:p-10">
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="text-center flex-1">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">업로드된 이미지</h3>
+                        <p className="text-gray-600">이미지가 선명하게 업로드되었습니다</p>
                       </div>
+                      <Button
+                        onClick={resetUpload}
+                        variant="outline"
+                        className="border-[#F8B8D2] text-[#F8B8D2] hover:bg-[#F8B8D2]/10"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        다시 업로드
+                      </Button>
+                    </div>
 
-                      {/* 퍼스널 컬러 타입 결과 */}
+                    <div className="relative mb-8">
+                      <div className="p-2 bg-white rounded-xl shadow-lg mx-auto max-w-md">
+                        <img
+                          src={uploadedImage || "/placeholder.svg?height=400&width=400"}
+                          alt="Uploaded"
+                          className="w-full rounded-lg"
+                        />
+                      </div>
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-green-500 text-white px-3 py-1 shadow-md">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          업로드 완료
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <Button
+                        onClick={handleDiagnosis}
+                        disabled={isAnalyzing || showResult}
+                        size="lg"
+                        className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 text-lg"
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                            AI 분석 중...
+                          </>
+                        ) : showResult ? (
+                          <>
+                            <CheckCircle className="h-6 w-6 mr-3" />
+                            분석 완료
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-6 w-6 mr-3" />
+                            분석하기
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isAnalyzing && (
+            <div className="mt-8 text-center">
+              <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="animate-pulse flex space-x-2">
+                      <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    AI가 당신의 피부톤, 눈동자, 머리카락 색상을 분석하고 있습니다...
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" ref={imageInputRef} />
+          {showResult && result && hasApiResult && (
+            <Card className="mt-8 bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative">
+                  {/* 배경 그라데이션 효과 */}
+                  <div className="absolute inset-0 bg-white"></div>
+
+                  {/* 결과 영역 */}
+                  <div className="relative p-8 md:p-10">
+
+                    <div className="text-left mb-8">
+                      <div className="w-20 h-20 bg-[#F8B8D2] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <Sparkles className="h-10 w-10 text-white" />
+                      </div>
+                      <h2 className="text-3xl font-bold text-gray-900 mb-3">분석 완료!</h2>
+                    </div>
+
+                    {/* 퍼스널 컬러 타입 결과 */}
+                    {hasApiResult && (
                       <div className="text-left mb-8 mx-auto">
                         <h3 className="text-4xl font-bold text-[#F8B8D2] mb-4">
-                          {result?.personalColor}
+                          {personalColorResult}
                         </h3>
                         <div className="p-6 bg-white/70 backdrop-blur-sm rounded-xl shadow-md">
-                          {/* <p className="text-gray-700 text-lg leading-relaxed">{result.description}</p> */}
-                          
+                          <p className="text-gray-700 text-lg leading-relaxed">{result.description}</p>
+
                           {/* 퍼스널 컬러 타입별 상세 설명 */}
-                          {result?.personalColor?.includes('Spring Light') && (
-                            <div className="border-gray-200">
+                          {personalColorResult?.includes('Spring-Light') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 라이트(Spring-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>밝고 화사한 톤으로 생기 넘치는 이미지를 연출합니다.</li>
@@ -316,9 +349,9 @@ export default function PersonalColorImageUpload() {
                               </ul>
                             </div>
                           )}
-                          
-                          {result?.personalColor?.includes('Spring Bright') && (
-                            <div className="border-gray-200">
+
+                          {personalColorResult?.includes('Spring-Bright') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">봄 브라이트(Spring-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 생동감 있는 톤으로 활기찬 이미지를 연출합니다.</li>
@@ -326,10 +359,10 @@ export default function PersonalColorImageUpload() {
                                 <li>선명하고 채도가 높은 색상이 잘 어울립니다.</li>
                               </ul>
                             </div>
-                          )}   
-                      
-                          {result?.personalColor?.includes('Summer Light') && (
-                            <div className="border-gray-200">
+                          )}
+
+                          {personalColorResult?.includes('Summer-Light') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 라이트(Summer-Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>부드럽고 시원한 톤으로 청순하고 여성스러운 이미지를 연출합니다.</li>
@@ -338,9 +371,9 @@ export default function PersonalColorImageUpload() {
                               </ul>
                             </div>
                           )}
-                          
-                          {result?.personalColor?.includes('Summer Mute') && (
-                            <div className="border-gray-200">
+
+                          {personalColorResult?.includes('Summer-Mute') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">여름 뮤트(Summer-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>차분하고 우아한 톤으로 세련된 이미지를 연출합니다.</li>
@@ -349,9 +382,9 @@ export default function PersonalColorImageUpload() {
                               </ul>
                             </div>
                           )}
-                          
-                          {result?.personalColor?.includes('Autumn Mute') && (
-                            <div className="border-gray-200">
+
+                          {personalColorResult?.includes('Autumn-Mute') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 뮤트(Autumn-Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>따뜻하고 차분한 톤으로 편안하고 자연스러운 이미지를 연출합니다.</li>
@@ -360,9 +393,9 @@ export default function PersonalColorImageUpload() {
                               </ul>
                             </div>
                           )}
-                          
-                          {result?.personalColor?.includes('Autumn Deep') && (
-                            <div className="border-gray-200">
+
+                          {personalColorResult?.includes('Autumn-Deep') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">가을 딥(Autumn-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 진한 톤으로 고급스럽고 강인한 이미지를 연출합니다.</li>
@@ -370,10 +403,10 @@ export default function PersonalColorImageUpload() {
                                 <li>깊이 있는 어스 톤 색상이 잘 어울립니다.</li>
                               </ul>
                             </div>
-                          )} 
-                        
-                          {result?.personalColor?.includes('Winter Bright') && (
-                            <div className="border-gray-200">
+                          )}
+
+                          {personalColorResult?.includes('Winter-Bright') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 브라이트(Winter-Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 강렬한 톤으로 카리스마 있는 이미지를 연출합니다.</li>
@@ -382,9 +415,9 @@ export default function PersonalColorImageUpload() {
                               </ul>
                             </div>
                           )}
-                          
-                          {result?.personalColor?.includes('Winter Deep') && (
-                            <div className="border-gray-200">
+
+                          {personalColorResult?.includes('Winter-Deep') && (
+                            <div className="mt-4 border-t pt-4 border-gray-200">
                               <h4 className="font-bold text-lg mb-2">겨울 딥(Winter-Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 세련된 톤으로 도시적이고 세련된 이미지를 연출합니다.</li>
@@ -395,8 +428,10 @@ export default function PersonalColorImageUpload() {
                           )}
                         </div>
                       </div>
+                    )}
 
-                      {/* 퍼스널 컬러 매칭 결과 */}
+                    {/* 퍼스널 컬러 매칭 결과 */}
+                    {hasApiResult && showResult && result && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                         {/* 잘 맞는 컬러 타입 */}
                         <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md">
@@ -405,10 +440,10 @@ export default function PersonalColorImageUpload() {
                             잘 어울리는 컬러 타입
                           </h4>
                           <p className="text-gray-700 mb-4">
-                            <span className="font-semibold">{result?.personalColor}</span>
+                            <span className="font-semibold">{personalColorResult}</span>
                           </p>
                           <div className="grid grid-cols-3 gap-2 mb-3">
-                            {getFlexible3x3ColorPalette(result?.personalColor || '').map((color, index) => (
+                            {getFlexible3x3ColorPalette(personalColorResult || '').map((color, index) => (
                               <div
                                 key={index}
                                 className="aspect-square rounded-lg border-2 border-white shadow-md hover:scale-105 transition-transform duration-200"
@@ -420,8 +455,8 @@ export default function PersonalColorImageUpload() {
                           <p className="text-sm text-gray-600">
                             당신의 피부톤과 가장 조화롭게 어울리는 컬러 팔레트입니다.
                           </p>
-                        </div> 
-                      {/* 잘 맞지 않는 컬러 타입 */}
+                        </div>
+                        {/* 잘 맞지 않는 컬러 타입 */}
                         <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md">
                           <h4 className="text-lg font-bold text-red-500 mb-4 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
@@ -432,13 +467,13 @@ export default function PersonalColorImageUpload() {
                           </h4>
                           <p className="text-gray-700 mb-4">
                             <span className="font-semibold">
-                              {result?.personalColor && getOppositeColorType(convertToKebabCase(result.personalColor)).split('-').map(word =>
+                              {personalColorResult && getOppositeColorType(convertToKebabCase(personalColorResult)).split('-').map(word =>
                                 word.charAt(0).toUpperCase() + word.slice(1)
                               ).join('-')}
                             </span>
                           </p>
                           <div className="grid grid-cols-3 gap-2 mb-3">
-                            {result?.personalColor && getFlexible3x3ColorPalette(getOppositeColorType(convertToKebabCase(result.personalColor))).map((color, index) => (
+                            {personalColorResult && getFlexible3x3ColorPalette(getOppositeColorType(convertToKebabCase(personalColorResult))).map((color, index) => (
                               <div
                                 key={index}
                                 className="aspect-square rounded-lg border-2 border-white shadow-md hover:scale-105 transition-transform duration-200"
@@ -452,8 +487,10 @@ export default function PersonalColorImageUpload() {
                           </p>
                         </div>
                       </div>
+                    )}
 
-                      {/* 피부 타입 분석 */}
+                    {/* 피부 타입 분석 */}
+                    {hasApiResult && (
                       <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md mb-6">
                         <h4 className="text-lg font-bold text-gray-900 mb-3">피부 타입 분석</h4>
                         <div className="flex items-center mb-4">
@@ -467,23 +504,23 @@ export default function PersonalColorImageUpload() {
                           </div>
                           <div>
                             <p className="font-semibold text-gray-800">
-                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ? '웜톤' :
-                                result?.personalColor?.includes('Winter-Bright') || result?.personalColor?.includes('Summer-Light') ? '뉴트럴' : '쿨톤'}
+                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ? '웜톤' :
+                                personalColorResult?.includes('Winter-Bright') || personalColorResult?.includes('Summer-Light') ? '뉴트럴' : '쿨톤'}
                             </p>
                             <p className="text-sm text-gray-600">
-                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
+                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
                                 '따뜻한 느낌의 황금빛이 도는 피부톤입니다.' :
-                                result?.personalColor?.includes('Winter-Bright') || result?.personalColor?.includes('Summer-Light') ?
+                                personalColorResult?.includes('Winter-Bright') || personalColorResult?.includes('Summer-Light') ?
                                   '중간 톤으로 웜톤과 쿨톤의 특성이 모두 있습니다.' :
                                   '차가운 느낌의 핑크빛이 도는 피부톤입니다.'}
                             </p>
                           </div>
-                        </div>          
-              
+                        </div>
+
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">피부톤 특징</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {result?.personalColor?.includes('Spring') && (
+                            {personalColorResult?.includes('Spring') && (
                               <>
                                 <li>밝고 투명한 피부톤</li>
                                 <li>황금빛이 도는 따뜻한 피부</li>
@@ -491,7 +528,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부 결점이 잘 드러나지 않음</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Summer') && (
+                            {personalColorResult?.includes('Summer') && (
                               <>
                                 <li>핑크빛이 도는 차가운 피부톤</li>
                                 <li>붉은 기가 살짝 있는 피부</li>
@@ -499,7 +536,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부가 얇고 민감한 편</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Autumn') && (
+                            {personalColorResult?.includes('Autumn') && (
                               <>
                                 <li>황금빛 또는 올리브 톤의 피부</li>
                                 <li>따뜻한 언더톤이 강함</li>
@@ -507,7 +544,7 @@ export default function PersonalColorImageUpload() {
                                 <li>피부가 두꺼운 편</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Winter') && (
+                            {personalColorResult?.includes('Winter') && (
                               <>
                                 <li>푸른빛이 도는 차가운 피부톤</li>
                                 <li>대비가 강한 피부</li>
@@ -518,14 +555,16 @@ export default function PersonalColorImageUpload() {
                           </ul>
                         </div>
                       </div>
+                    )}
 
-                      {/* 헤어 컬러 추천 */}
+                    {/* 헤어 컬러 추천 */}
+                    {hasApiResult && (
                       <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md mb-6">
                         <h4 className="text-lg font-bold text-gray-900 mb-4">헤어 컬러 추천</h4>
-                        
+
                         {/* 헤어 컬러 팔레트 */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                          {result?.personalColor?.includes('Spring') ? (
+                          {personalColorResult?.includes('Spring') ? (
                             // 봄 타입 헤어 컬러
                             [
                               { color: '#D4A76A', name: '골드 브라운' },
@@ -539,7 +578,7 @@ export default function PersonalColorImageUpload() {
                                 <span className="text-xs text-gray-700">{item.name}</span>
                               </div>
                             ))
-                          ) : result?.personalColor?.includes('Summer') ? (
+                          ) : personalColorResult?.includes('Summer') ? (
                             // 여름 타입 헤어 컬러
                             [
                               { color: '#8B7D6B', name: '애쉬 브라운' },
@@ -553,7 +592,7 @@ export default function PersonalColorImageUpload() {
                                 <span className="text-xs text-gray-700">{item.name}</span>
                               </div>
                             ))
-                          ) : result?.personalColor?.includes('Autumn') ? (
+                          ) : personalColorResult?.includes('Autumn') ? (
                             // 가을 타입 헤어 컬러
                             [
                               { color: '#8B4513', name: '다크 브라운' },
@@ -583,12 +622,12 @@ export default function PersonalColorImageUpload() {
                             ))
                           )}
                         </div>
-                      
+
                         {/* 헤어 스타일 추천 */}
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">추천 헤어 스타일</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {result?.personalColor?.includes('Spring') && (
+                            {personalColorResult?.includes('Spring') && (
                               <>
                                 <li>밝고 생기 있는 골드 브라운 계열 염색</li>
                                 <li>자연스러운 웨이브나 볼륨감 있는 스타일</li>
@@ -596,7 +635,7 @@ export default function PersonalColorImageUpload() {
                                 <li>밝은 컬러의 발레아쥬 염색 추천</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Summer') && (
+                            {personalColorResult?.includes('Summer') && (
                               <>
                                 <li>차가운 애쉬 브라운 계열 염색</li>
                                 <li>부드러운 레이어드 컷</li>
@@ -604,7 +643,7 @@ export default function PersonalColorImageUpload() {
                                 <li>자연스러운 웨이브 스타일</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Autumn') && (
+                            {personalColorResult?.includes('Autumn') && (
                               <>
                                 <li>따뜻한 다크 브라운, 마호가니 계열 염색</li>
                                 <li>풍성한 질감의 헤어스타일</li>
@@ -612,7 +651,7 @@ export default function PersonalColorImageUpload() {
                                 <li>자연스러운 볼륨감 있는 스타일</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Winter') && (
+                            {personalColorResult?.includes('Winter') && (
                               <>
                                 <li>블랙, 다크 브라운 계열 염색</li>
                                 <li>깔끔하고 선명한 라인의 헤어컷</li>
@@ -623,16 +662,18 @@ export default function PersonalColorImageUpload() {
                           </ul>
                         </div>
                       </div>
+                    )}
 
-                      {/* 액세서리 추천 */}
+                    {/* 액세서리 추천 */}
+                    {hasApiResult && (
                       <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md mb-6">
                         <h4 className="text-lg font-bold text-gray-900 mb-3">액세서리 추천</h4>
-                        
+
                         {/* 금속 소재 */}
                         <div className="mb-4">
                           <h5 className="font-semibold mb-2">추천 금속 소재</h5>
                           <div className="flex flex-wrap gap-3 mb-3">
-                            {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ? (
+                            {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ? (
                               // 웜톤 액세서리
                               ['골드', '로즈 골드', '브라스', '구리'].map((metal, index) => (
                                 <Badge key={index} className="bg-[#DAA520] text-white px-3 py-1">
@@ -649,17 +690,17 @@ export default function PersonalColorImageUpload() {
                             )}
                           </div>
                           <p className="text-sm text-gray-700 mt-2">
-                            {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
+                            {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
                               '따뜻한 골드 계열의 액세서리가 피부톤을 더욱 화사하게 보이게 합니다.' :
                               '차가운 실버나 화이트 골드 계열의 액세서리가 피부톤과 조화롭게 어울립니다.'}
                           </p>
-                        </div>   
-                    
+                        </div>
+
                         {/* 보석 추천 */}
                         <div className="mt-5 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">추천 보석 & 스톤</h5>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                            {result?.personalColor?.includes('Spring') ? (
+                            {personalColorResult?.includes('Spring') ? (
                               // 봄 타입 보석
                               [
                                 { name: '시트린', color: '#E4D00A' },
@@ -672,7 +713,7 @@ export default function PersonalColorImageUpload() {
                                   <span className="text-xs mt-1 block">{gem.name}</span>
                                 </div>
                               ))
-                            ) : result?.personalColor?.includes('Summer') ? (
+                            ) : personalColorResult?.includes('Summer') ? (
                               // 여름 타입 보석
                               [
                                 { name: '로즈 쿼츠', color: '#F7CAC9' },
@@ -685,7 +726,7 @@ export default function PersonalColorImageUpload() {
                                   <span className="text-xs mt-1 block">{gem.name}</span>
                                 </div>
                               ))
-                            ) : result?.personalColor?.includes('Autumn') ? (
+                            ) : personalColorResult?.includes('Autumn') ? (
                               // 가을 타입 보석
                               [
                                 { name: '가넷', color: '#7B1113' },
@@ -714,33 +755,33 @@ export default function PersonalColorImageUpload() {
                             )}
                           </div>
                         </div>
-                        
+
                         {/* 안경 추천 */}
                         <div className="mt-5">
                           <h5 className="font-semibold mb-2">추천 안경 프레임</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {result?.personalColor?.includes('Spring') && (
+                            {personalColorResult?.includes('Spring') && (
                               <>
                                 <li>밝은 골드, 투명한 프레임</li>
                                 <li>라이트 브라운, 피치 컬러 프레임</li>
                                 <li>둥근 형태의 부드러운 디자인</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Summer') && (
+                            {personalColorResult?.includes('Summer') && (
                               <>
                                 <li>실버, 라이트 그레이 프레임</li>
                                 <li>투명한 블루, 라벤더 컬러 프레임</li>
                                 <li>부드러운 사각형 또는 타원형 디자인</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Autumn') && (
+                            {personalColorResult?.includes('Autumn') && (
                               <>
                                 <li>토트쉘, 다크 브라운 프레임</li>
                                 <li>앤티크 골드, 구리색 프레임</li>
                                 <li>클래식하고 두꺼운 디자인</li>
                               </>
                             )}
-                            {result?.personalColor?.includes('Winter') && (
+                            {personalColorResult?.includes('Winter') && (
                               <>
                                 <li>블랙, 다크 네이비 프레임</li>
                                 <li>선명한 컬러의 프레임</li>
@@ -749,22 +790,25 @@ export default function PersonalColorImageUpload() {
                             )}
                           </ul>
                         </div>
-                      </div> 
+                      </div>
+                    )}
+
                     {/* 메이크업 추천 */}
+                    {hasApiResult && (
                       <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-md mb-10">
                         <h4 className="text-lg font-bold text-gray-900 mb-4">메이크업 추천</h4>
-                        
+
                         {/* 베이스 메이크업 */}
                         <div className="mb-5">
                           <h5 className="font-semibold mb-2">베이스 메이크업</h5>
                           <div className="bg-gray-50 p-4 rounded-lg">
                             <p className="text-sm mb-3">
-                              {result?.personalColor?.includes('Spring') || result?.personalColor?.includes('Autumn') ?
+                              {personalColorResult?.includes('Spring') || personalColorResult?.includes('Autumn') ?
                                 '노란빛이 도는 따뜻한 톤의 파운데이션을 선택하세요.' :
                                 '핑크빛이 도는 차가운 톤의 파운데이션을 선택하세요.'}
                             </p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                              {result?.personalColor?.includes('Spring') ? (
+                              {personalColorResult?.includes('Spring') ? (
                                 // 봄 타입 베이스
                                 [
                                   { name: '아이보리 베이지', color: '#FFFDD0' },
@@ -777,7 +821,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{base.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Summer') ? (
+                              ) : personalColorResult?.includes('Summer') ? (
                                 // 여름 타입 베이스
                                 [
                                   { name: '로즈 베이지', color: '#E8CEBF' },
@@ -790,7 +834,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{base.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Autumn') ? (
+                              ) : personalColorResult?.includes('Autumn') ? (
                                 // 가을 타입 베이스
                                 [
                                   { name: '골든 베이지', color: '#E6BE8A' },
@@ -819,15 +863,15 @@ export default function PersonalColorImageUpload() {
                               )}
                             </div>
                           </div>
-                        </div>       
-                
+                        </div>
+
                         {/* 블러셔 & 립 컬러 */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           {/* 블러셔 */}
                           <div>
                             <h5 className="font-semibold mb-2">추천 블러셔</h5>
                             <div className="grid grid-cols-2 gap-2">
-                              {result?.personalColor?.includes('Spring') ? (
+                              {personalColorResult?.includes('Spring') ? (
                                 // 봄 타입 블러셔
                                 [
                                   { name: '코랄', color: '#FF7F50' },
@@ -838,7 +882,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{blush.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Summer') ? (
+                              ) : personalColorResult?.includes('Summer') ? (
                                 // 여름 타입 블러셔
                                 [
                                   { name: '로즈 핑크', color: '#FF66CC' },
@@ -849,7 +893,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{blush.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Autumn') ? (
+                              ) : personalColorResult?.includes('Autumn') ? (
                                 // 가을 타입 블러셔
                                 [
                                   { name: '테라코타', color: '#E2725B' },
@@ -874,12 +918,12 @@ export default function PersonalColorImageUpload() {
                               )}
                             </div>
                           </div>
-                          
+
                           {/* 립 컬러 */}
                           <div>
                             <h5 className="font-semibold mb-2">추천 립 컬러</h5>
                             <div className="grid grid-cols-2 gap-2">
-                              {result?.personalColor?.includes('Spring') ? (
+                              {personalColorResult?.includes('Spring') ? (
                                 // 봄 타입 립
                                 [
                                   { name: '코랄', color: '#FF7F50' },
@@ -890,7 +934,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{lip.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Summer') ? (
+                              ) : personalColorResult?.includes('Summer') ? (
                                 // 여름 타입 립
                                 [
                                   { name: '로즈', color: '#FF007F' },
@@ -901,7 +945,7 @@ export default function PersonalColorImageUpload() {
                                     <span className="text-xs mt-1 block">{lip.name}</span>
                                   </div>
                                 ))
-                              ) : result?.personalColor?.includes('Autumn') ? (
+                              ) : personalColorResult?.includes('Autumn') ? (
                                 // 가을 타입 립
                                 [
                                   { name: '테라코타', color: '#E2725B' },
@@ -926,25 +970,25 @@ export default function PersonalColorImageUpload() {
                               )}
                             </div>
                           </div>
-                        </div> 
-                      
+                        </div>
+
                         {/* 아이 메이크업 */}
                         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-semibold mb-2">아이 메이크업 팁</h5>
                           <ul className="list-disc pl-5 space-y-1 text-sm">
-                            {result?.personalColor?.includes('Light') ? (
+                            {personalColorResult?.includes('Light') ? (
                               <>
                                 <li>부드러운 브라운이나 피치 계열의 아이섀도우로 자연스러운 눈매를 연출하세요.</li>
                                 <li>너무 진한 아이라인은 피하고 부드러운 브라운 아이라이너를 사용하세요.</li>
                                 <li>마스카라는 브라운 계열이 자연스럽게 어울립니다.</li>
                               </>
-                            ) : result?.personalColor?.includes('Bright') ? (
+                            ) : personalColorResult?.includes('Bright') ? (
                               <>
                                 <li>선명한 컬러의 아이섀도우로 또렷한 눈매를 강조하세요.</li>
                                 <li>블랙 아이라이너로 선명한 라인을 그려주세요.</li>
                                 <li>볼륨감 있는 마스카라로 눈매를 강조하세요.</li>
                               </>
-                            ) : result?.personalColor?.includes('Mute') ? (
+                            ) : personalColorResult?.includes('Mute') ? (
                               <>
                                 <li>차분한 톤의 아이섀도우로 세련된 눈매를 연출하세요.</li>
                                 <li>소프트한 브라운 또는 그레이 아이라이너가 잘 어울립니다.</li>
@@ -960,70 +1004,72 @@ export default function PersonalColorImageUpload() {
                           </ul>
                         </div>
                       </div>
+                    )}
 
-                      {/* 다음 단계 버튼 추가 */}
-                      <div className="text-center mt-10">
-                        <Button
-                          onClick={() => router.push("/personal-color-drape-test")}
-                          size="lg"
-                          className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg"
-                        >
-                          <span className="mr-3">드레이프 테스트 하기</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                          </svg>
-                        </Button>
-                        <p className="text-sm text-gray-600 mt-4 max-w-md mx-auto">
-                          다양한 색상을 직접 비교해보며 가장 잘 어울리는 색상을 찾아보세요
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Tips */}
-            <Card className="mt-8 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <div className="absolute inset-0"></div>
-                  <div className="relative p-8">
-                    <div className="flex items-center mb-6">
-                      {/* 전구 아이콘 SVG  */}
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        width="28" height="28" viewBox="0 0 24 24" fill="none"
-                        stroke="#171212" strokeWidth="2" strokeLinecap="round"
-                        strokeLinejoin="round" className="mr-4">
-                        <path d="M9 18h6"></path>
-                        <path d="M10 22h4"></path>
-                        <path d="M12 2v4"></path>
-                        <path d="M12 12v4"></path>
-                        <path d="M12 6a6 6 0 0 0-4.5 10h9a6 6 0 0 0-4.5-10z"></path>
-                      </svg>
-                      <h3 className="text-xl font-bold text-[#171212]">더 정확한 분석을 위한 팁</h3>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      {[
-                        "자연광에서 촬영된 사진을 사용해주세요",
-                        "얼굴이 정면으로 잘 보이는 사진을 선택해주세요",
-                        "메이크업이 진하지 않은 사진이 더 정확합니다",
-                        "고화질 이미지일수록 분석 정확도가 높아집니다"
-                      ].map((tip, idx) => (
-                        <div key={idx} className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-sm flex items-start">
-                          <div className="w-8 h-8 bg-[#E8B5B8] rounded-sm flex-shrink-0 mr-4" />
-                          <p className="text-[#171212] font-medium leading-relaxed">{tip}</p>
+                    {!hasApiResult && showResult && (
+                      <div className="text-center py-8">
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto">
+                          <h3 className="text-xl font-bold text-red-700 mb-2">분석 결과를 가져올 수 없습니다</h3>
+                          <p className="text-red-600 mb-4">
+                            AI 분석에 실패했습니다. 다시 시도해주세요.
+                          </p>
                         </div>
-                      ))}
+                      </div>
+                    )}
+
+                    {/* 다음 단계 버튼 추가 */}
+                    <div className="text-center mt-10">
+                      <Button
+                        onClick={() => router.push("/personal-color-drape-test")}
+                        size="lg"
+                        className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white px-10 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg"
+                      >
+                        <span className="mr-3">드레이프 테스트 하기</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right">
+                          <path d="M5 12h14"></path>
+                          <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+                      </Button>
+                      <p className="text-sm text-gray-600 mt-4 max-w-md mx-auto">
+                        다양한 색상을 직접 비교해보며 가장 잘 어울리는 색상을 찾아보세요
+                      </p>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
+          )}
+
+          {/* Tips */}
+          <Card className="mt-8 bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg overflow-hidden">
+            <CardContent className="p-0">
+              <div className="relative">
+                <div className="absolute inset-0"></div>
+                <div className="relative p-8">
+                  <div className="flex items-center mb-6">
+                    <Lightbulb className="text-[#171212] text-2xl mr-4" />
+                    <h3 className="text-xl font-bold text-[#171212]">더 정확한 분석을 위한 팁</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {[
+                      "자연광에서 촬영된 사진을 사용해주세요",
+                      "얼굴이 정면으로 잘 보이는 사진을 선택해주세요",
+                      "메이크업이 진하지 않은 사진이 더 정확합니다",
+                      "고화질 이미지일수록 분석 정확도가 높아집니다"
+                    ].map((tip, idx) => (
+                      <div key={idx} className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-sm flex items-start">
+                        <div className="w-8 h-8 bg-[#E8B5B8] rounded-sm flex-shrink-0 mr-4" />
+                        <p className="text-[#171212] font-medium leading-relaxed">{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+}

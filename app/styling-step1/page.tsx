@@ -114,11 +114,6 @@ export default function StylingStep1() {
     console.log("StylingStep1: sessionStorage cleared for 'styleRecommendations'.");
   }, [userId, router, setStylingData]);
 
-  useEffect(() => {
-    setHeight(stylingData.height || '');
-    setGender(stylingData.gender || null);
-  }, [stylingData]);
-
   const handleMemoSave = (value: string) => {
     setStylingData(prevData => ({
       ...prevData,
