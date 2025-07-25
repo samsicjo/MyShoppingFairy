@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
+import { Footer } from '@/components/ui/Footer';
 import { Palette, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react"
 import { useAuth } from "./context/AuthContext";
 import { useModal } from "./context/ModalContext";
@@ -41,32 +42,19 @@ export default function HomePage() {
           console.log('getUserStylingSummaryInfo Error : ', error)
         }
       }
-      // const getUserPersonalColorInfo = async () => {
-      //   try {
-      //     const response = await fetch(`http://localhost:8000/users/user_info_personal?user_id=${userId}`)
-      //     if(response.ok){
-      //       const data = await response.json()
-      //     }
-      //   }catch(e){
-      //   console.log('error : ', e)
-      //   }
-      // }
-
-
-
       getUserStylingSummaryInfo()
     }
     }, [isLoggedIn, userId, setStylingData])
 
-  const handleNavigation = (path: string) => {
-    if (!isLoggedIn) {
-      openModal("로그인 필요", "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.", () => {
-        router.push("/login");
-      });
-      return;
+    const handleNavigation = (path: string) => {
+      if (!isLoggedIn) {
+        openModal("로그인 필요", "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.", () => {
+          router.push("/login");
+        });
+        return;
+      }
+      router.push(path)
     }
-    router.push(path)
-  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -75,7 +63,7 @@ export default function HomePage() {
 
       {/* Hero Image Section - 모든 디바이스에서 동일한 위치 */}
       <section className="relative">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="rounded-2xl overflow-hidden shadow-lg relative">
             <img
               src="/images/service-hero.png"
@@ -119,7 +107,7 @@ export default function HomePage() {
       
       {/* How It Works Section - 버튼 추가된 버전 */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-left">
             How It Works
           </h2>
@@ -209,6 +197,8 @@ export default function HomePage() {
           </button>
         </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

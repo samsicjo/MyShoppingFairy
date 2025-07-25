@@ -124,9 +124,8 @@ export default function OutfitDetail() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-lg">{item.product_name}</h4>
-                              <p className="text-sm text-gray-600 truncate">{}</p>
-                              {/* category */}
+                              <h4 className="font-bold text-gray-900 text-lg">{category}</h4>
+                              <p className="text-sm text-gray-600 truncate">{item.product_name}</p>
                               <p className="text-md font-semibold text-gray-800 mt-1">₩{item.price.toLocaleString()}</p>
                             </div>
                           </div>
@@ -144,18 +143,9 @@ export default function OutfitDetail() {
               </CardContent>
             </Card>
 
-            <div className="flex gap-4">
-              <Button 
-                variant="outline" 
-                className="w-full h-12 text-lg font-medium"
-                onClick={() => router.back()}
-              >
-                돌아가기
-              </Button>
-              <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-medium">
-                전체 구매하기
-              </Button>
-            </div>
+            <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-medium">
+              전체 구매하기
+            </Button>
           </div>
         </div>
       </div>

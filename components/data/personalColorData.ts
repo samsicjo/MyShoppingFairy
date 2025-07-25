@@ -170,7 +170,17 @@ export const getOppositeColorType = (personalColor: string): string => {
     'winter-bright': 'autumn-mute',
     'winter-deep': 'spring-light'
   }
-  return oppositeMap[personalColor] || 'winter-deep'
+
+  // 입력값을 정규화 (공백을 하이픈으로, 소문자로 변환)
+  let normalizedInput = personalColor.toLowerCase().replace(/\s+/g, '-')
+
+  // kebab-case로 변환 시도
+  if (!oppositeMap[normalizedInput]) {
+    normalizedInput = convertToKebabCase(personalColor)
+  }
+
+  console.log('반대 컬러 매핑 - 입력:', personalColor, '정규화:', normalizedInput, '결과:', oppositeMap[normalizedInput]);
+  return oppositeMap[normalizedInput] || 'winter-deep'
 }
 
 // 특정 퍼스널 컬러 타입의 색상 팔레트를 가져오는 함수
@@ -261,6 +271,16 @@ export const getFlexible3x3ColorPalette = (colorType: string): string[] => {
 export const getFlexibleOpposite3x3ColorPalette = (colorType: string): string[] => {
   const oppositeType = getOppositeColorType(colorType)
   return getFlexible3x3ColorPalette(oppositeType)
+}
+
+// 퍼스널 컬러 타입 매칭 헬퍼 함수 (다양한 네이밍 컨벤션 지원)
+export const matchesPersonalColorType = (inputType: string, targetType: string): boolean => {
+  if (!inputType || !targetType) return false
+
+  // 정규화 함수
+  const normalize = (type: string) => type.toLowerCase().replace(/\s+/g, '-')
+
+  return normalize(inputType) === normalize(targetType)
 }
 
 // 유효한 퍼스널 컬러 타입인지 검증하는 함수

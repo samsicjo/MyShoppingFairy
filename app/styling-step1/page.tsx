@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/ui/Header";
+import { Footer } from '@/components/ui/Footer';
 import { OptimizedTextarea } from "@/components/OptimizedTextarea"; // Import the new component
 import { User, ArrowLeft, Loader2 } from "lucide-react"
 import { useStyling, Gender } from '../context/StylingContext'
@@ -142,8 +143,6 @@ export default function StylingStep1() {
     );
   }
 
-
-
   const handleNextStep = () => {
     if (isButtonDisabled) { // 유효성 검사
       openModal('알림', '키와 성별을 모두 입력해주세요.');
@@ -167,148 +166,162 @@ export default function StylingStep1() {
       <Header activePage="styling" />
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Steps */}
         <div className="flex justify-center mb-12">
-          <div className="flex items-center space-x-8">
-            {/* Step 1 - Active */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold">
-                1
+          <div className="relative">
+            <div className="flex items-center space-x-16">
+              {/* Step 1 - Active */}
+              <div className="flex flex-col items-center relative">
+                <div className="w-6 h-6 rounded-full mb-3" style={{ backgroundColor: '#E8B5B8' }}></div>
+                <span className="text-sm text-gray-900 font-medium">1 기본정보</span>
+                {/* Active underline */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-1 rounded-full" style={{ backgroundColor: '#E8B5B8' }}></div>
               </div>
-              <span className="ml-3 text-purple-600 font-medium">기본 정보</span>
-            </div>
 
-            {/* Step 2 - Inactive */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
-                2
+              {/* Step 2 - Inactive */}
+              <div className="flex flex-col items-center relative">
+                <div className="w-6 h-6 bg-gray-300 rounded-full mb-3 border-2 border-gray-400"></div>
+                <span className="text-sm text-gray-400">2 예산&사이즈</span>
               </div>
-              <span className="ml-3 text-gray-500">예산 & 사이즈</span>
-            </div>
 
-            {/* Step 3 - Inactive */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
-                3
+              {/* Step 3 - Inactive */}
+              <div className="flex flex-col items-center relative">
+                <div className="w-6 h-6 bg-gray-300 rounded-full mb-3 border-2 border-gray-400"></div>
+                <span className="text-sm text-gray-400">3 스타일 선호도</span>
               </div>
-              <span className="ml-3 text-gray-500">스타일 선호도</span>
             </div>
           </div>
         </div>
 
         {/* Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              기본 정보
-            </span>
-            를 입력해주세요
+        <div className="text-center mb-16">
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">
+            기본 정보를 입력해주세요
           </h1>
-          <p className="text-lg text-gray-600">맞춤형 코디 추천을 위한 기본 정보가 필요해요</p>
+          <p className="text-gray-500">맞춤형 코디 추천을 위한 기본 정보가 필요해요</p>
         </div>
 
-        {/* Form Card */}
-        <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center text-xl font-bold text-gray-900">
-              <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mr-3">
-                <User className="h-4 w-4 text-purple-600" />
+        {/* Form Content */}
+        <div className="max-w-5xl mx-auto">
+          {/* 기본정보 카드 */}
+          <div className="border border-[#E3DEE0] rounded-lg bg-white p-8">
+            {/* Section Header */}
+            <div className="mb-8">
+              <div className="flex items-center mb-2">
+                <div className="inline-flex items-center justify-center w-6 h-6 bg-pink-100 rounded-full mr-3">
+                  <User className="h-3 w-3 text-pink-500" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">기본정보</h2>
               </div>
-              기본정보
-            </CardTitle>
-            <p className="text-gray-600">개인 맞춤 추천을 위한 기본 정보를 입력해주세요</p>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 키 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="height" className="text-sm font-medium text-gray-700">
-                  키 (cm) <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={String(height)}
-                  onValueChange={(value: string) => setHeight(Number(value))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="키를 선택해주세요"/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {/* 1단계에서 만든 heightOptions 배열을 map으로 돌려 선택지를 만듭니다. */}
-                    {heightOptions.map(h => (
-                      <SelectItem key={h} value={String(h)}>
-                        {h} cm
-                      </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 성별 선택 */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">
-                  성별 <span className="text-red-500">*</span>
-                </Label>
-                <RadioGroup
-                  value={gender !== null ? String(gender) : ''}
-                  onValueChange={(value: string) => setGender(String(value) as Gender)}
-                  className="flex space-x-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value={String(Gender.Female)} id="female" />
-                    <Label htmlFor="female" className="cursor-pointer">
-                      여성
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value={String(Gender.Male)} id="male" />
-                    <Label htmlFor="male" className="cursor-pointer">
-                      남성
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value={String(Gender.Other)} id="other" />
-                    <Label htmlFor="other" className="cursor-pointer">
-                      기타
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              <p className="text-gray-500 text-sm ml-9">개인 맞춤 추천을 위한 기본 정보를 입력해주세요</p>
             </div>
 
-            {/* 스타일링 요청/메모 */}
-            <OptimizedTextarea
-              id="stylingRequest"
-              label="스타일링 요청/메모"
-              placeholder="특별한 요청사항이나 선호하는 스타일에 대해 자유롭게 작성해주세요..."
-              initialValue={stylingData.occasion || ''}
-              maxLength={225}
-              onSave={handleMemoSave}
-              description="원하는 스타일, 피하고 싶은 스타일, 특별한 요청사항 등을 자유롭게 작성해주세요"
-            />
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* 키 입력 */}
+                <div className="space-y-3">
+                  <Label htmlFor="height" className="text-sm font-medium text-gray-900">
+                    키 (cm) <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={String(height)}
+                    onValueChange={(value: string) => setHeight(Number(value))}>
+                    <SelectTrigger className="h-12 border-gray-200" style={{ '--tw-ring-color': '#E8B5B8' } as React.CSSProperties} onFocus={(e) => e.target.style.borderColor = '#E8B5B8'}>
+                      <SelectValue placeholder="키를 선택해주세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {/* 1단계에서 만든 heightOptions 배열을 map으로 돌려 선택지를 만듭니다. */}
+                      {heightOptions.map(h => (
+                        <SelectItem key={h} value={String(h)}>
+                          {h} cm
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* 다음 단계 버튼 */}
+                {/* 성별 선택 */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-900">
+                    성별 <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => setGender(String(Gender.Female) as Gender)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${gender === String(Gender.Female)
+                        ? 'bg-[#E8B5B8] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      style={gender === String(Gender.Female) ? { backgroundColor: '#E8B5B8' } : {}}
+                    >
+                      여성
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGender(String(Gender.Male) as Gender)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${gender === String(Gender.Male)
+                        ? 'bg-[#E8B5B8] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                    >
+                      남성
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGender(String(Gender.Other) as Gender)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${gender === String(Gender.Other)
+                        ? 'bg-[#E8B5B8] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                    >
+                      기타
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 스타일링 요청/메모 */}
+              <div className="space-y-3">
+                <OptimizedTextarea
+                  id="stylingRequest"
+                  label="스타일링 요청/메모"
+                  placeholder="특별한 요청사항이나 선호하는 스타일에 대해 자유롭게 작성해주세요..."
+                  initialValue={stylingData.occasion || ''}
+                  maxLength={225}
+                  onSave={handleMemoSave}
+                  description="원하는 스타일, 피하고 싶은 스타일, 특별한 요청사항 등을 자유롭게 작성해주세요"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 다음 단계 버튼 - 카드 밖으로 이동 */}
+          <div className="flex justify-center mt-12">
             <Button
               onClick={handleNextStep}
               disabled={isButtonDisabled}
-              className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-8"
+              className="px-12 py-3 bg-[#E8B5B8] hover:bg-[#CE8CA5] text-white font-medium rounded-full transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               다음 단계
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Back to Dashboard Link */}
         <div className="text-center mt-8">
           <button
             onClick={handleBackToDashboard}
-            className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors"
+            className="inline-flex items-center text-[#82696B] hover:text-gray-600 transition-colors text-sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             대시보드로 돌아가기
           </button>
         </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

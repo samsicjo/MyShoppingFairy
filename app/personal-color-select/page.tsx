@@ -7,13 +7,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
+import { Footer } from '@/components/ui/Footer';
 import { Palette } from "lucide-react"
 import { personalColorTypes } from "@/lib/personalColorData"
 import { useStyling } from "@/app/context/StylingContext"
 import { useAuth } from '@/app/context/AuthContext'
 
 export default function PersonalColorSelect() {
-  const { setStylingData } = useStyling()
+  const { stylingData, setStylingData } = useStyling()
   const { userId } = useAuth(); // userId 가져오기
   const { openModal } = useModal();
   const [selectedColor, setSelectedColor] = useState<string>("")
@@ -64,6 +65,7 @@ export default function PersonalColorSelect() {
           colorNames: selectedColorData.colorsName,
         }));
       }
+      console.log("styling data : ", stylingData, stylingData.personalColor)
       router.push("/personal-color-drape-test")
     }
   }
@@ -74,7 +76,7 @@ export default function PersonalColorSelect() {
       <Header activePage="personal-color" />
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-left mb-12">
           <h1 className="text-4xl font-bold mb-4 text-[#171212]">
             나에게 어울리는 퍼스널 컬러를 선택해주세요
@@ -169,6 +171,8 @@ export default function PersonalColorSelect() {
               </div>
             </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

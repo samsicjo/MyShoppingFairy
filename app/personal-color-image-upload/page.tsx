@@ -12,6 +12,7 @@ import { useStyling } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext'
 import { getFlexible3x3ColorPalette, getOppositeColorType, convertToKebabCase, isValidPersonalColorType } from "@/components/data/personalColorData"
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogHeader, AlertDialogFooter } from "@/components/ui/alert-dialog" 
+import { Footer } from '@/components/ui/Footer';
 
 export default function PersonalColorImageUpload() {
   const { stylingData, setStylingData } = useStyling()
@@ -182,7 +183,7 @@ export default function PersonalColorImageUpload() {
       <Header activePage="personal-color" />
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-left mb-12">
           <h1 className="text-4xl font-bold mb-4">
             AI 퍼스널 컬러 분석
@@ -346,7 +347,7 @@ export default function PersonalColorImageUpload() {
                           {/* 퍼스널 컬러 타입별 상세 설명 */}
                           {personalColorResult?.includes('Spring Light') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">봄 라이트(Spring-Light) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">봄 라이트(Spring Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>밝고 화사한 톤으로 생기 넘치는 이미지를 연출합니다.</li>
                                 <li>따뜻한 언더톤과 밝은 피부톤을 가진 분들에게 잘 어울립니다.</li>
@@ -357,7 +358,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Spring Bright') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">봄 브라이트(Spring-Bright) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">봄 브라이트(Spring Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 생동감 있는 톤으로 활기찬 이미지를 연출합니다.</li>
                                 <li>따뜻한 언더톤과 생기 있는 피부톤을 가진 분들에게 잘 어울립니다.</li>
@@ -368,7 +369,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Summer Light') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">여름 라이트(Summer-Light) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">여름 라이트(Summer Light) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>부드럽고 시원한 톤으로 청순하고 여성스러운 이미지를 연출합니다.</li>
                                 <li>차가운 언더톤과 밝은 피부톤을 가진 분들에게 잘 어울립니다.</li>
@@ -379,7 +380,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Summer Mute') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">여름 뮤트(Summer-Mute) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">여름 뮤트(Summer Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>차분하고 우아한 톤으로 세련된 이미지를 연출합니다.</li>
                                 <li>차가운 언더톤과 중간 톤의 피부를 가진 분들에게 잘 어울립니다.</li>
@@ -390,7 +391,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Autumn Mute') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">가을 뮤트(Autumn-Mute) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">가을 뮤트(Autumn Mute) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>따뜻하고 차분한 톤으로 편안하고 자연스러운 이미지를 연출합니다.</li>
                                 <li>따뜻한 언더톤과 중간 톤의 피부를 가진 분들에게 잘 어울립니다.</li>
@@ -401,7 +402,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Autumn Deep') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">가을 딥(Autumn-Deep) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">가을 딥(Autumn Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 진한 톤으로 고급스럽고 강인한 이미지를 연출합니다.</li>
                                 <li>따뜻한 언더톤과 진한 피부톤을 가진 분들에게 잘 어울립니다.</li>
@@ -412,7 +413,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Winter Bright') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">겨울 브라이트(Winter-Bright) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">겨울 브라이트(Winter Bright) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>선명하고 강렬한 톤으로 카리스마 있는 이미지를 연출합니다.</li>
                                 <li>차가운 언더톤과 대비가 강한 피부를 가진 분들에게 잘 어울립니다.</li>
@@ -423,7 +424,7 @@ export default function PersonalColorImageUpload() {
 
                           {personalColorResult?.includes('Winter Deep') && (
                             <div className="mt-4 border-t pt-4 border-gray-200">
-                              <h4 className="font-bold text-lg mb-2">겨울 딥(Winter-Deep) 특징</h4>
+                              <h4 className="font-bold text-lg mb-2">겨울 딥(Winter Deep) 특징</h4>
                               <ul className="list-disc pl-5 space-y-2">
                                 <li>깊고 세련된 톤으로 도시적이고 세련된 이미지를 연출합니다.</li>
                                 <li>차가운 언더톤과 진한 피부톤을 가진 분들에게 잘 어울립니다.</li>
@@ -1074,7 +1075,6 @@ export default function PersonalColorImageUpload() {
             </CardContent>
           </Card>
         </div>
-
         <AlertDialog open={isErrorModalOpen} onOpenChange={setIsErrorModalOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -1088,8 +1088,9 @@ export default function PersonalColorImageUpload() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

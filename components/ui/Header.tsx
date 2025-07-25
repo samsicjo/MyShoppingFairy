@@ -90,7 +90,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
               <Button
                 variant="outline"
                 onClick={logout}
-                className="border-purple-200 text-purple-600 bg-transparent"
+                className="border-[#F5F2F2] text-[#171212] bg-[#F5F2F2] hover:bg-[#d8a5a8] rounded-[20px] transition-colors"
               >
                 로그아웃
               </Button>
@@ -98,7 +98,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
               <Button
                 variant="outline"
                 onClick={() => router.push("/login")}
-                className="border-purple-200 text-purple-600 bg-transparent"
+                className="border-[#F5F2F2] text-[#171212] bg-[#F5F2F2] hover:bg-[#d8a5a8] rounded-[20px] transition-colors"
               >
                 로그인
               </Button>
@@ -125,30 +125,30 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-purple-100 shadow-lg">
           <div className="px-4 py-2 space-y-1">
-            <button
+          <button
               onClick={() => {
                 router.push("/");
                 setMobileMenuOpen(false);
               }}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'home' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'home' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               홈
             </button>
             <button
               onClick={() => handleProtectedNavigation("/personal-color-diagnosis")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'personal-color' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'personal-color' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               퍼스널컬러
             </button>
             <button
               onClick={() => handleProtectedNavigation("/styling-step1")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'styling' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'styling' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               스타일링
             </button>
             <button
               onClick={() => handleProtectedNavigation("/my-page")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'my-page' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'my-page' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               마이페이지
             </button>
@@ -160,7 +160,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full border-purple-200 text-purple-600 bg-transparent"
+                  className="w-full border-[#F5F2F2] text-[#171212] bg-[#E8B5B8] hover:bg-[#d8a5a8] rounded-[12px] transition-colors"
                 >
                   로그아웃
                 </Button>
@@ -171,7 +171,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
                     router.push("/login");
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full border-purple-200 text-purple-600 bg-transparent"
+                  className="w-full border-[#F5F2F2] text-[#171212] bg-[#E8B5B8] hover:bg-[#d8a5a8] rounded-[12px] transition-colors"
                 >
                   로그인
                 </Button>

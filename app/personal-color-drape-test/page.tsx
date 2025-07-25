@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
+import { Footer } from '@/components/ui/Footer';
 import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2, Palette, Trophy, ArrowDown } from "lucide-react"
 import { colorCategories } from "@/components/data/personalColorData"
 import { useStyling } from "@/app/context/StylingContext"
@@ -26,8 +27,7 @@ export default function PersonalColorDrapeTest() {
   const [personalColorResult, setPersonalColorResult] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("spring-light")
   const [selectedColorInfo, setSelectedColorInfo] = useState<{ color: string, title: string } | null>(null)
-  const { stylingData } = useStyling()
-
+  const { stylingData, setStylingData } = useStyling()
   const imageInputRef = useRef<HTMLInputElement>(null)
   const faceImageRef = useRef<HTMLImageElement>(null)
   const router = useRouter()
@@ -36,9 +36,7 @@ export default function PersonalColorDrapeTest() {
     // 퍼스널컬러 진단 결과 불러오기
     const personalColorAnalysis = localStorage.getItem("personalColorAnalysis")
     const selectedPersonalColor = localStorage.getItem("selectedPersonalColor")
-    
-    console.log("personal Color : ", stylingData.personalColor)
-    console.log(personalColorAnalysis, selectedPersonalColor)
+
     if (personalColorAnalysis) {
       const analysis = JSON.parse(personalColorAnalysis)
       setPersonalColorResult(analysis.type)
@@ -170,7 +168,7 @@ export default function PersonalColorDrapeTest() {
       <Header activePage="personal-color" />
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Title */}
         <div className="text-left mb-8">
           <h1 className="text-5xl font-bold mb-4">
@@ -477,6 +475,8 @@ export default function PersonalColorDrapeTest() {
           </div>
         </div>
       </div>
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }
