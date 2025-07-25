@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
 import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2, Palette, Trophy, ArrowDown } from "lucide-react"
 import { colorCategories } from "@/components/data/personalColorData"
+import { useStyling } from "@/app/context/StylingContext"
 
 export default function PersonalColorDrapeTest() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -25,6 +26,7 @@ export default function PersonalColorDrapeTest() {
   const [personalColorResult, setPersonalColorResult] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("spring-light")
   const [selectedColorInfo, setSelectedColorInfo] = useState<{ color: string, title: string } | null>(null)
+  const { stylingData } = useStyling()
 
   const imageInputRef = useRef<HTMLInputElement>(null)
   const faceImageRef = useRef<HTMLImageElement>(null)
@@ -34,7 +36,9 @@ export default function PersonalColorDrapeTest() {
     // 퍼스널컬러 진단 결과 불러오기
     const personalColorAnalysis = localStorage.getItem("personalColorAnalysis")
     const selectedPersonalColor = localStorage.getItem("selectedPersonalColor")
-
+    
+    console.log("personal Color : ", stylingData.personalColor)
+    console.log(personalColorAnalysis, selectedPersonalColor)
     if (personalColorAnalysis) {
       const analysis = JSON.parse(personalColorAnalysis)
       setPersonalColorResult(analysis.type)
@@ -178,7 +182,7 @@ export default function PersonalColorDrapeTest() {
           {personalColorResult && (
             <div className="flex justify-center">
               <Badge className="bg-[#F5F2F2] text-[#171212] px-4 py-2 text-sm hover:bg-[#F5F2F2]">
-                진단 결과: {personalColorResult}
+                진단 결과: {stylingData.personalColor}
               </Badge>
             </div>
           )}
