@@ -10,15 +10,44 @@ import { Header } from '@/components/ui/Header';
 import { Share2, Loader2 } from 'lucide-react';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 export default function OutfitDetail() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams(); // Add this line
+  const searchParams = useSearchParams();
   const { recommendations } = useStyleData();
   const [look, setLook] = useState<Look | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalForProductId, setModalForProductId] = useState<string | null>(null);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isFetchingPreview, setIsFetchingPreview] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
+  const fetchPreviewImages = async (productId: string) => {
+    setIsFetchingPreview(true);
+    setPreviewError(null);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/crawling/${productId}/snap`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.snap_img_url && Array.isArray(data.snap_img_url)) {
+        const validImages = data.snap_img_url.filter((url: string) => url && url.length > 0);
+        setPreviewImages(validImages.slice(0, 3));
+      } else {
+        setPreviewImages([]);
+      }
+    } catch (e: any) {
+      setPreviewError(e.message);
+      setPreviewImages([]);
+    } finally {
+      setIsFetchingPreview(false);
+    }
+  };
 
   useEffect(() => {
     const id = params.id ? decodeURIComponent(params.id as string) : null;
@@ -28,11 +57,9 @@ export default function OutfitDetail() {
       return;
     }
 
-    // ID가 숫자로 변환 가능한지 확인
     const isNumericId = !isNaN(Number(id));
 
     if (isNumericId) {
-      // my-page에서 온 경우: API로 데이터 요청
       const fetchLookDetail = async () => {
         try {
           const response = await fetch(`http://127.0.0.1:8000/users/looks/${id}`);
@@ -50,7 +77,6 @@ export default function OutfitDetail() {
       };
       fetchLookDetail();
     } else {
-      // styling-results에서 온 경우: 컨텍스트에서 데이터 검색
       const existingLook = recommendations.find(r => r.look_name === id);
       if (existingLook) {
         setLook(existingLook);
@@ -83,12 +109,11 @@ export default function OutfitDetail() {
   }
 
   const allItems: [string, Item][] = Object.entries(look.items).filter((entry): entry is [string, Item] => entry[1] !== null);
-  const mainImageUrl = allItems.length > 0 ? allItems[0][1].image_url : '/placeholder.svg';
 
   const activeHeaderPage = searchParams.get('from') === 'my-page' ? 'my-page' : 'styling';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       <Header activePage={activeHeaderPage as 'my-page' | 'styling'} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -124,16 +149,84 @@ export default function OutfitDetail() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-lg">{category}</h4>
-                              <p className="text-sm text-gray-600 truncate">{item.product_name}</p>
+                              <h4 className="font-bold text-gray-900 text-lg">{item.product_name}</h4>
+                              <p className="text-sm text-gray-600 truncate">{}</p>
+                              {/* category */}
                               <p className="text-md font-semibold text-gray-800 mt-1">₩{item.price.toLocaleString()}</p>
                             </div>
                           </div>
-                          <div className="flex gap-2 mb-3">
+                          <div className="flex flex-wrap gap-2 mb-3">
                             <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => window.open(`https://store.musinsa.com/app/goods/${item.product_id}`, '_blank')}>
                               구매하기
                             </Button>
                             <FavoriteButton item={item} />
+                            {item.product_id && (
+                              <Dialog
+                                open={modalForProductId === String(item.product_id)}
+                                onOpenChange={(isOpen) => {
+                                  if (isOpen) {
+                                    setModalForProductId(String(item.product_id));
+                                    fetchPreviewImages(String(item.product_id));
+                                  } else {
+                                    setModalForProductId(null);
+                                  }
+                                }}
+                              >
+                                <DialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={isFetchingPreview && modalForProductId === String(item.product_id)}
+                                  >
+                                    {isFetchingPreview && modalForProductId === String(item.product_id) ? '로딩 중...' : '미리보기'}
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-3xl p-0">
+                                  <DialogTitle className="sr-only">미리보기 이미지</DialogTitle>
+                                  <DialogDescription className="sr-only">미리보기 이미지를 보여주는 모달입니다.</DialogDescription>
+                                  {isFetchingPreview && (
+                                    <div className="flex justify-center items-center h-64">
+                                      <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+                                    </div>
+                                  )}
+                                  {previewError && (
+                                    <div className="p-4 text-center text-red-500">
+                                      {previewError}
+                                    </div>
+                                  )}
+                                  {!isFetchingPreview && !previewError && previewImages.length > 0 && (
+                                    <Carousel className="w-full max-w-sm mx-auto">
+                                      <CarouselContent>
+                                        {previewImages.map((imgSrc, index) => (
+                                          <CarouselItem key={index}>
+                                            <div className="p-1">
+                                              <Card>
+                                                <CardContent className="flex aspect-square items-center justify-center p-6">
+                                                  <Image
+                                                    src={imgSrc}
+                                                    alt={`미리보기 이미지 ${index + 1}`}
+                                                    width={500}
+                                                    height={500}
+                                                    className="object-contain max-h-[500px]"
+                                                  />
+                                                </CardContent>
+                                              </Card>
+                                            </div>
+                                          </CarouselItem>
+                                        ))}
+                                      </CarouselContent>
+                                      <CarouselPrevious />
+                                      <CarouselNext />
+                                    </Carousel>
+                                  )}
+                                  {!isFetchingPreview && !previewError && previewImages.length === 0 && (
+                                    <div className="p-4 text-center text-gray-500">
+                                      해당 제품의 스냅/후기 사진이 없습니다.
+                                    </div>
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+                            )}
                           </div>
                         </div>
                       </div>
