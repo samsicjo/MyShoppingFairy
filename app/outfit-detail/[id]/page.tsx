@@ -144,9 +144,18 @@ export default function OutfitDetail() {
               </CardContent>
             </Card>
 
-            <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-medium">
-              전체 구매하기
-            </Button>
+            <div className="flex gap-4">
+              <Button 
+                variant="outline" 
+                className="w-full h-12 text-lg font-medium"
+                onClick={() => router.back()}
+              >
+                돌아가기
+              </Button>
+              <Button className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-medium">
+                전체 구매하기
+              </Button>
+            </div>
           </div>
         </div>
       </div>

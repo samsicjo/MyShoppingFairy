@@ -350,19 +350,18 @@ export default function MyPage() {
                 <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg">
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="text-2xl font-bold text-gray-900">프로필 정보</CardTitle>
-                    <Button
+                    {/* <Button
                       onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     >
                       {isEditing ? <Save className="h-4 w-4 mr-2" /> : <Edit className="h-4 w-4 mr-2" />}
                       {isEditing ? "저장" : "수정"}
-                    </Button>
+                    </Button> */}
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <Tabs defaultValue="personal" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3">
+                      <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="personal">개인정보</TabsTrigger>
-                        <TabsTrigger value="styling">스타일링</TabsTrigger>
                         <TabsTrigger value="security">보안</TabsTrigger>
                       </TabsList>
 
@@ -387,38 +386,7 @@ export default function MyPage() {
                               disabled={!isEditing}
                             />
                           </div>
-                          <div>
-                            <Label htmlFor="phone">전화번호</Label>
-                            <Input
-                              id="phone"
-                              value={userProfile.phone}
-                              onChange={(e) => setUserProfile({ ...userProfile, phone: e.target.value })}
-                              disabled={!isEditing}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="address">주소</Label>
-                            <Input
-                              id="address"
-                              value={userProfile.address}
-                              onChange={(e) => setUserProfile({ ...userProfile, address: e.target.value })}
-                              disabled={!isEditing}
-                            />
-                          </div>
                         </div>
-                        <div>
-                          <Label htmlFor="bio">자기소개</Label>
-                          <Textarea
-                            id="bio"
-                            value={userProfile.bio}
-                            onChange={(e) => setUserProfile({ ...userProfile, bio: e.target.value })}
-                            disabled={!isEditing}
-                            rows={3}
-                          />
-                        </div>
-                      </TabsContent>
-
-                      <TabsContent value="styling" className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="height">키 (cm)</Label>
@@ -487,7 +455,6 @@ export default function MyPage() {
                             </div>
                           </div>
                         </div>
-
                         <div>
                           <Label htmlFor="occasion">스타일링 요청사항</Label>
                           <Textarea
@@ -499,6 +466,7 @@ export default function MyPage() {
                           />
                         </div>
                       </TabsContent>
+
 
                       
 
