@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useStyling } from '../context/StylingContext'
+import { useModal } from "@/app/context/ModalContext";
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,7 @@ const styleOptions = [
 export default function StylingStep3() {
 
   const { stylingData, setStylingData } = useStyling()
+  const { openModal } = useModal();
   const [preferredStyles, setPreferredStyles] = useState<string[]>(stylingData.preferred_styles || []);
   const router = useRouter()
 
@@ -40,7 +42,7 @@ export default function StylingStep3() {
     // 방어 로직: step2에서 저장했어야 할 데이터(예: top_size)가 없으면
     // 이전 페이지로 돌려보냅니다.
     if (!stylingData.top_size) {
-      alert('이전 단계의 정보가 없습니다. 2단계부터 다시 진행해주세요.');
+      openModal('오류', '이전 단계의 정보가 없습니다. 2단계부터 다시 진행해주세요.');
       router.push('/styling-step2');
       return; // useEffect 실행을 중단합니다.
     }
@@ -48,7 +50,7 @@ export default function StylingStep3() {
     // 콘솔에 최종적으로 누적된 모든 데이터를 객체 형태로 출력합니다.
     console.log('✅ styling-step3 페이지에서 최종 확인한 데이터:' , stylingData);
 
-  }, [stylingData, router]);
+  }, [stylingData, router, openModal]);
 
   useEffect(() => {
     setPreferredStyles(stylingData.preferred_styles || []);

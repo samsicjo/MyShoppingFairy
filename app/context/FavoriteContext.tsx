@@ -1,9 +1,9 @@
 'use client';
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { useAuth } from './AuthContext'; // AuthContext에서 userId를 가져옵니다.
-import { Item } from './StyleDataContext'; // Item 인터페이스를 가져옵니다.
-
+import { useModal } from './ModalContext'; // ModalContext에서 useModal을 가져옵니다.
+import { useAuth } from './AuthContext'
+import { Item } from './StyleDataContext'
 // 1. 컨텍스트가 가지게 될 값의 타입을 정의합니다.
 interface FavoriteContextType {
   likedItems: number[];
@@ -18,6 +18,7 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined
 // 3. Provider 컴포넌트를 생성합니다.
 export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
   const { userId } = useAuth();
+  const { openModal } = useModal(); // useModal 훅을 사용합니다.
   const [likedItems, setLikedItems] = useState<number[]>([]);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState<boolean>(true);
   const [errorFavorites, setErrorFavorites] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
   // 찜하기/찜 취소 토글 함수
   const toggleFavorite = useCallback(async (item: Item) => {
     if (userId === null) {
-      alert("로그인이 필요합니다.");
+      openModal("로그인 필요", "로그인이 필요한 기능입니다.");
       return;
     }
 
@@ -76,7 +77,7 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
           throw new Error('찜 취소에 실패했습니다.');
         }
         newLikedItems = likedItems.filter((id) => id !== item.product_id);
-        alert("찜 목록에서 제거되었습니다.");
+        openModal("알림", "찜 목록에서 제거되었습니다.");
       } else {
         // 찜하기
         const response = await fetch(`http://127.0.0.1:8000/users/favorites/add?user_id=${userId}`, {
@@ -95,14 +96,14 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
           throw new Error('찜하기에 실패했습니다.');
         }
         newLikedItems = [...likedItems, item.product_id];
-        alert("찜 목록에 추가되었습니다!");
+        openModal("알림", "찜 목록에 추가되었습니다!");
       }
       setLikedItems(newLikedItems);
     } catch (error: any) {
       console.error("찜하기/취소 오류:", error);
-      alert(error.message);
+      openModal("오류", error.message);
     }
-  }, [userId, likedItems]);
+  }, [userId, likedItems, openModal]);
 
   const value = { likedItems, toggleFavorite, isLoadingFavorites, errorFavorites };
 

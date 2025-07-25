@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { FavoriteProvider } from "./context/FavoriteContext";
+import { ModalProvider } from "./context/ModalContext";
 
 import { StylingProvider } from "./context/StylingContext";
 import { StyleDataProvider } from "./context/StyleDataContext";
@@ -23,15 +24,18 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <FavoriteProvider>
-            <StyleDataProvider>
-              <StylingProvider>
-                {children}
-              </StylingProvider>
-            </StyleDataProvider>
-          </FavoriteProvider>
+          <ModalProvider>
+            <FavoriteProvider>
+              <StyleDataProvider>
+                <StylingProvider>
+                  {children}
+                </StylingProvider>
+              </StyleDataProvider>
+            </FavoriteProvider>
+          </ModalProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+

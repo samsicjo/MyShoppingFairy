@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { User, Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { useModal } from "@/app/context/ModalContext"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -31,6 +32,7 @@ export default function SignupPage() {
   const [usernameCheckStatus, setUsernameCheckStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
   const [emailErrorMessage, setEmailErrorMessage] = useState(''); // 이메일 오류 메시지 상태 추가
   const router = useRouter()
+  const { openModal } = useModal(); 
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -111,8 +113,19 @@ export default function SignupPage() {
     )
   }
 
+  const validateEmail = (email: string) => {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
+    return re.test(String(email).toLowerCase());
+  }
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateEmail(formData.email)) {
+      setEmailErrorMessage('올바른 이메일 형식이 아닙니다.');
+      return;
+    }
+
     if (!isFormValid()) return
 
     setIsLoading(true)
@@ -153,7 +166,7 @@ export default function SignupPage() {
 
       router.push("/login?signupSuccess=true"); // 회원가입 성공 후 로그인 페이지로 이동
     } catch (error: any) {
-      alert(error); // error 객체 대신 메시지 문자열을 직접 alert
+      openModal("회원가입 오류", error);
       console.error('Signup failed:', error);
     } finally {
       setIsLoading(false);

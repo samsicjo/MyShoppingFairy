@@ -2,18 +2,20 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useStyling } from "@/app/context/StylingContext"
-import { useAuth } from '@/app/context/AuthContext'; // useAuth 훅 임포트
+import { useModal } from "@/app/context/ModalContext";
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
 import { Palette } from "lucide-react"
 import { personalColorTypes } from "@/lib/personalColorData"
+import { useStyling } from "@/app/context/StylingContext"
+import { useAuth } from '@/app/context/AuthContext'
 
 export default function PersonalColorSelect() {
   const { setStylingData } = useStyling()
   const { userId } = useAuth(); // userId 가져오기
+  const { openModal } = useModal();
   const [selectedColor, setSelectedColor] = useState<string>("")
   const router = useRouter()
 
@@ -39,17 +41,17 @@ export default function PersonalColorSelect() {
             if (!response.ok) {
               const errorData = await response.json();
               console.error("Failed to update personal color:", errorData);
-              alert("퍼스널 컬러 업데이트에 실패했습니다.");
+              openModal("오류", "퍼스널 컬러 업데이트에 실패했습니다.");
               return;
             }
             console.log("Personal color updated successfully!");
           } catch (error) {
             console.error("Error updating personal color:", error);
-            alert("퍼스널 컬러 업데이트 중 오류가 발생했습니다.");
+            openModal("오류", "퍼스널 컬러 업데이트 중 오류가 발생했습니다.");
             return;
           }
         } else {
-          alert("로그인이 필요합니다.");
+          openModal("로그인 필요", "로그인이 필요합니다.");
           router.push("/login");
           return;
         }

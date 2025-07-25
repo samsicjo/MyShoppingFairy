@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { User, Eye, EyeOff, Lock } from "lucide-react"
 
 import { useAuth } from "@/app/context/AuthContext";
+import { useModal } from "@/app/context/ModalContext";
 
 function LoginContent() {
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { openModal } = useModal();
 
   useEffect(() => {
     if (searchParams.get('signupSuccess') === 'true') {
@@ -57,8 +59,8 @@ function LoginContent() {
       } else if (errorMessage.includes("비밀번호가 일치하지 않습니다.")) {
         setPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
       } else {
-        // 그 외의 오류는 alert으로 표시
-        alert(errorMessage);
+        // 그 외의 오류는 모달으로 표시
+        openModal("로그인 오류", errorMessage);
       }
       console.error("Login failed in LoginPage:", errorMessage);
     } finally {

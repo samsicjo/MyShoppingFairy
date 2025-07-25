@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/ui/Header";
 import { Palette, Shirt, Heart, Star, TrendingUp, ArrowRight } from "lucide-react"
 import { useAuth } from "./context/AuthContext";
+import { useModal } from "./context/ModalContext";
 import { useEffect } from "react";
 import { useStyling } from './context/StylingContext'
 
 export default function HomePage() {
   const router = useRouter()
   const { isLoggedIn, userId } = useAuth();
+  const { openModal } = useModal();
   const { stylingData, setStylingData} = useStyling()
 
   //간단한 백엔드 확인용 코드
@@ -54,12 +56,14 @@ export default function HomePage() {
 
       getUserStylingSummaryInfo()
     }
-    }, [isLoggedIn])
+    }, [isLoggedIn, userId, setStylingData])
 
   const handleNavigation = (path: string) => {
     if (!isLoggedIn) {
-      router.push("/login")
-      return
+      openModal("로그인 필요", "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.", () => {
+        router.push("/login");
+      });
+      return;
     }
     router.push(path)
   }

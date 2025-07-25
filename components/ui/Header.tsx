@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Palette } from "lucide-react" // 메뉴 아이콘과 팔레트 아이콘 추가
 import { useAuth } from '@/app/context/AuthContext'; // useAuth 훅 임포트
+import { useModal } from '@/app/context/ModalContext'; // useModal 훅 임포트
 import Image from "next/image";
 
 
@@ -15,6 +16,7 @@ interface HeaderProps {
 export const Header = React.memo(({ activePage }: HeaderProps) => {
   const router = useRouter()
   const { isLoggedIn, logout } = useAuth(); // useAuth 훅 사용
+  const { openModal } = useModal(); // useModal 훅 사용
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getButtonClass = (page: 'home' | 'personal-color' | 'styling' | 'my-page') => {
@@ -23,6 +25,17 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
     }
     return "text-gray-600 hover:text-purple-600 transition-colors"
   }
+
+  const handleProtectedNavigation = (path: string) => {
+    if (!isLoggedIn) {
+      openModal("로그인 필요", "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.", () => {
+        router.push("/login");
+      });
+    } else {
+      router.push(path);
+    }
+    setMobileMenuOpen(false); // 모바일 메뉴 닫기
+  };
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -56,19 +69,19 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
               홈
             </button>
             <button
-              onClick={() => router.push("/personal-color-diagnosis")}
+              onClick={() => handleProtectedNavigation("/personal-color-diagnosis")}
               className={getButtonClass('personal-color')}
             >
               퍼스널컬러
             </button>
             <button
-              onClick={() => router.push("/styling-step1")}
+              onClick={() => handleProtectedNavigation("/styling-step1")}
               className={getButtonClass('styling')}
             >
               스타일링
             </button>
             <button
-              onClick={() => router.push("/my-page")}
+              onClick={() => handleProtectedNavigation("/my-page")}
               className={getButtonClass('my-page')}
             >
               마이페이지
@@ -122,28 +135,19 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
               홈
             </button>
             <button
-              onClick={() => {
-                router.push("/personal-color-diagnosis");
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => handleProtectedNavigation("/personal-color-diagnosis")}
               className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'personal-color' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               퍼스널컬러
             </button>
             <button
-              onClick={() => {
-                router.push("/styling-step1");
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => handleProtectedNavigation("/styling-step1")}
               className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'styling' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               스타일링
             </button>
             <button
-              onClick={() => {
-                router.push("/my-page");
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => handleProtectedNavigation("/my-page")}
               className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'my-page' ? 'bg-purple-50 text-purple-600' : 'text-gray-600 hover:bg-purple-50'}`}
             >
               마이페이지

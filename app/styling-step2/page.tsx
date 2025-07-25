@@ -16,6 +16,7 @@ import SizeInformationSection from '@/components/SizeInformationSection';
 import OccasionsSection from '@/components/OccasionsSection';
 import BodyTypeSection from '@/components/BodyTypeSection';
 import { Header } from '@/components/ui/Header'; // ADDED
+import { useModal } from "@/app/context/ModalContext"
 
 const situationOptions = [
   { id: "출근/업무", label: "출근/업무", icon: "💼" },
@@ -43,7 +44,7 @@ const shoeSizeOptions = Array.from({ length: 13 }, (_, i) => String(220 + i * 5)
 export default function StylingStep2() {
   const { stylingData, setStylingData } = useStyling()
   const router = useRouter()
-
+  const { openModal } = useModal();
   const [localBudget, setLocalBudget] = useState([stylingData.budget ? stylingData.budget / 10000 : 50]);
   const [selectedSituations, setSelectedSituations] = useState<string[]>(stylingData.user_situation || [])
   const [topSize, setTopSize] = useState<string | ''>('');
@@ -63,10 +64,10 @@ export default function StylingStep2() {
 
   useEffect(() => {
     if (!stylingData.height) {
-      alert('이전 단계의 정보가 없습니다. 1단계부터 다시 진행해주세요.');
+      openModal('오류', '이전 단계의 정보가 없습니다. 1단계부터 다시 진행해주세요.');
       router.push('/styling-step1');
     }
-  }, [stylingData, router]);
+  }, [stylingData, router, openModal]);
 
 
   // 이벤트 핸들러들을 Context 로직에 맞게 수정합니다.

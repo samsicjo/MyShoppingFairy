@@ -64,82 +64,85 @@ export default function MyPage() {
   
   useEffect(() => {
     const fetchUserData = async () => {
-      if (userId) {
-        try {
-          // Fetch user profile
-          const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
-          let userData = null;
-          if (userResponse.ok) {
-            userData = await userResponse.json()
-          } else {
-            console.error("Failed to fetch user data:", userResponse.statusText)
-          }
-
-          // Fetch styling data
-          const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
-          let stylingData = null;
-          if (stylingResponse.ok) {
-            stylingData = await stylingResponse.json()
-          } else if (stylingResponse.status === 404) {
-            console.log("No styling data found for user (404) in my-page. This is expected for new users.");
-            stylingData = null; // Explicitly set to null if 404
-          } else {
-            console.error("Failed to fetch styling data:", stylingResponse.status, stylingResponse.statusText)
-          }
-
-          if (userData) { // Check if userData exists
-            setUserProfile({
-              username: userData.username || "",
-              name: userData.name || "",
-              email: userData.email || "",
-              phone: userProfile.phone || "", // 기존 값 유지 또는 빈 문자열
-              address: userProfile.address || "", // 기존 값 유지 또는 빈 문자열
-              bio: userProfile.bio || "", // 기존 값 유지 또는 빈 문자열
-              budget: stylingData?.budget || 0,
-              occasion: stylingData?.occasion || "",
-              height: stylingData?.height || 0,
-              gender: stylingData?.gender || "",
-              top_size: stylingData?.top_size || "",
-              bottom_size: stylingData?.bottom_size || 0,
-              shoe_size: stylingData?.shoe_size || 0,
-              body_feature: stylingData?.body_feature || [],
-              preferred_styles: stylingData?.preferred_styles || [],
-            })
-          }
-                                                                                                        //Debug
-          
-          
-          // Fetch favorite items
-          setIsLoadingFavorites(true); // Set loading to true before fetch
-          const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
-          if (favoritesResponse.ok) {
-            const favoritesData = await favoritesResponse.json()
-            console.log(favoritesData)
-            setFavoriteItems(favoritesData)
-          } else {
-            console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
-            setFavoriteItems([]); // Ensure favoriteItems is empty on error
-          }
-          setIsLoadingFavorites(false); // Set loading to false after fetch
-
-          // Fetch favorite looks
-          setIsLoadingOutfits(true); // Set loading to true before fetch
-          const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
-          if (looksResponse.ok) {
-            const looksData = await looksResponse.json()
-            console.log("Fetched looks:", looksData.looks)
-            setSavedOutfits(looksData.looks)
-          } else {
-            console.error("Failed to fetch favorite looks:", looksResponse.statusText)
-            setSavedOutfits([]); // Ensure savedOutfits is empty on error
-          }
-          setIsLoadingOutfits(false); // Set loading to false after fetch
-
-        } catch (error) {
-          console.error("Error fetching data:", error)
-          setIsLoadingOutfits(false); // Set loading to false on error
-          setIsLoadingFavorites(false); // Set loading to false on error
+      if (!userId) {
+        
+        router.push("/");
+        return;
+      }
+      try {
+        // Fetch user profile
+        const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
+        let userData = null;
+        if (userResponse.ok) {
+          userData = await userResponse.json()
+        } else {
+          console.error("Failed to fetch user data:", userResponse.statusText)
         }
+
+        // Fetch styling data
+        const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
+        let stylingData = null;
+        if (stylingResponse.ok) {
+          stylingData = await stylingResponse.json()
+        } else if (stylingResponse.status === 404) {
+          console.log("No styling data found for user (404) in my-page. This is expected for new users.");
+          stylingData = null; // Explicitly set to null if 404
+        } else {
+          console.error("Failed to fetch styling data:", stylingResponse.status, stylingResponse.statusText)
+        }
+
+        if (userData) { // Check if userData exists
+          setUserProfile({
+            username: userData.username || "",
+            name: userData.name || "",
+            email: userData.email || "",
+            phone: userProfile.phone || "", // 기존 값 유지 또는 빈 문자열
+            address: userProfile.address || "", // 기존 값 유지 또는 빈 문자열
+            bio: userProfile.bio || "", // 기존 값 유지 또는 빈 문자열
+            budget: stylingData?.budget || 0,
+            occasion: stylingData?.occasion || "",
+            height: stylingData?.height || 0,
+            gender: stylingData?.gender || "",
+            top_size: stylingData?.top_size || "",
+            bottom_size: stylingData?.bottom_size || 0,
+            shoe_size: stylingData?.shoe_size || 0,
+            body_feature: stylingData?.body_feature || [],
+            preferred_styles: stylingData?.preferred_styles || [],
+          })
+        }
+                                                                                                        //Debug
+        
+        
+        // Fetch favorite items
+        setIsLoadingFavorites(true); // Set loading to true before fetch
+        const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
+        if (favoritesResponse.ok) {
+          const favoritesData = await favoritesResponse.json()
+          console.log(favoritesData)
+          setFavoriteItems(favoritesData)
+        } else {
+          console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
+          setFavoriteItems([]); // Ensure favoriteItems is empty on error
+        }
+        setIsLoadingFavorites(false); // Set loading to false after fetch
+
+        // Fetch favorite looks
+        setIsLoadingOutfits(true); // Set loading to true before fetch
+        const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
+        if (looksResponse.ok) {
+          const looksData = await looksResponse.json()
+          console.log("Fetched looks:", looksData.looks)
+          setSavedOutfits(looksData.looks)
+        } else {
+          console.error("Failed to fetch favorite looks:", looksResponse.statusText)
+          setSavedOutfits([]); // Ensure savedOutfits is empty on error
+        }
+        setIsLoadingOutfits(false); // Set loading to false after fetch
+
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        setIsLoadingOutfits(false); // Set loading to false on error
+        setIsLoadingFavorites(false); // Set loading to false on error
       }
     }
 

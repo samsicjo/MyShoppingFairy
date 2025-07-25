@@ -9,10 +9,12 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header";
 import { Check, User, DollarSign, Heart, Edit, Database, Sparkles, Loader2 } from "lucide-react"
 import { useAuth } from "@/app/context/AuthContext";
+import { useModal } from "@/app/context/ModalContext";
 
 export default function StylingSummary() {
   const { stylingData, setStylingData } = useStyling()
   const { userId } = useAuth();
+  const { openModal } = useModal();
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -23,7 +25,7 @@ export default function StylingSummary() {
 
   const saveStylingSummaryToDatabase = async (): Promise<any | null> => {
     if (userId === null) {
-      alert("로그인이 필요합니다.");
+      openModal("로그인 필요", "로그인이 필요한 기능입니다.");
       return null;
     }
 
@@ -87,7 +89,7 @@ export default function StylingSummary() {
       return savedData; // Return the saved data
     } catch (error: any) {
       console.error("스타일 정보 저장/업데이트 실패:", error);
-      alert(`스타일 정보 저장/업데이트 중 오류가 발생했습니다: ${error}`);
+      openModal("오류", `스타일 정보 저장/업데이트 중 오류가 발생했습니다: ${error}`);
       return null;
     } finally {
       setIsSaving(false);

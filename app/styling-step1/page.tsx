@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -14,11 +14,13 @@ import { OptimizedTextarea } from "@/components/OptimizedTextarea"; // Import th
 import { User, ArrowLeft, Loader2 } from "lucide-react"
 import { useStyling, Gender } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext' // useAuth 훅 임포트
+import { useModal } from "@/app/context/ModalContext";
 
 const heightOptions = Array.from({ length: 61 }, (_, i) => 140 + i);
 
 export default function StylingStep1() {
   const { stylingData, setStylingData } = useStyling();
+  const { openModal } = useModal();
   
   const router = useRouter()
   const [height, setHeight] = useState<number | ''>(stylingData.height || '')
@@ -26,93 +28,103 @@ export default function StylingStep1() {
   const isButtonDisabled = height === '' || gender === null;
   const [isPersonalColorLoading, setIsPersonalColorLoading] = useState(true); // 퍼스널 컬러 로딩 상태
   const [isStylingDataLoading, setIsStylingDataLoading] = useState(true); // 스타일링 데이터 로딩 상태
+  const [hasRedirected, setHasRedirected] = useState(false); // 무한 루프 방지를 위한 상태 추가
+  const mountedRef = useRef(false); // API 호출이 한 번만 실행되도록 하는 Ref
 
   const { userId } = useAuth(); // userId 가져오기
 
   useEffect(() => {
     if (!userId) {
-      // userId가 없으면 로그인 페이지로 리다이렉트하거나 에러 처리
       router.push("/login");
       return;
     }
 
-    const fetchPersonalColor = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/users/user_info_personal?user_id=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.personal_color_name) {
+    // 이미 리다이렉트가 시작되었으면 더 이상 진행하지 않음
+    if (hasRedirected) {
+      return;
+    }
+
+    // 컴포넌트가 처음 마운트될 때만 API 호출
+    if (!mountedRef.current) {
+      mountedRef.current = true; // 마운트되었음을 표시
+      const fetchPersonalColor = async () => {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/users/user_info_personal?user_id=${userId}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.personal_color_name) {
+              setStylingData(prevData => ({
+                ...prevData,
+                personalColor: data.personal_color_name,
+                description: data.description,
+                recommendedColors: data.recommended_colors,
+                colorNames: data.color_names,
+              }));
+            } else {
+              openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'));
+              setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+            }
+          } else if (response.status === 404) {
+            openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'));
+            setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+          } else {
+            const errorData = await response.json();
+            console.error("Failed to fetch personal color:", errorData);
+            openModal('오류', '퍼스널 컬러 정보를 불러오는 데 실패했습니다.', () => router.push('/personal-color-diagnosis'));
+            setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+          }
+        } catch (error) {
+          console.error("Error fetching personal color:", error);
+          openModal('오류', '퍼스널 컬러 정보를 불러오는 중 오류가 발생했습니다.', () => router.push('/personal-color-diagnosis'));
+          setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+        } finally {
+          setIsPersonalColorLoading(false);
+        }
+      };
+
+      const fetchStylingSummary = async () => {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`);
+          if (response.ok) {
+            const data = await response.json();
+            // API 응답 필드명과 StylingData 인터페이스 필드명 매핑
             setStylingData(prevData => ({
               ...prevData,
-              personalColor: data.personal_color_name,
-              description: data.description,
-              recommendedColors: data.recommended_colors,
-              colorNames: data.color_names,
+              budget: data.budget || 0,
+              occasion: data.occasion || '',
+              height: data.height || 0,
+              gender: data.gender || "",
+              top_size: data.top_size || "",
+              bottom_size: data.bottom_size || 0,
+              shoe_size: data.shoe_size || 0,
+              body_feature: data.body_feature || [],
+              preferred_styles: data.preferred_styles || [],
+              user_situation: data.user_situation || [],
             }));
+          } else if (response.status === 404) {
+            console.log("Styling summary not found for user. This is normal for new users.");
+            // 데이터가 없으면 StylingContext의 해당 필드들을 기본값으로 유지
           } else {
-            alert('퍼스널 컬러 진단이 필요합니다.');
-            router.push('/personal-color-diagnosis');
+            const errorData = await response.json();
+            console.error("Failed to fetch styling summary:", errorData);
+            openModal('오류', '스타일링 요약 정보를 불러오는 데 실패했습니다.');
           }
-        } else if (response.status === 404) {
-          alert('퍼스널 컬러 진단이 필요합니다.');
-          router.push('/personal-color-diagnosis');
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to fetch personal color:", errorData);
-          alert('퍼스널 컬러 정보를 불러오는 데 실패했습니다.');
-          router.push('/personal-color-diagnosis');
+        } catch (error) {
+          console.error("Error fetching styling summary:", error);
+          openModal('오류', '스타일링 요약 정보를 불러오는 중 오류가 발생했습니다.');
+        } finally {
+          setIsStylingDataLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching personal color:", error);
-        alert('퍼스널 컬러 정보를 불러오는 중 오류가 발생했습니다.');
-        router.push('/personal-color-diagnosis');
-      } finally {
-        setIsPersonalColorLoading(false);
-      }
-    };
+      };
 
-    const fetchStylingSummary = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          // API 응답 필드명과 StylingData 인터페이스 필드명 매핑
-          setStylingData(prevData => ({
-            ...prevData,
-            budget: data.budget || 0,
-            occasion: data.occasion || '',
-            height: data.height || 0,
-            gender: data.gender || "",
-            top_size: data.top_size || "",
-            bottom_size: data.bottom_size || 0,
-            shoe_size: data.shoe_size || 0,
-            body_feature: data.body_feature || [],
-            preferred_styles: data.preferred_styles || [],
-            user_situation: data.user_situation || [],
-          }));
-        } else if (response.status === 404) {
-          console.log("Styling summary not found for user. This is normal for new users.");
-          // 데이터가 없으면 StylingContext의 해당 필드들을 기본값으로 유지
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to fetch styling summary:", errorData);
-          alert('스타일링 요약 정보를 불러오는 데 실패했습니다.');
-        }
-      } catch (error) {
-        console.error("Error fetching styling summary:", error);
-        alert('스타일링 요약 정보를 불러오는 중 오류가 발생했습니다.');
-      } finally {
-        setIsStylingDataLoading(false);
-      }
-    };
-
-    fetchPersonalColor();
-    fetchStylingSummary();
+      fetchPersonalColor();
+      fetchStylingSummary();
+    }
 
     sessionStorage.removeItem('styleRecommendations');
     console.log("step1 : ", stylingData)
     console.log("StylingStep1: sessionStorage cleared for 'styleRecommendations'.");
-  }, [userId, router, setStylingData]);
+  }, [userId, router, setStylingData, hasRedirected, openModal]);
 
   const handleMemoSave = (value: string) => {
     setStylingData(prevData => ({
@@ -134,7 +146,7 @@ export default function StylingStep1() {
 
   const handleNextStep = () => {
     if (isButtonDisabled) { // 유효성 검사
-      alert('키와 성별을 모두 입력해주세요.');
+      openModal('알림', '키와 성별을 모두 입력해주세요.');
       return;
     }
     setStylingData(prevData => ({ // setStylingData를 사용해서 새로운 데이터 추가.

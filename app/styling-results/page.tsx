@@ -12,6 +12,15 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, RefreshCw, Share2, Loader2, Check, Palette, Sparkles, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/app/context/AuthContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const categoryNames = ["아우터", "상의", "하의", "신발"];
 
@@ -26,20 +35,27 @@ export default function StylingResults() {
   const [savingLooks, setSavingLooks] = useState<string[]>([]);
   const [drapeTestImage, setDrapeTestImage] = useState<string | null>(null);
   const [backgroundColor, setBackgroundColor] = useState('#e0e0e0');
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', message: '' });
+
+  const openModal = (title: string, message: string) => {
+    setModalContent({ title, message });
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    // A short delay to ensure the fetch-once logic in the context is stable.
     const timer = setTimeout(() => {
       fetchRecommendations();
       console.log('recommendtaions : ', recommendations)
     }, 10);
 
-    return () => clearTimeout(timer); // Cleanup the timer
-  }, []); // Empty dependency array ensures this runs only once on mount
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (isMounted) {
@@ -70,7 +86,7 @@ export default function StylingResults() {
     const isLiked = likedLooks.some(item => item.look_name === lookName);
 
     if (savingLooks.includes(lookName)) {
-      return; // Prevent multiple clicks while saving
+      return;
     }
 
     if (isLiked) {
@@ -79,7 +95,7 @@ export default function StylingResults() {
         const newLikedLooks = likedLooks.filter((item) => item.look_name !== lookName);
         setLikedLooks(newLikedLooks);
         localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks));
-        alert(`${lookName}이(가) 찜 목록에서 제거되었습니다.`);
+        openModal('알림', `${lookName}이(가) 찜 목록에서 제거되었습니다.`);
         deleteLookFromDb(itemToRemove.look_id);
       }
     } else {
@@ -89,10 +105,10 @@ export default function StylingResults() {
         const newLikedLooks = [...likedLooks, { look_name: lookName, look_id: savedLookId }];
         setLikedLooks(newLikedLooks);
         localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks));
-        alert("룩이 성공적으로 저장되었습니다!");
+        openModal('성공', "룩이 성공적으로 저장되었습니다!");
       } catch (error) {
         console.error("룩 저장 오류:", error);
-        alert(`룩 저장 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
+        openModal('오류', `룩 저장 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setSavingLooks(prev => prev.filter(name => name !== lookName));
       }
@@ -101,7 +117,7 @@ export default function StylingResults() {
 
   const saveLookToDb = async (look: Look): Promise<number> => {
     if (!userId) {
-      alert("로그인이 필요합니다.");
+      openModal("오류", "로그인이 필요합니다.");
       throw new Error("User not logged in");
     }
 
@@ -144,7 +160,7 @@ export default function StylingResults() {
 
   const deleteLookFromDb = async (lookId: number) => {
     if (!userId) {
-      alert("로그인이 필요합니다.");
+      openModal("오류", "로그인이 필요합니다.");
       return;
     }
 
@@ -174,7 +190,7 @@ export default function StylingResults() {
       console.log(`Look ${lookId} deleted successfully from DB.`);
     } catch (error) {
       console.error("룩 삭제 오류:", error);
-      alert(`룩 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
+      openModal('오류', `룩 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -186,13 +202,12 @@ export default function StylingResults() {
     if (navigator.share) {
       navigator.share({
         title: '나의 퍼스널컬러 & 스타일링 결과',
-        text: `퍼스널컬러: ${stylingData.personalColor || ''}
-스타일: ${stylingData.preferred_styles?.join(', ') || ''}`,
+        text: `퍼스널컬러: ${stylingData.personalColor || ''}\n스타일: ${stylingData.preferred_styles?.join(', ') || ''}`,
         url: window.location.href,
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('링크가 복사되었습니다!');
+      openModal('알림', '링크가 복사되었습니다!');
     }
   };
 
@@ -206,7 +221,7 @@ export default function StylingResults() {
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem('savedStylingResultsSummary', JSON.stringify(results));
-    alert('결과가 저장되었습니다!');
+    openModal('성공', '결과가 저장되었습니다!');
   };
 
   const recommendedColorsFromStylingData = stylingData.recommendedColors ? stylingData.recommendedColors.slice(0, 3) : [];
@@ -531,6 +546,21 @@ export default function StylingResults() {
           <Button onClick={() => router.push('/my-page')} className="flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"><Heart className="h-4 w-4 mr-2" />저장된 코디 보기</Button>
         </div>
       </div>
+
+      <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{modalContent.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {modalContent.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsModalOpen(false)}>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }

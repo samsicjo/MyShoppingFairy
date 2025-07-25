@@ -11,6 +11,7 @@ import { Camera, Upload, Sparkles, CheckCircle, RefreshCw, Lightbulb } from "luc
 import { useStyling } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext'
 import { getFlexible3x3ColorPalette, getOppositeColorType, convertToKebabCase, isValidPersonalColorType } from "@/components/data/personalColorData"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogHeader, AlertDialogFooter } from "@/components/ui/alert-dialog" 
 
 export default function PersonalColorImageUpload() {
   const { stylingData, setStylingData } = useStyling()
@@ -23,6 +24,8 @@ export default function PersonalColorImageUpload() {
   const [colorNameResult, setColorNameResult] = useState<string[]>([])
   const [personalColorResult, setPersonalColorResult] = useState<string | undefined>()
   const [descriptionResult, setDescriptionResult] = useState<string | undefined>()
+  const [errorModalMessage, setErrorModalMessage] = useState("")
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false) 
 
   const [result, setResult] = useState<{
     personalColor: string
@@ -61,7 +64,8 @@ export default function PersonalColorImageUpload() {
 
   const handleDiagnosis = async () => {
     if (!imageFile || !userId) {
-      alert("이미지를 업로드하거나 로그인해야 합니다.");
+      setErrorModalMessage("이미지를 업로드하거나 로그인해야 합니다.");
+      setIsErrorModalOpen(true);
       return;
     }
 
@@ -144,7 +148,8 @@ export default function PersonalColorImageUpload() {
       setColorNameResult([]);
       setDescriptionResult(undefined);
       console.log('상태 초기화 완료 - hasApiResult: false, showResult: false');
-      alert(error.message);
+      setErrorModalMessage(error.message || "알 수 없는 오류가 발생했습니다."); 
+      setIsErrorModalOpen(true);
       console.error('AI analysis failed:', error);
       setIsAnalyzing(false);
     }
@@ -1069,6 +1074,21 @@ export default function PersonalColorImageUpload() {
             </CardContent>
           </Card>
         </div>
+
+        <AlertDialog open={isErrorModalOpen} onOpenChange={setIsErrorModalOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>오류</AlertDialogTitle>
+              <AlertDialogDescription>
+                {errorModalMessage}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => setIsErrorModalOpen(false)}>확인</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </div>
     </div>
   )
