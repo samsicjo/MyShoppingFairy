@@ -84,7 +84,7 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log(`StyleDataContext: Fetching from http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 200000); // 200 seconds timeout
+      const timeoutId = setTimeout(() => controller.abort(), 500000); // 200 seconds timeout
 
       const response = await fetch(`http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`, {
         method: 'POST',

@@ -14,14 +14,16 @@ import { Footer } from '@/components/ui/Footer';
 import { OptimizedTextarea } from "@/components/OptimizedTextarea"; // Import the new component
 import { User, ArrowLeft, Loader2 } from "lucide-react"
 import { useStyling, Gender } from '../context/StylingContext'
-import { useAuth } from '@/app/context/AuthContext' // useAuth 훅 임포트
+import { useAuth } from '@/app/context/AuthContext'
 import { useModal } from "@/app/context/ModalContext";
+import { useStyleData } from '@/app/context/StyleDataContext'; // Add this import
 
 const heightOptions = Array.from({ length: 61 }, (_, i) => 140 + i);
 
 export default function StylingStep1() {
   const { stylingData, setStylingData } = useStyling();
   const { openModal } = useModal();
+  const { clearRecommendations } = useStyleData(); // Add this line
   
   const router = useRouter()
   const [height, setHeight] = useState<number | ''>(stylingData.height || '')
@@ -122,9 +124,8 @@ export default function StylingStep1() {
       fetchStylingSummary();
     }
 
-    sessionStorage.removeItem('styleRecommendations');
-    console.log("step1 : ", stylingData)
-    console.log("StylingStep1: sessionStorage cleared for 'styleRecommendations'.");
+    clearRecommendations();
+    console.log("StylingStep1: clearRecommendations called.");
   }, [userId, router, setStylingData, hasRedirected, openModal]);
 
   const handleMemoSave = (value: string) => {

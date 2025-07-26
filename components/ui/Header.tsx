@@ -48,7 +48,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
             <div className="w-8 h-8 rounded-lg flex items-center justify-center">
               <Image
-              src="/favicon.ico"
+              src="/favicon2.PNG"
               alt="로고"
               width={48}
               height={48}
