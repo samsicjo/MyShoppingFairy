@@ -45,17 +45,17 @@ export default function StylingSummary() {
     };
 
     try {
-      const checkResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`);
+      const checkResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`);
 
       let method: 'POST' | 'PATCH';
       let url: string;
 
       if (checkResponse.ok) {
         method = 'PATCH';
-        url = `http://127.0.0.1:8000/users/styling_summary_update?user_id=${userId}`;
+        url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_update?user_id=${userId}`;
       } else if (checkResponse.status === 404) {
         method = 'POST';
-        url = `http://127.0.0.1:8000/users/styling_summary_create?user_id=${userId}`;
+        url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_create?user_id=${userId}`;
       } else {
         const errorData = await checkResponse.json();
         throw new Error(errorData.detail || '스타일 정보 확인에 실패했습니다.');

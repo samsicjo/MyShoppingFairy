@@ -77,7 +77,7 @@ export default function PersonalColorImageUpload() {
     formData.append("user_id", String(userId));
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/personal/analyze-all?user_id=${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/personal/analyze-all?user_id=${userId}`, {
         method: 'POST',
         body: formData,
       });

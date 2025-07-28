@@ -60,7 +60,7 @@ export default function SignupPage() {
     setUsernameCheckMessage('');
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/user_create_check?username=${formData.username}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_create_check?username=${formData.username}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/user_create`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

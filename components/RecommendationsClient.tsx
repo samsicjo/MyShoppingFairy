@@ -102,7 +102,7 @@ export default function RecommendationsClient() {
     }
 
     console.log("API 요청!!!!!!!!!!!!!!!!!!!!!")
-    const response = await fetch(`http://127.0.0.1:8000/users/looks/create?user_id=${userId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/create?user_id=${userId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ export default function RecommendationsClient() {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/looks/${lookId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${lookId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

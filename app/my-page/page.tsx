@@ -71,7 +71,7 @@ export default function MyPage() {
       }
       try {
         // Fetch user profile
-        const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info?user_id=${userId}`)
         let userData = null;
         if (userResponse.ok) {
           userData = await userResponse.json()
@@ -80,7 +80,7 @@ export default function MyPage() {
         }
 
         // Fetch styling data
-        const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
+        const stylingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`)
         let stylingData = null;
         if (stylingResponse.ok) {
           stylingData = await stylingResponse.json()
@@ -115,7 +115,7 @@ export default function MyPage() {
         
         // Fetch favorite items
         setIsLoadingFavorites(true); // Set loading to true before fetch
-        const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
+        const favoritesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites?user_id=${userId}`)
         if (favoritesResponse.ok) {
           const favoritesData = await favoritesResponse.json()
           console.log(favoritesData)
@@ -128,7 +128,7 @@ export default function MyPage() {
 
         // Fetch favorite looks
         setIsLoadingOutfits(true); // Set loading to true before fetch
-        const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
+        const looksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks?user_id=${userId}`)
         if (looksResponse.ok) {
           const looksData = await looksResponse.json()
           console.log("Fetched looks:", looksData.looks)
@@ -158,7 +158,7 @@ export default function MyPage() {
 
     try {
       // Update user profile
-      const userUpdateResponse = await fetch(`http://127.0.0.1:8000/users/user_update?user_id=${userId}`, {
+      const userUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +174,7 @@ export default function MyPage() {
       }
 
       // Update styling data
-      const stylingUpdateResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_update?user_id=${userId}`, {
+      const stylingUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +212,7 @@ export default function MyPage() {
 
   const handleDeleteOutfit = async (look_id: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/looks/${look_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${look_id}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -227,7 +227,7 @@ export default function MyPage() {
 
   const handleDeleteFavorite = async (productId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/favorites/?product_id=${productId}&user_id=${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites/?product_id=${productId}&user_id=${userId}`, {
         method: "DELETE",
       })
       if (response.ok) {

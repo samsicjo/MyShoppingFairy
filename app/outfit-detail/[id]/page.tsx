@@ -30,7 +30,7 @@ export default function OutfitDetail() {
     setIsFetchingPreview(true);
     setPreviewError(null);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/crawling/${productId}/snap`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/${productId}/snap`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -62,7 +62,7 @@ export default function OutfitDetail() {
     if (isNumericId) {
       const fetchLookDetail = async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/users/looks/${id}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${id}`);
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.detail || '코디 정보를 불러오는 데 실패했습니다.');

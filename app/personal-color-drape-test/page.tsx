@@ -65,7 +65,7 @@ export default function PersonalColorDrapeTest() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/personal/extract-face-image', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/personal/extract-face-image`, {
         method: 'POST',
         body: formData,
       });

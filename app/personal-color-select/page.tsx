@@ -32,7 +32,7 @@ export default function PersonalColorSelect() {
         if (userId) {
           const encodedColorName = encodeURIComponent(selectedColorData.nameForDB);
           try {
-            const response = await fetch(`http://127.0.0.1:8000/users/user_personal_color_update?user_id=${userId}&personal_color_name=${encodedColorName}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_personal_color_update?user_id=${userId}&personal_color_name=${encodedColorName}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',

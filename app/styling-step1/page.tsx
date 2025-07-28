@@ -52,7 +52,7 @@ export default function StylingStep1() {
       mountedRef.current = true; // 마운트되었음을 표시
       const fetchPersonalColor = async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/users/user_info_personal?user_id=${userId}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info_personal?user_id=${userId}`);
           if (response.ok) {
             const data = await response.json();
             if (data && data.personal_color_name) {
@@ -87,7 +87,7 @@ export default function StylingStep1() {
 
       const fetchStylingSummary = async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`);
           if (response.ok) {
             const data = await response.json();
             // API 응답 필드명과 StylingData 인터페이스 필드명 매핑
@@ -126,7 +126,16 @@ export default function StylingStep1() {
 
     clearRecommendations();
     console.log("StylingStep1: clearRecommendations called.");
-  }, [userId, router, setStylingData, hasRedirected, openModal]);
+  }, [userId, router, setStylingData, hasRedirected, openModal, clearRecommendations]);
+
+  useEffect(() => {
+    if (stylingData.height) {
+      setHeight(stylingData.height);
+    }
+    if (stylingData.gender) {
+      setGender(stylingData.gender);
+    }
+  }, [stylingData.height, stylingData.gender]);
 
   const handleMemoSave = (value: string) => {
     setStylingData(prevData => ({

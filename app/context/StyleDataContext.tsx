@@ -49,13 +49,13 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [hasFetchBeenAttempted, setHasFetchBeenAttempted] = useState(false); // Fetch-once flag
 
-  const clearRecommendations = () => {
+  const clearRecommendations = useCallback(() => {
     setRecommendations([]);
     setError(null);
     setHasFetchBeenAttempted(false); // Allow fetching again
     sessionStorage.removeItem('styleRecommendations');
     console.log("StyleDataContext: Cleared recommendations, error, and fetch flag.");
-  };
+  }, []);
 
   const resetFetchAttempt = () => {
     setHasFetchBeenAttempted(false);
@@ -82,11 +82,11 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      console.log(`StyleDataContext: Fetching from http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`);
+      console.log(`StyleDataContext: Fetching from ${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=0`);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 500000); // 200 seconds timeout
 
-      const response = await fetch(`http://127.0.0.1:8000/crawling/analyze-item?user_id=${userId}&filter=0`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=0`, {
         method: 'POST',
         signal: controller.signal,
       });

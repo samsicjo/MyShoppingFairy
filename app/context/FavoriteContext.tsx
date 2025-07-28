@@ -35,7 +35,7 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
     setIsLoadingFavorites(true);
     setErrorFavorites(null);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites?user_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         // 백엔드 응답이 Item 객체 배열이라고 가정
@@ -70,7 +70,7 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (isCurrentlyLiked) {
         // 찜 취소
-        const response = await fetch(`http://127.0.0.1:8000/users/favorites?product_id=${item.product_id}&user_id=${userId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites?product_id=${item.product_id}&user_id=${userId}`, {
           method: 'DELETE',
         });
         if (!response.ok) {
@@ -80,7 +80,7 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
         openModal("알림", "찜 목록에서 제거되었습니다.");
       } else {
         // 찜하기
-        const response = await fetch(`http://127.0.0.1:8000/users/favorites/add?user_id=${userId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites/add?user_id=${userId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
