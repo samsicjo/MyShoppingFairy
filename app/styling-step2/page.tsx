@@ -4,19 +4,14 @@ import React from 'react'
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useStyling } from '../context/StylingContext'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import SizeInformationSection from '@/components/SizeInformationSection';
-import OccasionsSection from '@/components/OccasionsSection';
-import BodyTypeSection from '@/components/BodyTypeSection';
-import { Header } from '@/components/ui/Header'; 
-import { Footer } from '@/components/ui/Footer';
+import { Header } from '@/components/ui/Header' 
+import { Footer } from '@/components/ui/Footer'
 import { useModal } from "@/app/context/ModalContext"
 
 const situationOptions = [
@@ -45,30 +40,30 @@ const shoeSizeOptions = Array.from({ length: 13 }, (_, i) => String(220 + i * 5)
 export default function StylingStep2() {
   const { stylingData, setStylingData } = useStyling()
   const router = useRouter()
-  const { openModal } = useModal();
-  const [localBudget, setLocalBudget] = useState([stylingData.budget ? stylingData.budget / 10000 : 50]);
+  const { openModal } = useModal()
+  const [localBudget, setLocalBudget] = useState([stylingData.budget ? stylingData.budget / 10000 : 50])
   const [selectedSituations, setSelectedSituations] = useState<string[]>(stylingData.user_situation || [])
-  const [topSize, setTopSize] = useState<string | ''>('');
-  const [waistSize, setWaistSize] = useState<number | ''>('');
-  const [shoeSize, setShoeSize] = useState<number | ''>('');
-  const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(stylingData.body_feature || []);
+  const [topSize, setTopSize] = useState<string | ''>('')
+  const [waistSize, setWaistSize] = useState<number | ''>('')
+  const [shoeSize, setShoeSize] = useState<number | ''>('')
+  const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(stylingData.body_feature || [])
 
   useEffect(() => {
-    setLocalBudget([stylingData.budget ? stylingData.budget / 10000 : 50]);
-    setSelectedSituations(stylingData.user_situation || []);
-    setTopSize(stylingData.top_size || '');
-    setWaistSize(stylingData.bottom_size || '');
-    setShoeSize(stylingData.shoe_size || '');
-    setSelectedBodyTypes(stylingData.body_feature || []);
-  }, [stylingData]);
+    setLocalBudget([stylingData.budget ? stylingData.budget / 10000 : 50])
+    setSelectedSituations(stylingData.user_situation || [])
+    setTopSize(stylingData.top_size || '')
+    setWaistSize(stylingData.bottom_size || '')
+    setShoeSize(stylingData.shoe_size || '')
+    setSelectedBodyTypes(stylingData.body_feature || [])
+  }, [stylingData])
 
 
   useEffect(() => {
     if (!stylingData.height) {
-      openModal('오류', '이전 단계의 정보가 없습니다. 1단계부터 다시 진행해주세요.');
-      router.push('/styling-step1');
+      openModal('오류', '이전 단계의 정보가 없습니다. 1단계부터 다시 진행해주세요.')
+      router.push('/styling-step1')
     }
-  }, [stylingData, router, openModal]);
+  }, [stylingData, router, openModal])
 
   // 이벤트 핸들러들을 Context 로직에 맞게 수정합니다.
   const handleSituationChange = React.useCallback((situationId: string) => {
@@ -76,16 +71,16 @@ export default function StylingStep2() {
       prev.includes(situationId)
         ? prev.filter(id => id !== situationId)
         : [...prev, situationId]
-    );
-  }, []);
+    )
+  }, [])
 
   const handleBodyTypeChange = React.useCallback((bodyTypeId: string) => {
     setSelectedBodyTypes(prev =>
       prev.includes(bodyTypeId)
         ? prev.filter(id => id !== bodyTypeId)
         : [...prev, bodyTypeId]
-    );
-  }, []);
+    )
+  }, [])
 
   // '다음' 버튼 클릭 시 Context에 데이터를 저장합니다.
   const handleNext = () => {
@@ -97,15 +92,15 @@ export default function StylingStep2() {
       bottom_size: waistSize as number,
       shoe_size: shoeSize as number,
       body_feature: selectedBodyTypes,
-    }));
-    router.push("/styling-step3");
-  };
+    }))
+    router.push("/styling-step3")
+  }
 
   const handleBack = () => {
-    router.push("/styling-step1");
-  };
+    router.push("/styling-step1")
+  }
 
-  const isFormValid = selectedSituations.length > 0 && topSize && waistSize && shoeSize;
+  const isFormValid = selectedSituations.length > 0 && topSize && waistSize && shoeSize
 
   return (
     <div className="min-h-screen bg-white">

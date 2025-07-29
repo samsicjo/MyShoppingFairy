@@ -1,57 +1,57 @@
-'use client';
+'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Items, Item } from '@/app/context/StyleDataContext';
-import useEmblaCarousel from 'embla-carousel-react';
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import Image from 'next/image'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Items, Item } from '@/app/context/StyleDataContext'
+import useEmblaCarousel from 'embla-carousel-react'
 
 interface OutfitImageCarouselProps {
-  items: Items;
-  altText: string;
-  className?: string;
+  items: Items
+  altText: string
+  className?: string
 }
 
 export function OutfitImageCarousel({ items, altText, className }: OutfitImageCarouselProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel()
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   const imageUrls = useMemo(() => 
     Object.values(items)
       .filter((item): item is Item => item !== null && item.image_url && item.image_url.length > 0)
       .map(item => item.image_url),
     [items]
-  );
+  )
 
   const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi, setSelectedIndex]);
+    if (!emblaApi) return
+    setSelectedIndex(emblaApi.selectedScrollSnap())
+  }, [emblaApi, setSelectedIndex])
 
   useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-  }, [emblaApi, onSelect]);
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+  }, [emblaApi, onSelect])
 
   if (imageUrls.length === 0) {
     return (
       <div className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden ${className}`}>
         <Image src="/placeholder.svg" alt="No image available" layout="fill" objectFit="cover" />
       </div>
-    );
+    )
   }
 
   const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    emblaApi?.scrollPrev();
-  };
+    e.stopPropagation()
+    emblaApi?.scrollPrev()
+  }
 
   const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    emblaApi?.scrollNext();
-  };
+    e.stopPropagation()
+    emblaApi?.scrollNext()
+  }
 
   return (
     <div className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden group ${className}`}>
@@ -94,7 +94,7 @@ export function OutfitImageCarousel({ items, altText, className }: OutfitImageCa
             {imageUrls.map((_, index) => (
               <button
                 key={index}
-                onClick={(e) => { e.stopPropagation(); emblaApi?.scrollTo(index); }}
+                onClick={(e) => { e.stopPropagation(); emblaApi?.scrollTo(index) }}
                 className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                   selectedIndex === index ? 'bg-white' : 'bg-white/50'
                 }`}
@@ -104,5 +104,5 @@ export function OutfitImageCarousel({ items, altText, className }: OutfitImageCa
         </>
       )}
     </div>
-  );
+  )
 }

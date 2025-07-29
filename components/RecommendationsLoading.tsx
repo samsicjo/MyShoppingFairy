@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import React from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function RecommendationsLoading() {
   return (
@@ -36,5 +36,5 @@ export default function RecommendationsLoading() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

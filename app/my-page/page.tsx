@@ -5,33 +5,32 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "../context/AuthContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { OutfitImageCarousel } from "@/components/OutfitImageCarousel";
-import { Header } from '@/components/ui/Header';
-import { User, Settings, Heart, ShoppingBag, Bell, Shield, Edit, Save, Eye, Trash2, Camera, Loader2 } from "lucide-react"
+import { OutfitImageCarousel } from "@/components/OutfitImageCarousel"
+import { Header } from '@/components/ui/Header'
+import { User, Settings, Heart, ShoppingBag, Shield, Eye, Trash2, Loader2 } from "lucide-react"
 import { Item, Look } from "../context/StyleDataContext"
 
 interface MyPageUserProfile {
-  username: string;
-  name: string;
-  email: string;
-  phone?: string; // 더미 데이터로 유지
-  address?: string; // 더미 데이터로 유지
-  bio?: string; // 더미 데이터로 유지
-  budget: number;
-  occasion: string;
-  height: number;
-  gender: string;
-  top_size: string;
-  bottom_size: number;
-  shoe_size: number;
-  body_feature: string[];
-  preferred_styles: string[];
+  username: string
+  name: string
+  email: string
+  phone?: string // 더미 데이터로 유지
+  address?: string // 더미 데이터로 유지
+  bio?: string // 더미 데이터로 유지
+  budget: number
+  occasion: string
+  height: number
+  gender: string
+  top_size: string
+  bottom_size: number
+  shoe_size: number
+  body_feature: string[]
+  preferred_styles: string[]
 }
 
 export default function MyPage() {
@@ -57,22 +56,22 @@ export default function MyPage() {
 
   const [savedOutfits, setSavedOutfits] = useState<Look[]>([])
   const [favoriteItems, setFavoriteItems] = useState<Item[]>([])
-  const [isLoadingOutfits, setIsLoadingOutfits] = useState(true); // Add loading state
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true); // Add loading state for favorites
+  const [isLoadingOutfits, setIsLoadingOutfits] = useState(true) // Add loading state
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true) // Add loading state for favorites
   const router = useRouter()
   const { userId } = useAuth()
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userId) {
-        
-        router.push("/");
-        return;
+
+        router.push("/")
+        return
       }
       try {
         // Fetch user profile
-        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info?user_id=${userId}`)
-        let userData = null;
+        const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
+        let userData = null
         if (userResponse.ok) {
           userData = await userResponse.json()
         } else {
@@ -80,13 +79,13 @@ export default function MyPage() {
         }
 
         // Fetch styling data
-        const stylingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`)
-        let stylingData = null;
+        const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
+        let stylingData = null
         if (stylingResponse.ok) {
           stylingData = await stylingResponse.json()
         } else if (stylingResponse.status === 404) {
-          console.log("No styling data found for user (404) in my-page. This is expected for new users.");
-          stylingData = null; // Explicitly set to null if 404
+          console.log("No styling data found for user (404) in my-page. This is expected for new users.")
+          stylingData = null // Explicitly set to null if 404
         } else {
           console.error("Failed to fetch styling data:", stylingResponse.status, stylingResponse.statusText)
         }
@@ -110,39 +109,39 @@ export default function MyPage() {
             preferred_styles: stylingData?.preferred_styles || [],
           })
         }
-                                                                                                        //Debug
-        
-        
+        //Debug
+
+
         // Fetch favorite items
-        setIsLoadingFavorites(true); // Set loading to true before fetch
-        const favoritesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites?user_id=${userId}`)
+        setIsLoadingFavorites(true) // Set loading to true before fetch
+        const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
         if (favoritesResponse.ok) {
           const favoritesData = await favoritesResponse.json()
           console.log(favoritesData)
           setFavoriteItems(favoritesData)
         } else {
           console.error("Failed to fetch favorite items:", favoritesResponse.statusText)
-          setFavoriteItems([]); // Ensure favoriteItems is empty on error
+          setFavoriteItems([]) // Ensure favoriteItems is empty on error
         }
-        setIsLoadingFavorites(false); // Set loading to false after fetch
+        setIsLoadingFavorites(false) // Set loading to false after fetch
 
         // Fetch favorite looks
-        setIsLoadingOutfits(true); // Set loading to true before fetch
-        const looksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks?user_id=${userId}`)
+        setIsLoadingOutfits(true) // Set loading to true before fetch
+        const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
         if (looksResponse.ok) {
           const looksData = await looksResponse.json()
           console.log("Fetched looks:", looksData.looks)
           setSavedOutfits(looksData.looks)
         } else {
           console.error("Failed to fetch favorite looks:", looksResponse.statusText)
-          setSavedOutfits([]); // Ensure savedOutfits is empty on error
+          setSavedOutfits([]) // Ensure savedOutfits is empty on error
         }
-        setIsLoadingOutfits(false); // Set loading to false after fetch
+        setIsLoadingOutfits(false) // Set loading to false after fetch
 
       } catch (error) {
         console.error("Error fetching data:", error)
-        setIsLoadingOutfits(false); // Set loading to false on error
-        setIsLoadingFavorites(false); // Set loading to false on error
+        setIsLoadingOutfits(false) // Set loading to false on error
+        setIsLoadingFavorites(false) // Set loading to false on error
       }
     }
 
@@ -158,7 +157,7 @@ export default function MyPage() {
 
     try {
       // Update user profile
-      const userUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_update?user_id=${userId}`, {
+      const userUpdateResponse = await fetch(`http://127.0.0.1:8000/users/user_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +173,7 @@ export default function MyPage() {
       }
 
       // Update styling data
-      const stylingUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_update?user_id=${userId}`, {
+      const stylingUpdateResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +211,7 @@ export default function MyPage() {
 
   const handleDeleteOutfit = async (look_id: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${look_id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/looks/${look_id}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -227,7 +226,7 @@ export default function MyPage() {
 
   const handleDeleteFavorite = async (productId: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites/?product_id=${productId}&user_id=${userId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/favorites/?product_id=${productId}&user_id=${userId}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -280,70 +279,72 @@ export default function MyPage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <Header activePage="my-page" />
-      
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <div className="lg:w-64">
-            <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-lg">
-              <CardContent className="p-6">
-                <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <User className="h-10 w-10 text-white" />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-900">{userProfile.name || "사용자"}</h2>
-                  <p className="text-gray-600">{userProfile.email}</p>
+            <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-orange-200 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                  <img
+                    src="/api/placeholder/80/80"
+                    alt="프로필"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">{userProfile.name || "최삼식"}</h2>
+                <p className="text-gray-600 text-sm">{userProfile.email}</p>
+              </div>
 
-                <nav className="space-y-2">
-                  <button
-                    onClick={() => setActiveTab("profile")}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === "profile"
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                        : "text-gray-600 hover:bg-purple-50"
+              <nav className="space-y-3">
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={`w-full flex items-center px-4 py-3 rounded-full transition-colors ${activeTab === "profile"
+                    ? "text-gray-900"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
-                  >
-                    <User className="h-5 w-5 mr-3" />
-                    프로필
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("outfits")}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === "outfits"
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                        : "text-gray-600 hover:bg-purple-50"
+                  style={{ backgroundColor: activeTab === "profile" ? "#E8B5B8" : "transparent" }}
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  프로필
+                </button>
+                <button
+                  onClick={() => setActiveTab("outfits")}
+                  className={`w-full flex items-center px-4 py-3 rounded-full transition-colors ${activeTab === "outfits"
+                    ? "text-gray-900"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
-                  >
-                    <ShoppingBag className="h-5 w-5 mr-3" />
-                    저장된 코디
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("favorites")}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === "favorites"
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                        : "text-gray-600 hover:bg-purple-50"
+                  style={{ backgroundColor: activeTab === "outfits" ? "#E8B5B8" : "transparent" }}
+                >
+                  <ShoppingBag className="h-5 w-5 mr-3" />
+                  저장된 코디
+                </button>
+                <button
+                  onClick={() => setActiveTab("favorites")}
+                  className={`w-full flex items-center px-4 py-3 rounded-full transition-colors ${activeTab === "favorites"
+                    ? "text-gray-900"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
-                  >
-                    <Heart className="h-5 w-5 mr-3" />
-                    찜한 아이템
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("settings")}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === "settings"
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                        : "text-gray-600 hover:bg-purple-50"
+                  style={{ backgroundColor: activeTab === "favorites" ? "#E8B5B8" : "transparent" }}
+                >
+                  <Heart className="h-5 w-5 mr-3" />
+                  찜한 아이템
+                </button>
+                <button
+                  onClick={() => setActiveTab("settings")}
+                  className={`w-full flex items-center px-4 py-3 rounded-full transition-colors ${activeTab === "settings"
+                    ? "text-gray-900"
+                    : "text-gray-700 hover:bg-gray-100"
                     }`}
-                  >
-                    <Settings className="h-5 w-5 mr-3" />
-                    설정
-                  </button>
-                </nav>
-              </CardContent>
-            </Card>
+                  style={{ backgroundColor: activeTab === "settings" ? "#E8B5B8" : "transparent" }}
+                >
+                  <Settings className="h-5 w-5 mr-3" />
+                  설정
+                </button>
+              </nav>
+            </div>
           </div>
 
           {/* Main Content */}
@@ -471,7 +472,7 @@ export default function MyPage() {
                       </TabsContent>
 
 
-                      
+
 
                       <TabsContent value="security" className="space-y-4">
                         <div>
@@ -525,7 +526,7 @@ export default function MyPage() {
                               <Button
                                 size="sm"
                                 onClick={() => handleViewOutfit(outfit.look_id)}
-                                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                                className="flex-1 bg-[#E8B5B8] hover:bg-[#F5E8DA] transition-colors duration-200 rounded-full"
                               >
                                 <Eye className="h-4 w-4 mr-1" />
                                 상세보기
@@ -534,7 +535,7 @@ export default function MyPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleDeleteOutfit(outfit.look_id)}
-                                className="border-red-200 text-red-600 hover:bg-red-50"
+                                className="border-[#E8B5B8] text-[#E8B5B8] hover:bg-[#E8B5B8] rounded-full"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -568,8 +569,8 @@ export default function MyPage() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {favoriteItems.map((item, index) => (
-                        <Card key={item.product_id || `favorite-item-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow">
-                          <CardContent className="p-4">
+                        <Card key={item.product_id || `favorite-item-${index}`} className="border-purple-100 hover:shadow-lg transition-shadow h-full">
+                          <CardContent className="p-4 h-full flex flex-col">
                             <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                               <img
                                 src={
@@ -581,18 +582,20 @@ export default function MyPage() {
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-1">{item.product_name}</h3>
-                            <p className="text-lg font-bold text-purple-600 mb-3">{item.price} 원</p>
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteFavorite(item.product_id)}
-                                className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                삭제
-                              </Button>
+                            <div className="flex-1 flex flex-col">
+                              <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.product_name}</h3>
+                              <p className="text-lg font-bold text-purple-600 mb-3">{item.price} 원</p>
+                              <div className="flex gap-2 mt-auto">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleDeleteFavorite(item.product_id)}
+                                  className="flex-1 border-red-200 text-red-600 hover:bg-red-50 rounded-full"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  삭제
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
@@ -617,10 +620,6 @@ export default function MyPage() {
                         <input type="checkbox" className="toggle" defaultChecked />
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-700">세일 정보</span>
-                        <input type="checkbox" className="toggle" />
-                      </div>
-                      <div className="flex items-center justify-between">
                         <span className="text-gray-700">이메일 뉴스레터</span>
                         <input type="checkbox" className="toggle" defaultChecked />
                       </div>
@@ -635,10 +634,6 @@ export default function MyPage() {
                       <Button variant="outline" className="w-full justify-start bg-transparent">
                         <Shield className="h-4 w-4 mr-2" />
                         개인정보 처리방침
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start bg-transparent">
-                        <Bell className="h-4 w-4 mr-2" />
-                        데이터 다운로드
                       </Button>
                       <Button
                         variant="outline"

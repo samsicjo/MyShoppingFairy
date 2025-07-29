@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { AuthProvider } from "./context/AuthContext";
-import { FavoriteProvider } from "./context/FavoriteContext";
-import { ModalProvider } from "./context/ModalContext";
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { AuthProvider } from "./context/AuthContext"
+import { FavoriteProvider } from "./context/FavoriteContext"
+import { ModalProvider } from "./context/ModalContext"
 
-import { StylingProvider } from "./context/StylingContext";
-import { StyleDataProvider } from "./context/StyleDataContext";
+import { StylingProvider } from "./context/StylingContext"
+import { StyleDataProvider } from "./context/StyleDataContext"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "My Shopping Fairy",
   description: "Your personal AI fashion stylist",
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
       <head>
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       </head>
       <body className={inter.className}>
         <AuthProvider>
@@ -39,6 +39,6 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
-  );
+  )
 }
 

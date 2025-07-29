@@ -1,18 +1,18 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface SizeInformationSectionProps {
-  topSize: string | '';
-  setTopSize: (value: string | '') => void;
-  waistSize: number | '';
-  setWaistSize: (value: number | '') => void;
-  shoeSize: number | '';
-  setShoeSize: (value: number | '') => void;
-  topSizeOptions: string[];
-  waistSizeOptions: string[];
-  shoeSizeOptions: string[];
+  topSize: string | ''
+  setTopSize: (value: string | '') => void
+  waistSize: number | ''
+  setWaistSize: (value: number | '') => void
+  shoeSize: number | ''
+  setShoeSize: (value: number | '') => void
+  topSizeOptions: string[]
+  waistSizeOptions: string[]
+  shoeSizeOptions: string[]
 }
 
 const SizeInformationSection: React.FC<SizeInformationSectionProps> = React.memo(
@@ -76,10 +76,10 @@ const SizeInformationSection: React.FC<SizeInformationSectionProps> = React.memo
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
-);
+)
 
-SizeInformationSection.displayName = 'SizeInformationSection';
+SizeInformationSection.displayName = 'SizeInformationSection'
 
-export default SizeInformationSection;
+export default SizeInformationSection

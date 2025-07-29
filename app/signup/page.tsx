@@ -4,13 +4,14 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { User, Eye, EyeOff, Lock, Mail } from "lucide-react"
 import { useModal } from "@/app/context/ModalContext"
+
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -28,20 +29,20 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
-  const [usernameCheckStatus, setUsernameCheckStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
-  const [emailErrorMessage, setEmailErrorMessage] = useState(''); // 이메일 오류 메시지 상태 추가
+  const [usernameCheckMessage, setUsernameCheckMessage] = useState('')
+  const [usernameCheckStatus, setUsernameCheckStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle')
+  const [emailErrorMessage, setEmailErrorMessage] = useState('') // 이메일 오류 메시지 상태 추가
   const router = useRouter()
-  const { openModal } = useModal(); 
+  const { openModal } = useModal()
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     if (field === 'username') {
-      setUsernameCheckMessage(''); // 아이디 변경 시 메시지 초기화
-      setUsernameCheckStatus('idle');
+      setUsernameCheckMessage('') // 아이디 변경 시 메시지 초기화
+      setUsernameCheckStatus('idle')
     }
     if (field === 'email') {
-      setEmailErrorMessage(''); // 이메일 변경 시 메시지 초기화
+      setEmailErrorMessage('') // 이메일 변경 시 메시지 초기화
     }
   }
 
@@ -51,53 +52,53 @@ export default function SignupPage() {
 
   const handleUsernameCheck = async () => {
     if (!formData.username) {
-      setUsernameCheckMessage('아이디를 입력해주세요.');
-      setUsernameCheckStatus('error');
-      return;
+      setUsernameCheckMessage('아이디를 입력해주세요.')
+      setUsernameCheckStatus('error')
+      return
     }
 
-    setUsernameCheckStatus('checking');
-    setUsernameCheckMessage('');
+    setUsernameCheckStatus('checking')
+    setUsernameCheckMessage('')
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_create_check?username=${formData.username}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/user_create_check?username=${formData.username}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      })
 
       if (response.ok) {
-        const isAvailable = await response.json();
+        const isAvailable = await response.json()
         if (isAvailable === true) {
-          setUsernameCheckMessage('사용할 수 있는 아이디입니다.');
-          setUsernameCheckStatus('available');
+          setUsernameCheckMessage('사용할 수 있는 아이디입니다.')
+          setUsernameCheckStatus('available')
         } else {
           // Should not happen based on API spec, but for safety
-          setUsernameCheckMessage('아이디 확인 중 알 수 없는 오류가 발생했습니다.');
-          setUsernameCheckStatus('error');
+          setUsernameCheckMessage('아이디 확인 중 알 수 없는 오류가 발생했습니다.')
+          setUsernameCheckStatus('error')
         }
       } else if (response.status === 400) {
-        const errorData = await response.json();
+        const errorData = await response.json()
         if (errorData.detail === "이미 존재하는 아이디입니다.") {
-          setUsernameCheckMessage('이미 존재하는 아이디입니다.');
-          setUsernameCheckStatus('taken');
+          setUsernameCheckMessage('이미 존재하는 아이디입니다.')
+          setUsernameCheckStatus('taken')
         } else {
-          setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${errorData.detail || response.statusText}`);
-          setUsernameCheckStatus('error');
+          setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${errorData.detail || response.statusText}`)
+          setUsernameCheckStatus('error')
         }
       } else {
-        setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${response.statusText}`);
-        setUsernameCheckStatus('error');
+        setUsernameCheckMessage(`아이디 확인 중 오류가 발생했습니다: ${response.statusText}`)
+        setUsernameCheckStatus('error')
       }
     } catch (error) {
-      console.error('아이디 확인 실패:', error);
-      setUsernameCheckMessage('네트워크 오류 또는 서버에 연결할 수 없습니다.');
-      setUsernameCheckStatus('error');
+      console.error('아이디 확인 실패:', error)
+      setUsernameCheckMessage('네트워크 오류 또는 서버에 연결할 수 없습니다.')
+      setUsernameCheckStatus('error')
     } finally {
       // No need to set loading state to false here, as status handles it
     }
-  };
+  }
 
   const isFormValid = () => {
     return (
@@ -114,16 +115,16 @@ export default function SignupPage() {
   }
 
   const validateEmail = (email: string) => {
-    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i;
-    return re.test(String(email).toLowerCase());
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i
+    return re.test(String(email).toLowerCase())
   }
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!validateEmail(formData.email)) {
-      setEmailErrorMessage('올바른 이메일 형식이 아닙니다.');
-      return;
+      setEmailErrorMessage('올바른 이메일 형식이 아닙니다.')
+      return
     }
 
     if (!isFormValid()) return
@@ -131,7 +132,7 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_create`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/user_create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,86 +143,93 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
         }),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        let errorMessage = '회원가입 실패';
+        const errorData = await response.json()
+        let errorMessage = '회원가입 실패'
         if (errorData && errorData.detail) {
           if (Array.isArray(errorData.detail)) {
-            errorMessage = errorData.detail.map((err: any) => err.msg).join(', ');
+            errorMessage = errorData.detail.map((err: any) => err.msg).join(', ')
           } else if (typeof errorData.detail === 'string') {
-            errorMessage = errorData.detail;
+            errorMessage = errorData.detail
           }
         }
 
         // 이메일 중복 오류 처리
         if (errorMessage.includes("이미 존재하는 사용자명 또는 이메일입니다.")) {
-          setEmailErrorMessage('이미 존재하는 이메일입니다!');
-          return; // alert 대신 필드 옆에 메시지 표시
+          setEmailErrorMessage('이미 존재하는 이메일입니다!')
+          return // alert 대신 필드 옆에 메시지 표시
         }
 
-        throw errorMessage; // Error 객체 대신 메시지 문자열 자체를 던집니다.
+        throw errorMessage // Error 객체 대신 메시지 문자열 자체를 던집니다.
       }
 
-      router.push("/login?signupSuccess=true"); // 회원가입 성공 후 로그인 페이지로 이동
+      router.push("/login?signupSuccess=true") // 회원가입 성공 후 로그인 페이지로 이동
     } catch (error: any) {
-      openModal("회원가입 오류", error);
-      console.error('Signup failed:', error);
+      openModal("회원가입 오류", error)
+      console.error('Signup failed:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4  cursor-pointer" onClick={() => router.push('/')}>
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">S</span>
+      {/* 간단한 헤더 - 로고만 표시 */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                <img
+                  src="/favicon2.PNG"
+                  alt="로고"
+                  className="w-12 h-12 object-contain"
+                />
+              </div>
+              <span className="text-[#171212] font-bold">
+                My Shopping Fairy
+              </span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              My Shopping Fairy
-            </span>
           </div>
-          <p className="text-gray-600">나만의 퍼스널 스타일링 서비스</p>
         </div>
+      </header>
 
-        {/* Signup Card */}
-        <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl">
-          <CardHeader className="text-center pb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4 mx-auto">
-              <User className="h-8 w-8 text-purple-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">회원가입</h1>
-            <p className="text-gray-600">My Shopping Fairy에 가입하여 맞춤형 스타일링을 받아보세요</p>
-          </CardHeader>
+      {/* 중앙 회원가입 폼 */}
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-left mb-12">
+            <h1 className="text-5xl font-bold text-black mb-4">회원가입</h1>
+            <p className="text-gray-500">My Shopping Fairy에 가입하여 맞춤형 스타일링을 받아보세요</p>
+          </div>
 
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSignup} className="space-y-4">
+          <div className="space-y-6">
+            <form onSubmit={handleSignup} className="space-y-6">
               {/* 아이디 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="username" className="text-sm font-medium text-black">
                   아이디 <span className="text-red-500">*</span>
                 </Label>
-                <div className="relative flex items-center space-x-2">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="아이디를 입력하세요"
-                    value={formData.username}
-                    onChange={(e) => handleInputChange("username", e.target.value)}
-                    className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500 flex-grow"
-                    required
-                  />
+                <div className="flex items-center space-x-2">
+                  <div className="relative flex-grow">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="아이디를 입력하세요"
+                      value={formData.username}
+                      onChange={(e) => handleInputChange("username", e.target.value)}
+                      className="pl-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4] w-full"
+                      required
+                    />
+                  </div>
                   <Button
                     type="button"
                     onClick={handleUsernameCheck}
                     disabled={usernameCheckStatus === 'checking' || !formData.username}
-                    className="h-12 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm"
+                    className="h-14 px-4 py-2 text-white rounded-full text-sm"
+                    style={{ backgroundColor: '#E8B5B8' }}
                   >
                     {usernameCheckStatus === 'checking' ? '확인 중...' : '아이디 확인'}
                   </Button>
@@ -237,7 +245,7 @@ export default function SignupPage() {
 
               {/* 이름 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="name" className="text-sm font-medium text-black">
                   이름 <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -246,14 +254,14 @@ export default function SignupPage() {
                   placeholder="이름을 입력하세요"
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  className="h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                  className="h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                   required
                 />
               </div>
 
               {/* 이메일 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="email" className="text-sm font-medium text-black">
                   이메일 <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
@@ -264,7 +272,7 @@ export default function SignupPage() {
                     placeholder="이메일을 입력하세요"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                     required
                   />
                 </div>
@@ -277,7 +285,7 @@ export default function SignupPage() {
 
               {/* 비밀번호 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="password" className="text-sm font-medium text-black">
                   비밀번호 <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
@@ -288,7 +296,7 @@ export default function SignupPage() {
                     placeholder="비밀번호를 입력하세요"
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 pr-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                     required
                   />
                   <button
@@ -303,7 +311,7 @@ export default function SignupPage() {
 
               {/* 비밀번호 확인 */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-black">
                   비밀번호 확인 <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
@@ -314,7 +322,7 @@ export default function SignupPage() {
                     placeholder="비밀번호를 다시 입력하세요"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 pr-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                     required
                   />
                   <button
@@ -338,8 +346,8 @@ export default function SignupPage() {
                     checked={agreements.terms}
                     onCheckedChange={(checked) => handleAgreementChange("terms", checked as boolean)}
                   />
-                  <Label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer">
-                    이용약관에 동의합니다 <span className="text-red-500">*</span>
+                  <Label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
+                    이용약관에 동의합니다
                   </Label>
                 </div>
 
@@ -349,8 +357,8 @@ export default function SignupPage() {
                     checked={agreements.privacy}
                     onCheckedChange={(checked) => handleAgreementChange("privacy", checked as boolean)}
                   />
-                  <Label htmlFor="privacy" className="text-sm text-gray-700 cursor-pointer">
-                    개인정보처리방침에 동의합니다 <span className="text-red-500">*</span>
+                  <Label htmlFor="privacy" className="text-sm text-gray-600 cursor-pointer">
+                    개인정보처리방침에 동의합니다
                   </Label>
                 </div>
 
@@ -360,7 +368,7 @@ export default function SignupPage() {
                     checked={agreements.marketing}
                     onCheckedChange={(checked) => handleAgreementChange("marketing", checked as boolean)}
                   />
-                  <Label htmlFor="marketing" className="text-sm text-gray-700 cursor-pointer">
+                  <Label htmlFor="marketing" className="text-sm text-gray-600 cursor-pointer">
                     마케팅 정보 수신에 동의합니다 (선택)
                   </Label>
                 </div>
@@ -370,25 +378,26 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 disabled={isLoading || !isFormValid()}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                className="w-full h-14 text-white font-medium rounded-full transition-all duration-300 mt-8"
+                style={{ backgroundColor: '#E8B5B8' }}
               >
                 {isLoading ? "회원가입 중..." : "회원가입"}
               </Button>
             </form>
 
             {/* 로그인 링크 */}
-            <div className="text-center pt-4 border-t border-gray-200">
-              <p className="text-gray-600 mb-3">이미 계정이 있으신가요?</p>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/login")}
-                className="w-full h-12 border-2 border-purple-200 text-purple-600 hover:bg-purple-50 font-medium rounded-lg bg-transparent"
-              >
-                로그인
-              </Button>
+            <div className="text-center pt-6">
+              <p className="text-gray-500 mb-3">이미 계정이 있으신가요?
+                <button
+                  onClick={() => router.push("/login")}
+                  className="text-blue-500 hover:underline ml-1"
+                >
+                  로그인
+                </button>
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

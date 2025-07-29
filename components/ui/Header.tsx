@@ -1,44 +1,44 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Palette } from "lucide-react" // 메뉴 아이콘과 팔레트 아이콘 추가
-import { useAuth } from '@/app/context/AuthContext'; // useAuth 훅 임포트
-import { useModal } from '@/app/context/ModalContext'; // useModal 훅 임포트
-import Image from "next/image";
+import { useAuth } from '@/app/context/AuthContext' // useAuth 훅 임포트
+import { useModal } from '@/app/context/ModalContext' // useModal 훅 임포트
+import Image from "next/image"
 
 
 interface HeaderProps {
-  activePage: 'home' | 'personal-color' | 'styling' | 'my-page';
+  activePage: 'home' | 'personal-color' | 'styling' | 'my-page'
 }
 
 export const Header = React.memo(({ activePage }: HeaderProps) => {
   const router = useRouter()
-  const { isLoggedIn, logout } = useAuth(); // useAuth 훅 사용
-  const { openModal } = useModal(); // useModal 훅 사용
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isLoggedIn, logout } = useAuth() // useAuth 훅 사용
+  const { openModal } = useModal() // useModal 훅 사용
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const getButtonClass = (page: 'home' | 'personal-color' | 'styling' | 'my-page') => {
     if (page === activePage) {
-      return "text-purple-600 font-medium"
+      return "text-[#E8B5B8] font-medium"
     }
-    return "text-gray-600 hover:text-purple-600 transition-colors"
+    return "text-gray-600 hover:text-[#82696B] transition-colors"
   }
 
   const handleProtectedNavigation = (path: string) => {
     if (!isLoggedIn) {
       openModal("로그인 필요", "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.", () => {
-        router.push("/login");
-      });
+        router.push("/login")
+      })
     } else {
-      router.push(path);
+      router.push(path)
     }
-    setMobileMenuOpen(false); // 모바일 메뉴 닫기
-  };
+    setMobileMenuOpen(false) // 모바일 메뉴 닫기
+  }
 
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
+    setMobileMenuOpen(!mobileMenuOpen)
   }
 
   return (
@@ -127,8 +127,8 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
           <div className="px-4 py-2 space-y-1">
           <button
               onClick={() => {
-                router.push("/");
-                setMobileMenuOpen(false);
+                router.push("/")
+                setMobileMenuOpen(false)
               }}
               className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'home' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
             >
@@ -157,8 +157,8 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
+                    logout()
+                    setMobileMenuOpen(false)
                   }}
                   className="w-full border-[#F5F2F2] text-[#171212] bg-[#E8B5B8] hover:bg-[#d8a5a8] rounded-[12px] transition-colors"
                 >
@@ -168,8 +168,8 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    router.push("/login");
-                    setMobileMenuOpen(false);
+                    router.push("/login")
+                    setMobileMenuOpen(false)
                   }}
                   className="w-full border-[#F5F2F2] text-[#171212] bg-[#E8B5B8] hover:bg-[#d8a5a8] rounded-[12px] transition-colors"
                 >

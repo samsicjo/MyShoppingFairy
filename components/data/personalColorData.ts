@@ -161,14 +161,23 @@ export const colorCategories: ColorCategory[] = [
 // 퍼스널 컬러 타입에 따른 반대 컬러 타입 매핑
 export const getOppositeColorType = (personalColor: string): string => {
   const oppositeMap: { [key: string]: string } = {
-    'spring-light': 'winter-deep',
-    'spring-bright': 'summer-mute',
-    'summer-light': 'autumn-deep',
-    'summer-mute': 'spring-bright',
-    'autumn-mute': 'summer-light',
-    'autumn-deep': 'summer-light',
-    'winter-bright': 'autumn-mute',
-    'winter-deep': 'spring-light'
+    // 'spring-light': 'winter-deep',
+    // 'spring-bright': 'summer-mute',
+    // 'summer-light': 'autumn-deep',
+    // 'summer-mute': 'spring-bright',
+    // 'autumn-mute': 'winter-bright',
+    // 'autumn-deep': 'summer-light',
+    // 'winter-bright': 'autumn-mute',
+    // 'winter-deep': 'spring-light',
+    '봄 라이트' : '겨울 딥',
+    '봄 브라이트' : '여름 뮤트',
+    '여름 라이트' : '가을 딥',
+    '여름 뮤트' : '봄 브라이트',
+    '가을 뮤트' : '겨울 브라이트',
+    '가을 딥' : '여름 라이트',
+    '겨울 브라이트' : '가을 뮤트',
+    '겨울 딥' : '봄 라이트',
+
   }
 
   // 입력값을 정규화 (공백을 하이픈으로, 소문자로 변환)
@@ -238,7 +247,7 @@ export const convertToPascalCase = (colorType: string): string => {
 // 유연한 색상 팔레트 가져오기 (두 네이밍 컨벤션 모두 지원)
 export const getFlexibleColorPalette = (colorType: string): ColorSwatch[] => {
   // 먼저 원본 이름으로 시도
-  let category = colorCategories.find(cat => cat.name === colorType)
+  let category = colorCategories.find(cat => cat.title === colorType)
 
   // 공백을 하이픈으로 변환해서 시도 (Spring Light -> spring-light)
   if (!category) {

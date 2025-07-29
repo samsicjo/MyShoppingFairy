@@ -1,12 +1,12 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 interface BodyTypeSectionProps {
-  selectedBodyTypes: string[];
-  onBodyTypeChange: (bodyTypeId: string) => void;
-  bodyTypeOptions: { id: string; label: string }[];
+  selectedBodyTypes: string[]
+  onBodyTypeChange: (bodyTypeId: string) => void
+  bodyTypeOptions: { id: string; label: string }[]
 }
 
 const BodyTypeSection: React.FC<BodyTypeSectionProps> = React.memo(
@@ -35,10 +35,10 @@ const BodyTypeSection: React.FC<BodyTypeSectionProps> = React.memo(
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
-);
+)
 
-BodyTypeSection.displayName = 'BodyTypeSection';
+BodyTypeSection.displayName = 'BodyTypeSection'
 
-export default BodyTypeSection;
+export default BodyTypeSection

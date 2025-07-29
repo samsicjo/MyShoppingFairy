@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Header } from "@/components/ui/Header";
-import { Footer } from '@/components/ui/Footer';
+import { Header } from "@/components/ui/Header"
+import { Footer } from '@/components/ui/Footer'
 import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2, Palette, Trophy, ArrowDown } from "lucide-react"
 import { colorCategories } from "@/components/data/personalColorData"
 import { useStyling } from "@/app/context/StylingContext"
@@ -36,7 +36,9 @@ export default function PersonalColorDrapeTest() {
     // 퍼스널컬러 진단 결과 불러오기
     const personalColorAnalysis = localStorage.getItem("personalColorAnalysis")
     const selectedPersonalColor = localStorage.getItem("selectedPersonalColor")
-
+    console.log("personalColorAnalysis : ", personalColorAnalysis)
+    console.log("selectedPersonalColor : ", selectedPersonalColor)
+    console.log("stylingData : ", stylingData)
     if (personalColorAnalysis) {
       const analysis = JSON.parse(personalColorAnalysis)
       setPersonalColorResult(analysis.type)
@@ -57,40 +59,40 @@ export default function PersonalColorDrapeTest() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    setIsProcessing(true); // Start processing
-    setUploadedImage(null); // Clear previous image
-    setHasValidResult(true); // 초기화
+    setIsProcessing(true) // Start processing
+    setUploadedImage(null) // Clear previous image
+    setHasValidResult(true) // 초기화
 
-    const formData = new FormData();
-    formData.append('file', file);
+    const formData = new FormData()
+    formData.append('file', file)
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/personal/extract-face-image`, {
         method: 'POST',
         body: formData,
-      });
+      })
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to extract face image: ${response.status} ${response.statusText} - ${errorText}`);
+        const errorText = await response.text()
+        throw new Error(`Failed to extract face image: ${response.status} ${response.statusText} - ${errorText}`)
       }
 
-      const imageBlob = await response.blob();
-      const imageUrl = URL.createObjectURL(imageBlob);
-      setUploadedImage(imageUrl);
-      setHasValidResult(true); // 성공 시 유효한 결과로 설정
+      const imageBlob = await response.blob()
+      const imageUrl = URL.createObjectURL(imageBlob)
+      setUploadedImage(imageUrl)
+      setHasValidResult(true) // 성공 시 유효한 결과로 설정
 
       // 이미지 업로드 시 변형 값 초기화
-      setCurrentScale(1);
-      setCurrentOffsetX(0);
-      setCurrentOffsetY(0);
+      setCurrentScale(1)
+      setCurrentOffsetX(0)
+      setCurrentOffsetY(0)
 
     } catch (error) {
-      console.error("Error uploading image or extracting face:", error);
-      setHasValidResult(false); // 실패 시 결과가 없음을 표시
-      setUploadedImage(null);
+      console.error("Error uploading image or extracting face:", error)
+      setHasValidResult(false) // 실패 시 결과가 없음을 표시
+      setUploadedImage(null)
     } finally {
-      setIsProcessing(false); // End processing
+      setIsProcessing(false) // End processing
     }
   }
 

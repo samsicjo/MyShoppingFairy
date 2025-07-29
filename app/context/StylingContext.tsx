@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from 'react'
 
 export enum Gender{
     Male = "남",
@@ -56,20 +56,20 @@ export enum PreferredStyle {
 
 // 1. 공유할 데이터의 타입 정의
 interface StylingData {
-    personalColor?: string;      //퍼스널 컬러
-    colorNames?: string[];      //어울리는 색 이름
-    recommendedColors?: string[];   //추천 색 HEX
-    description?: string;       //설명
-    height?: number;        //사용자 키
-    gender?: string;        //사용자 성별 (API 응답에 맞춰 string으로 변경)
-    user_situation?: string[];   //사용자 주된 스타일 상황 (API 응답에 맞춰 string[]으로 변경)
-    budget?: number;        //사용자 예산
-    occasion?: string;      //사용자 스타일링 메모 (API 응답에 맞춰 style_request로 변경)
-    top_size?: string;      //상의 사이즈 (API 응답에 맞춰 string으로 변경)
-    bottom_size?: number;     //허리 사이즈 (API 응답에 맞춰 bottom_size로 변경)
-    shoe_size?: number;      //신발 사이즈
-    body_feature?: string[];  //체형 타입 (API 응답에 맞춰 string[]으로 변경)
-    preferred_styles?: string[];      //선호하는 스타일 (API 응답에 맞춰 string[]으로 변경)
+    personalColor?: string      //퍼스널 컬러
+    colorNames?: string[]      //어울리는 색 이름
+    recommendedColors?: string[]   //추천 색 HEX
+    description?: string       //설명
+    height?: number        //사용자 키
+    gender?: string        //사용자 성별 (API 응답에 맞춰 string으로 변경)
+    user_situation?: string[]   //사용자 주된 스타일 상황 (API 응답에 맞춰 string[]으로 변경)
+    budget?: number        //사용자 예산
+    occasion?: string      //사용자 스타일링 메모 (API 응답에 맞춰 style_request로 변경)
+    top_size?: string      //상의 사이즈 (API 응답에 맞춰 string으로 변경)
+    bottom_size?: number     //허리 사이즈 (API 응답에 맞춰 bottom_size로 변경)
+    shoe_size?: number      //신발 사이즈
+    body_feature?: string[]  //체형 타입 (API 응답에 맞춰 string[]으로 변경)
+    preferred_styles?: string[]      //선호하는 스타일 (API 응답에 맞춰 string[]으로 변경)
 }
             // - 예산: {styling_summary.get('price', 'N/A')}원
             // - 스타일 요청: {styling_summary.get('style_request', 'N/A')}
@@ -94,55 +94,55 @@ interface StylingData {
 
 // 2. Context가 제공할 값의 타입 정의 (데이터와, 데이터를 변경할 함수)
 interface StylingContextType {
-    stylingData: StylingData;
-    setStylingData: React.Dispatch<React.SetStateAction<StylingData>>;
+    stylingData: StylingData
+    setStylingData: React.Dispatch<React.SetStateAction<StylingData>>
 }
 
 // 3. Context 생성 (초기값 설정)
-const StylingContext = createContext<StylingContextType | undefined>(undefined);
+const StylingContext = createContext<StylingContextType | undefined>(undefined)
 
 // 4. Context를 제공할 Provider 컴포넌트 생성
 export function StylingProvider({ children }: { children: ReactNode }) {
     const [stylingData, setStylingData] = useState<StylingData>(() => {
         if (typeof window !== 'undefined') {
-            const savedStylingData = sessionStorage.getItem('stylingData');
-            const initialData = savedStylingData ? JSON.parse(savedStylingData) : {};
+            const savedStylingData = sessionStorage.getItem('stylingData')
+            const initialData = savedStylingData ? JSON.parse(savedStylingData) : {}
 
             
             // body_feature가 배열이 아니면 배열로 변환
             if (!Array.isArray(initialData.body_feature)) {
-                initialData.body_feature = initialData.body_feature ? [initialData.body_feature] : [];
+                initialData.body_feature = initialData.body_feature ? [initialData.body_feature] : []
             }
             // preferred_styles가 배열이 아니면 배열로 변환
             if (!Array.isArray(initialData.preferred_styles)) {
-                initialData.preferred_styles = initialData.preferred_styles ? [initialData.preferred_styles] : [];
+                initialData.preferred_styles = initialData.preferred_styles ? [initialData.preferred_styles] : []
             }
-            console.log("StylingContext: Initializing with data from sessionStorage:", initialData);
-            return initialData;
+            console.log("StylingContext: Initializing with data from sessionStorage:", initialData)
+            return initialData
         }
-        console.log("StylingContext: Initializing with empty data (server-side).");
-        return {};
-    });
+        console.log("StylingContext: Initializing with empty data (server-side).")
+        return {}
+    })
 
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
-            console.log("StylingContext: Saving stylingData to sessionStorage:", stylingData);
-            sessionStorage.setItem('stylingData', JSON.stringify(stylingData));
+            console.log("StylingContext: Saving stylingData to sessionStorage:", stylingData)
+            sessionStorage.setItem('stylingData', JSON.stringify(stylingData))
         }
-    }, [stylingData]);
+    }, [stylingData])
 
     return (
         <StylingContext.Provider value={{ stylingData, setStylingData }}>
         {children}
     </StylingContext.Provider>
-    );
+    )
 }
 
 // 5. Context를 쉽게 사용하기 위한 커스텀 훅 생성
 export function useStyling() {
-    const context = useContext(StylingContext);
+    const context = useContext(StylingContext)
     if (context === undefined) {
-        throw new Error('useStyling must be used within a StylingProvider');
+        throw new Error('useStyling must be used within a StylingProvider')
     }
-    return context;
+    return context
 }

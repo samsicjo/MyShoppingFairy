@@ -1,25 +1,12 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/context/AuthContext'
-import { useModal } from '@/app/context/ModalContext'
 import { Button } from '@/components/ui/button'
 import { Palette, Shirt } from 'lucide-react'
+import { useNavigation } from '@/hooks/useNavigations'
 
 export function InteractiveButtons() {
-  const router = useRouter()
-  const { isLoggedIn } = useAuth()
-  const { openModal } = useModal()
-
-  const handleNavigation = (path: string) => {
-    if (!isLoggedIn) {
-      openModal('로그인 필요', '로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.', () => {
-        router.push('/login')
-      })
-      return
-    }
-    router.push(path)
-  }
+  const { handleNavigation } = useNavigation()
+  
 
   return (
     <div className="absolute inset-0 flex flex-col justify-end items-end text-right p-8 pr-6 pb-12">

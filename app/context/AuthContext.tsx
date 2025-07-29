@@ -12,7 +12,7 @@ interface AuthContextType {
 }
 
 // 2. createContext를 사용하여 컨텍스트를 생성합니다.
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 // 3. Provider 컴포넌트를 생성합니다.
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -38,26 +38,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || '로그인 실패');
+        const errorData = await response.json()
+        throw new Error(errorData.detail || '로그인 실패')
       }
       console.log(response.body)
-      const data = await response.json();
+      const data = await response.json()
       // 백엔드에서 순수한 숫자 (int8)를 반환한다고 가정
-      const userId = data; // 숫자를 직접 할당
+      const userId = data // 숫자를 직접 할당
       console.log(userId)
-      localStorage.setItem('userInfo', JSON.stringify({ userId }));
-      setIsLoggedIn(true);
-      setUserId(userId);
-      router.push('/'); // 로그인 후 홈으로 이동
+      localStorage.setItem('userInfo', JSON.stringify({ userId }))
+      setIsLoggedIn(true)
+      setUserId(userId)
+      router.push('/') // 로그인 후 홈으로 이동
     } catch (error: any) {
-      console.error('Login failed:', error);
-      throw error; // 오류를 다시 던져서 호출자가 처리하도록 합니다.
+      console.error('Login failed:', error)
+      throw error // 오류를 다시 던져서 호출자가 처리하도록 합니다.
     }
-  };
+  }
 
   const logout = () => {
     localStorage.removeItem('userInfo')
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = { isLoggedIn, userId, login, logout }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-};
+}
 
 // 4. 컨텍스트를 쉽게 사용할 수 있도록 커스텀 훅을 만듭니다.
 export const useAuth = (): AuthContextType => {

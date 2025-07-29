@@ -4,14 +4,13 @@ import type React from "react"
 
 import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { User, Eye, EyeOff, Lock } from "lucide-react"
+import { useAuth } from "@/app/context/AuthContext"
+import { useModal } from "@/app/context/ModalContext"
 
-import { useAuth } from "@/app/context/AuthContext";
-import { useModal } from "@/app/context/ModalContext";
 
 function LoginContent() {
   const [formData, setFormData] = useState({
@@ -20,28 +19,28 @@ function LoginContent() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [showSignupSuccessMessage, setShowSignupSuccessMessage] = useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState(''); // 아이디 오류 메시지 상태 추가
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState(''); // 비밀번호 오류 메시지 상태 추가
+  const [showSignupSuccessMessage, setShowSignupSuccessMessage] = useState(false)
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState('') // 아이디 오류 메시지 상태 추가
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('') // 비밀번호 오류 메시지 상태 추가
   const router = useRouter()
-  const searchParams = useSearchParams();
-  const { login } = useAuth();
-  const { openModal } = useModal();
+  const searchParams = useSearchParams()
+  const { login } = useAuth()
+  const { openModal } = useModal()
 
   useEffect(() => {
     if (searchParams.get('signupSuccess') === 'true') {
-      setShowSignupSuccessMessage(true);
+      setShowSignupSuccessMessage(true)
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     // 입력 변경 시 관련 오류 메시지 초기화
     if (field === 'username') {
-      setUsernameErrorMessage('');
+      setUsernameErrorMessage('')
     }
     if (field === 'password') {
-      setPasswordErrorMessage('');
+      setPasswordErrorMessage('')
     }
   }
 
@@ -50,61 +49,66 @@ function LoginContent() {
     setIsLoading(true)
 
     try {
-      await login(formData.username, formData.password);
+      await login(formData.username, formData.password)
     } catch (error: any) {
-      let errorMessage = error.message || '로그인 중 알 수 없는 오류가 발생했습니다.';
+      let errorMessage = error.message || '로그인 중 알 수 없는 오류가 발생했습니다.'
 
       if (errorMessage.includes("사용자를 찾을 수 없습니다.")) {
-        setUsernameErrorMessage('사용자를 찾을 수 없습니다.');
+        setUsernameErrorMessage('사용자를 찾을 수 없습니다.')
       } else if (errorMessage.includes("비밀번호가 일치하지 않습니다.")) {
-        setPasswordErrorMessage('비밀번호가 일치하지 않습니다.');
+        setPasswordErrorMessage('비밀번호가 일치하지 않습니다.')
       } else {
         // 그 외의 오류는 모달으로 표시
-        openModal("로그인 오류", errorMessage);
+        openModal("로그인 오류", errorMessage)
       }
-      console.error("Login failed in LoginPage:", errorMessage);
+      console.error("Login failed in LoginPage:", errorMessage)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4 cursor-pointer" onClick={() => router.push('/')}>
-            
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-              <img src='/favicon.ico'></img>
+    <div className="min-h-screen bg-white">
+      {/* 간단한 헤더 - 로고만 표시 */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push('/')}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                <img
+                  src="/favicon2.PNG"
+                  alt="로고"
+                  className="w-12 h-12 object-contain"
+                />
+              </div>
+              <span className="text-[#171212] font-bold">
+                My Shopping Fairy
+              </span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              My Shopping Fairy
-            </span>
           </div>
-          <p className="text-gray-600">나만의 퍼스널 스타일링 서비스</p>
         </div>
+      </header>
 
-        {/* Login Card */}
-        <Card className="bg-white/80 backdrop-blur-sm border-purple-100 shadow-xl">
-          {showSignupSuccessMessage && (
-            <div className="bg-green-100 text-green-800 p-3 text-center rounded-t-lg font-medium">
-              회원가입이 완료되었습니다! 환영해요!
-            </div>
-          )}
-          <CardHeader className="text-center pb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4 mx-auto">
-              <User className="h-8 w-8 text-purple-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">로그인</h1>
-            <p className="text-gray-600">계정에 로그인하여 개인화된 스타일링을 받아보세요</p>
-          </CardHeader>
+      {/* 중앙 로그인 폼 */}
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-left mb-12">
+            <h1 className="text-5xl font-bold text-black mb-4">로그인</h1>
+            <p className="text-gray-500">계정에 로그인하여 개인화된 스타일링을 받아보세요</p>
+          </div>
 
-          <CardContent className="space-y-6">
-            <form onSubmit={handleLogin} className="space-y-4">
+          {/* Login Form */}
+          <div className="space-y-6">
+            {showSignupSuccessMessage && (
+              <div className="bg-green-100 text-green-800 p-3 text-center rounded-lg font-medium">
+                회원가입이 완료되었습니다! 환영해요!
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-6">
               {/* 아이디 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="username" className="text-sm font-medium text-black">
                   아이디
                 </Label>
                 <div className="relative">
@@ -115,7 +119,7 @@ function LoginContent() {
                     placeholder="아이디를 입력하세요"
                     value={formData.username}
                     onChange={(e) => handleInputChange("username", e.target.value)}
-                    className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                     required
                   />
                 </div>
@@ -128,7 +132,7 @@ function LoginContent() {
 
               {/* 비밀번호 입력 */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="password" className="text-sm font-medium text-black">
                   비밀번호
                 </Label>
                 <div className="relative">
@@ -139,7 +143,7 @@ function LoginContent() {
                     placeholder="비밀번호를 입력하세요"
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 pr-10 h-14 border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg bg-[#FFF6F4]"
                     required
                   />
                   <button
@@ -161,33 +165,34 @@ function LoginContent() {
               <Button
                 type="submit"
                 disabled={isLoading || !formData.username || !formData.password}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full h-14 text-white font-medium rounded-full transition-all duration-300 mt-8"
+                style={{ backgroundColor: '#E8B5B8' }}
               >
-                {isLoading ? "로그인 중..." : "로그인"}
+                {isLoading ? "로그인 중..." : "로그인 →"}
               </Button>
             </form>
 
             {/* 링크들 */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-4 mt-8">
               <div className="flex justify-center items-center space-x-4 text-sm">
-                <button className="text-purple-600 hover:text-purple-700 hover:underline">아이디 찾기</button>
+                <button className="text-gray-500 hover:text-gray-700 hover:underline">아이디 찾기</button>
                 <span className="text-gray-400">|</span>
-                <button className="text-purple-600 hover:text-purple-700 hover:underline">비밀번호 찾기</button>
+                <button className="text-gray-500 hover:text-gray-700 hover:underline">비밀번호 찾기</button>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-gray-600 mb-3">아직 계정이 없으신가요?</p>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/signup")}
-                  className="w-full h-12 border-2 border-purple-200 text-purple-600 hover:bg-purple-50 font-medium rounded-lg bg-transparent"
-                >
-                  회원가입
-                </Button>
+              <div className="pt-6">
+                <p className="text-gray-500 mb-3">아직 계정이 없으신가요?
+                  <button
+                    onClick={() => router.push("/signup")}
+                    className="text-blue-500 hover:underline ml-1"
+                  >
+                    회원가입
+                  </button>
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -198,5 +203,5 @@ export default function LoginPage() {
     <Suspense>
       <LoginContent />
     </Suspense>
-  );
+  )
 }

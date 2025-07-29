@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useModal } from "@/app/context/ModalContext";
+import { useModal } from "@/app/context/ModalContext"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Header } from "@/components/ui/Header";
-import { Footer } from '@/components/ui/Footer';
+import { Header } from "@/components/ui/Header"
+import { Footer } from '@/components/ui/Footer'
 import { Palette } from "lucide-react"
 import { personalColorTypes } from "@/lib/personalColorData"
 import { useStyling } from "@/app/context/StylingContext"
@@ -15,8 +15,8 @@ import { useAuth } from '@/app/context/AuthContext'
 
 export default function PersonalColorSelect() {
   const { stylingData, setStylingData } = useStyling()
-  const { userId } = useAuth(); // userId 가져오기
-  const { openModal } = useModal();
+  const { userId } = useAuth() // userId 가져오기
+  const { openModal } = useModal()
   const [selectedColor, setSelectedColor] = useState<string>("")
   const router = useRouter()
 
@@ -30,31 +30,31 @@ export default function PersonalColorSelect() {
       if (selectedColorData) {
         // API 호출
         if (userId) {
-          const encodedColorName = encodeURIComponent(selectedColorData.nameForDB);
+          const encodedColorName = encodeURIComponent(selectedColorData.nameForDB)
           try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_personal_color_update?user_id=${userId}&personal_color_name=${encodedColorName}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
               },
-            });
+            })
 
             if (!response.ok) {
-              const errorData = await response.json();
-              console.error("Failed to update personal color:", errorData);
-              openModal("오류", "퍼스널 컬러 업데이트에 실패했습니다.");
-              return;
+              const errorData = await response.json()
+              console.error("Failed to update personal color:", errorData)
+              openModal("오류", "퍼스널 컬러 업데이트에 실패했습니다.")
+              return
             }
-            console.log("Personal color updated successfully!");
+            console.log("Personal color updated successfully!")
           } catch (error) {
-            console.error("Error updating personal color:", error);
-            openModal("오류", "퍼스널 컬러 업데이트 중 오류가 발생했습니다.");
-            return;
+            console.error("Error updating personal color:", error)
+            openModal("오류", "퍼스널 컬러 업데이트 중 오류가 발생했습니다.")
+            return
           }
         } else {
-          openModal("로그인 필요", "로그인이 필요합니다.");
-          router.push("/login");
-          return;
+          openModal("로그인 필요", "로그인이 필요합니다.")
+          router.push("/login")
+          return
         }
 
         setStylingData(prevData => ({
@@ -63,7 +63,7 @@ export default function PersonalColorSelect() {
           description: selectedColorData.description,
           recommendedColors: selectedColorData.colors,
           colorNames: selectedColorData.colorsName,
-        }));
+        }))
       }
       console.log("styling data : ", stylingData, stylingData.personalColor)
       router.push("/personal-color-drape-test")

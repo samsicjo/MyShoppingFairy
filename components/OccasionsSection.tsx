@@ -1,12 +1,12 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 interface OccasionsSectionProps {
-  selectedSituations: string[];
-  onSituationChange: (situationId: string) => void;
-  situationOptions: { id: string; label: string; icon: string }[];
+  selectedSituations: string[]
+  onSituationChange: (situationId: string) => void
+  situationOptions: { id: string; label: string; icon: string }[]
 }
 
 const OccasionsSection: React.FC<OccasionsSectionProps> = React.memo(
@@ -38,10 +38,10 @@ const OccasionsSection: React.FC<OccasionsSectionProps> = React.memo(
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
-);
+)
 
-OccasionsSection.displayName = 'OccasionsSection';
+OccasionsSection.displayName = 'OccasionsSection'
 
-export default OccasionsSection;
+export default OccasionsSection

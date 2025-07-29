@@ -1,379 +1,46 @@
-브라우저 Console에 나타난 오류 : 
-StyleDataContext: fetchRecommendations called.
-C:\Users\USER\MyShoppingFairy\MSF_FE\app\context\StyleDataContext.tsx:79 StyleDataContext: Fetching from http://127.0.0.1:8000/crawling/analyze-item?user_id=1&filter=0
-C:\Users\USER\MyShoppingFairy\MSF_FE\app\context\StyleDataContext.tsx:93 StyleDataContext: Received data: (3) [{…}, {…}, {…}]
-C:\Users\USER\MyShoppingFairy\MSF_FE\app\context\StyleDataContext.tsx:96 StyleDataContext: Saved recommendations to sessionStorage.
-C:\Users\USER\MyShoppingFairy\MSF_FE\app\context\StyleDataContext.tsx:109 StyleDataContext: fetchRecommendations finished.
+server {
+    server_name myshoppingfairy.p-e.kr;
+
+    location = /users/user_login {
+        rewrite ^/users/user_login(.*)$ /api/users/user_login$1 last;
+    }
+
+    # Frontend (Next.js)
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+    # Backend API (FastAPI)
+    location /api/ {
+        proxy_pass http://localhost:8000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static files optimization
+    location /_next/static/ {
+        proxy_pass http://localhost:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/myshoppingfairy.p-e.kr/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/myshoppingfairy.p-e.kr/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 
-
-FastAPI 로그 : 
-INFO:     127.0.0.1:54376 - "PATCH /users/styling_summary_update?user_id=1 HTTP/1.1" 200 OK
-Gemini API result type: <class 'schemas.gemini_schema.GeminiExamplePrompt'>
-Gemini API result: recommendations=[StyleRecommendation(style_name='캐주얼 스타일', looks=[LookInfo(look_name='클래식 캐주얼 데이트 룩', look_description='깔끔하면서도 편안한 분위기를 연출하는 데이트 코디입니다. 하체 발달 체형을 보완하며 안정적인 실루엣을 제공합니다.', items={'아우터': ItemInfo(category='트러커 재킷', item_code='002017', category_id='002', color='DARKBLUEDENIM'), '상의': ItemInfo(category='맨투맨/스웨트', item_code='001005', category_id='001', color='OLIVEGREEN'), '하의': ItemInfo(category='데님 팬츠', item_code='003002', category_id='003', color='DARKBLUEDENIM'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='BROWN'), '원피스': None}), LookInfo(look_name='모던 캐주얼 데이트 룩', look_description='가을 딥 톤에 맞는 따뜻하고 세련된 느낌을 주는 코디입니다. 차분하면서도 엣지있는 스타일을 연출합니다.', items={'아우터': ItemInfo(category='블루종/MA-1', item_code='002001', category_id='002', color='KHAKI'), '상의': ItemInfo(category='니트/스웨터', item_code='001006', category_id='001', color='BURGUNDY'), '하의': ItemInfo(category='코튼 팬츠', item_code='003007', category_id='003', color='DARKBEIGE'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='DARKBROWN'), '원피스': None}), LookInfo(look_name='편안한 활동성 캐주얼 룩', look_description='활동성이 좋으면서도 센스 있는 캐주얼 데이트 코디입니다. 하체 체형을 자연스럽게 커버하며 트렌디함을 더합니다.', items={'아우터': ItemInfo(category='후드 집업', item_code='002022', category_id='002', color='DARKGREY'), '상의': ItemInfo(category='긴소매 티셔츠', item_code='001010', category_id='001', color='IVORY'), '하의': ItemInfo(category='트레이닝/조거팬츠', item_code='003004', category_id='003', color='BLACK'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='BLACK'), '원피스': None})])]
-Parsed recommendations: recommendations=[StyleRecommendation(style_name='캐주얼 스타일', looks=[LookInfo(look_name='클래식 캐주얼 데이트 룩', look_description='깔끔하면서도 편안한 분위기를 연출하는 데이트 코디입니다. 하체 발달 체형을 보완하며 안정적인 실루엣을 제공합니다.', items={'아우터': ItemInfo(category='트러커 재킷', item_code='002017', category_id='002', color='DARKBLUEDENIM'), '상의': ItemInfo(category='맨투맨/스웨트', item_code='001005', category_id='001', color='OLIVEGREEN'), '하의': ItemInfo(category='데님 팬츠', item_code='003002', category_id='003', color='DARKBLUEDENIM'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='BROWN'), '원피스': None}), LookInfo(look_name='모던 캐주얼 데이트 룩', look_description='가을 딥 톤에 맞는 따뜻하고 세련된 느낌을 주는 코디입니다. 차분하면서도 엣지있는 스타일을 연출합니다.', items={'아우터': ItemInfo(category='블루종/MA-1', item_code='002001', category_id='002', color='KHAKI'), '상의': ItemInfo(category='니트/스웨터', item_code='001006', category_id='001', color='BURGUNDY'), '하의': ItemInfo(category='코튼 팬츠', item_code='003007', category_id='003', color='DARKBEIGE'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='DARKBROWN'), '원피스': None}), LookInfo(look_name='편안한 활동성 캐주얼 룩', look_description='활동성이 좋으면서도 센스 있는 캐주얼 데이트 코디입니다. 하체 체형을 자연스럽게 커버하며 트렌디함을 더합니다.', items={'아우터': ItemInfo(category='후드 집업', item_code='002022', category_id='002', color='DARKGREY'), '상의': ItemInfo(category='긴소매 티셔츠', item_code='001010', category_id='001', color='IVORY'), '하의': ItemInfo(category='트레이닝/조거팬츠', item_code='003004', category_id='003', color='BLACK'), '신발': ItemInfo(category='스니커즈', item_code='103004', category_id='103', color='BLACK'), '원피스': None})])]
-2025-07-22 11:24:35,077 [ WARNING] Skipping item due to missing info: None
-2025-07-22 11:24:35,077 [ WARNING] Skipping item due to missing info: None
-2025-07-22 11:24:35,078 [ WARNING] Skipping item due to missing info: None
-2025-07-22 11:24:35,078 [ WARNING] Skipping item due to missing info: None
-2025-07-22 11:24:35,078 [ WARNING] Skipping item due to missing info: None
-2025-07-22 11:24:35,078 [ WARNING] Skipping item due to missing info: None
-Extracted tasks count: 12
-Task 0: category_id=002, item_code=002017, look_name=클래식 캐주얼 데이트 룩
-Task 1: category_id=001, item_code=001005, look_name=클래식 캐주얼 데이트 룩
-Task 2: category_id=003, item_code=003002, look_name=클래식 캐주얼 데이트 룩
-Task 3: category_id=103, item_code=103004, look_name=클래식 캐주얼 데이트 룩
-Task 4: category_id=002, item_code=002001, look_name=모던 캐주얼 데이트 룩
-Task 5: category_id=001, item_code=001006, look_name=모던 캐주얼 데이트 룩
-Task 6: category_id=003, item_code=003007, look_name=모던 캐주얼 데이트 룩
-Task 7: category_id=103, item_code=103004, look_name=모던 캐주얼 데이트 룩
-Task 8: category_id=002, item_code=002022, look_name=편안한 활동성 캐주얼 룩
-Task 9: category_id=001, item_code=001010, look_name=편안한 활동성 캐주얼 룩
-Task 10: category_id=003, item_code=003004, look_name=편안한 활동성 캐주얼 룩
-Task 11: category_id=103, item_code=103004, look_name=편안한 활동성 캐주얼 룩
-2025-07-22 11:24:35,096 [    INFO] Starting parallel crawling with 22 processes...
-2025-07-22 11:24:35,096 [    INFO] Starting parallel crawling with 22 processes...
-2025-07-22 11:24:36,629 [    INFO] [Main PID:19272] Starting worker for item: {"category_id": "103", "item_code": "103004", "color": "DARKBROWN", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ubaa8\ub358 \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,654 [    INFO] [Main PID:36700] Starting worker for item: {"category_id": "002", "item_code": "002022", "color": "DARKGREY", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud3b8\uc548\ud55c \ud65c\ub3d9\uc131 \uce90\uc8fc\uc5bc \ub8e9"}
-2025-07-22 11:24:36,655 [    INFO] [Main PID:34944] Starting worker for item: {"category_id": "001", "item_code": "001005", "color": "OLIVEGREEN", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud074\ub798\uc2dd \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,656 [    INFO] [Main PID:35888] Starting worker for item: {"category_id": "103", "item_code": "103004", "color": "BLACK", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud3b8\uc548\ud55c \ud65c\ub3d9\uc131 \uce90\uc8fc\uc5bc \ub8e9"}
-2025-07-22 11:24:36,657 [    INFO] [Main PID:22536] Starting worker for item: {"category_id": "003", "item_code": "003002", "color": "DARKBLUEDENIM", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud074\ub798\uc2dd \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,680 [    INFO] [Main PID:38596] Starting worker for item: {"category_id": "003", "item_code": "003007", "color": "DARKBEIGE", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ubaa8\ub358 \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,681 [    INFO] [Main PID:34136] Starting worker for item: {"category_id": "002", "item_code": "002017", "color": "DARKBLUEDENIM", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud074\ub798\uc2dd \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,703 [    INFO] [Main PID:41936] Starting worker for item: {"category_id": "003", "item_code": "003004", "color": "BLACK", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud3b8\uc548\ud55c \ud65c\ub3d9\uc131 \uce90\uc8fc\uc5bc \ub8e9"}
-2025-07-22 11:24:36,704 [    INFO] [Main PID:37260] Starting worker for item: {"category_id": "001", "item_code": "001010", "color": "IVORY", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud3b8\uc548\ud55c \ud65c\ub3d9\uc131 \uce90\uc8fc\uc5bc \ub8e9"}
-2025-07-22 11:24:36,705 [    INFO] [Main PID:35256] Starting worker for item: {"category_id": "002", "item_code": "002001", "color": "KHAKI", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ubaa8\ub358 \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,706 [    INFO] [Main PID:35928] Starting worker for item: {"category_id": "103", "item_code": "103004", "color": "BROWN", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ud074\ub798\uc2dd \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-2025-07-22 11:24:36,728 [    INFO] [Main PID:19708] Starting worker for item: {"category_id": "001", "item_code": "001006", "color": "BURGUNDY", "style_name": "\uce90\uc8fc\uc5bc \uc2a4\ud0c0\uc77c", "look_name": "\ubaa8\ub358 \uce90\uc8fc\uc5bc \ub370\uc774\ud2b8 \ub8e9"}
-[7276:28436:0722/112439.346:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[7276:28436:0722/112439.346:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54453/devtools/browser/221da5c4-a11d-4a69-aba6-af4419780198
-[7276:28436:0722/112439.543:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[7276:28436:0722/112439.543:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[7276:28436:0722/112439.545:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[7276:28436:0722/112439.545:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[26212:2976:0722/112439.601:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[26212:2976:0722/112439.601:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54464/devtools/browser/79765023-2336-446f-9073-6277db6275fe
-[21980:38304:0722/112439.678:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[21980:38304:0722/112439.680:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54467/devtools/browser/2cfc2bf5-0e77-4a33-b1e6-8825a5644750
-
-DevTools listening on ws://127.0.0.1:54468/devtools/browser/6ff87853-79ae-401b-a729-7ba862a9fe61
-[30280:23512:0722/112439.695:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[30280:23512:0722/112439.695:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[26212:2976:0722/112439.871:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[26212:2976:0722/112439.874:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[26212:2976:0722/112439.875:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[26212:2976:0722/112439.877:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[21980:38304:0722/112439.965:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[30280:23512:0722/112439.966:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-
-DevTools listening on ws://127.0.0.1:54481/devtools/browser/190b0c18-fbfe-4860-8388-0470053f3f25
-
-DevTools listening on ws://127.0.0.1:54482/devtools/browser/287ed869-b8bb-4f57-9572-2a935e8abd1f
-[30280:23512:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[21980:38304:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[30280:23512:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[21980:38304:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[30280:23512:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[21980:38304:0722/112439.976:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54483/devtools/browser/2dbf9ab1-e56b-4afb-9326-8739c37b0bb9
-[38932:40544:0722/112439.980:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[38932:40544:0722/112439.980:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54484/devtools/browser/f781268d-1638-43cc-8dea-8b1ae091db3e
-[31376:28552:0722/112440.033:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[31376:28552:0722/112440.033:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[24860:23428:0722/112440.043:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[24860:23428:0722/112440.048:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54496/devtools/browser/4f481e6e-bc72-4064-92c2-2c5a8e05fd0d
-[31376:28552:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[24860:23428:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[31376:28552:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[24860:23428:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[31376:28552:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[24860:23428:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[31376:28552:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[24860:23428:0722/112440.246:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[6684:19996:0722/112440.251:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[6684:19996:0722/112440.251:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54504/devtools/browser/fae13431-123d-41cb-a146-ab0d544b0768
-[4560:23836:0722/112440.279:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[33256:36552:0722/112440.281:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[4560:23836:0722/112440.282:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[33256:36552:0722/112440.282:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[38932:40544:0722/112440.293:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[38932:40544:0722/112440.295:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[38932:40544:0722/112440.295:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[38932:40544:0722/112440.298:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[6684:19996:0722/112440.402:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[6684:19996:0722/112440.403:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[6684:19996:0722/112440.403:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[6684:19996:0722/112440.403:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54515/devtools/browser/2f300bfa-192d-4cc3-9145-20666942ada7
-[33256:36552:0722/112440.428:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[33256:36552:0722/112440.428:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[33256:36552:0722/112440.428:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[33256:36552:0722/112440.429:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[16512:34072:0722/112440.456:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[16512:34072:0722/112440.456:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[17516:36492:0722/112440.559:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[17516:36492:0722/112440.559:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[16512:34072:0722/112440.560:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[16512:34072:0722/112440.562:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[16512:34072:0722/112440.562:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[16512:34072:0722/112440.562:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[4560:23836:0722/112440.574:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[4560:23836:0722/112440.574:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[4560:23836:0722/112440.576:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[4560:23836:0722/112440.576:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-
-DevTools listening on ws://127.0.0.1:54540/devtools/browser/30dfda7d-98de-486b-bb52-9d09c7690f79
-[17516:36492:0722/112440.783:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[17516:36492:0722/112440.784:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-[17516:36492:0722/112440.784:ERROR:gpu\ipc\service\gpu_channel_manager.cc:946] Failed to create GLES3 context, fallback to GLES2.
-[17516:36492:0722/112440.784:ERROR:gpu\ipc\service\gpu_channel_manager.cc:957] ContextResult::kFatalFailure: Failed to create shared context for virtualization.
-2025-07-22 11:24:42,474 [   ERROR] [Main PID:19272] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "103", "item_code": "103004", "color": "DARKBROWN", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ubaa8\\ub358 \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:42,474 [   ERROR] Stderr: 2025-07-22 11:24:37,368 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'DARKBROWN', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,368 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,368 [    INFO] Filter value: 0
-2025-07-22 11:24:39,796 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,424 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:42,730 [   ERROR] [Main PID:35256] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "002", "item_code": "002001", "color": "KHAKI", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ubaa8\\ub358 \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:42,730 [   ERROR] Stderr: 2025-07-22 11:24:37,457 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002001', 'color': 'KHAKI', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,458 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,458 [    INFO] Filter value: 0
-2025-07-22 11:24:40,427 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,676 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:42,818 [   ERROR] [Main PID:22536] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "003", "item_code": "003002", "color": "DARKBLUEDENIM", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud074\\ub798\\uc2dd \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:42,819 [   ERROR] Stderr: 2025-07-22 11:24:37,404 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003002', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,404 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,404 [    INFO] Filter value: 0
-2025-07-22 11:24:40,591 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,778 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:42,952 [   ERROR] [Main PID:41936] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "003", "item_code": "003004", "color": "BLACK", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud3b8\\uc548\\ud55c \\ud65c\\ub3d9\\uc131 \\uce90\\uc8fc\\uc5bc \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:42,952 [   ERROR] Stderr: 2025-07-22 11:24:37,436 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,694 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,891 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:42,971 [   ERROR] [Main PID:36700] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "002", "item_code": "002022", "color": "DARKGREY", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud3b8\\uc548\\ud55c \\ud65c\\ub3d9\\uc131 \\uce90\\uc8fc\\uc5bc \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:42,972 [   ERROR] Stderr: 2025-07-22 11:24:37,420 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002022', 'color': 'DARKGREY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,420 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,420 [    INFO] Filter value: 0
-2025-07-22 11:24:40,665 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,899 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,020 [   ERROR] [Main PID:38596] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "003", "item_code": "003007", "color": "DARKBEIGE", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ubaa8\\ub358 \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,021 [   ERROR] Stderr: 2025-07-22 11:24:37,407 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003007', 'color': 'DARKBEIGE', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,407 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,407 [    INFO] Filter value: 0
-2025-07-22 11:24:40,794 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,028 [   ERROR] [Main PID:19708] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "001", "item_code": "001006", "color": "BURGUNDY", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ubaa8\\ub358 \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,028 [   ERROR] Stderr: 2025-07-22 11:24:37,441 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001006', 'color': 'BURGUNDY', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,441 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,442 [    INFO] Filter value: 0
-2025-07-22 11:24:40,841 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,972 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,040 [   ERROR] [Main PID:34944] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "001", "item_code": "001005", "color": "OLIVEGREEN", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud074\\ub798\\uc2dd \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,041 [   ERROR] Stderr: 2025-07-22 11:24:37,408 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001005', 'color': 'OLIVEGREEN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,408 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,408 [    INFO] Filter value: 0
-2025-07-22 11:24:40,519 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,955 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,041 [   ERROR] [Main PID:35928] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "103", "item_code": "103004", "color": "BROWN", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud074\\ub798\\uc2dd \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,042 [   ERROR] Stderr: 2025-07-22 11:24:37,425 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BROWN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,425 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,425 [    INFO] Filter value: 0
-2025-07-22 11:24:40,768 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,056 [   ERROR] [Main PID:37260] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "001", "item_code": "001010", "color": "IVORY", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud3b8\\uc548\\ud55c \\ud65c\\ub3d9\\uc131 \\uce90\\uc8fc\\uc5bc \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,056 [   ERROR] Stderr: 2025-07-22 11:24:37,446 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001010', 'color': 'IVORY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,446 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,446 [    INFO] Filter value: 0
-2025-07-22 11:24:40,341 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,956 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,104 [   ERROR] [Main PID:35888] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "103", "item_code": "103004", "color": "BLACK", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud3b8\\uc548\\ud55c \\ud65c\\ub3d9\\uc131 \\uce90\\uc8fc\\uc5bc \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,105 [   ERROR] Stderr: 2025-07-22 11:24:37,437 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,978 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,043 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,933 [   ERROR] [Main PID:34136] Worker process failed with error: Command '['C:\\Python313\\python.exe', 'C:\\Users\\USER\\MyShoppingFairy\\MSF_BE\\service\\crowling_worker.py', '{"category_id": "002", "item_code": "002017", "color": "DARKBLUEDENIM", "style_name": "\\uce90\\uc8fc\\uc5bc \\uc2a4\\ud0c0\\uc77c", "look_name": "\\ud074\\ub798\\uc2dd \\uce90\\uc8fc\\uc5bc \\ub370\\uc774\\ud2b8 \\ub8e9"}', '{"budget": 750000, "occasion": "\\ub370\\uc774\\ud2b8", "height": 182, "gender": "\\ub0a8", "top_size": "L", "bottom_size": 28, "shoe_size": 235, "body_feature": ["\\ud558\\uccb4\\uac00 \\ubc1c\\ub2ec\\ud55c \\ud3b8"], "preferred_styles": ["\\uce90\\uc8fc\\uc5bc"]}', '0']' returned non-zero exit status 1.
-2025-07-22 11:24:43,933 [   ERROR] Stderr: 2025-07-22 11:24:37,399 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002017', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,399 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,399 [    INFO] Filter value: 0
-2025-07-22 11:24:40,663 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,881 [    INFO] 브라우저 종료 및 크롤링 완료
-
-2025-07-22 11:24:43,996 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:43,996 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:43,997 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,399 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002017', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,399 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,399 [    INFO] Filter value: 0
-2025-07-22 11:24:40,663 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,881 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:43,997 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,399 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002017', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,399 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,399 [    INFO] Filter value: 0
-2025-07-22 11:24:40,663 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,881 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:43,998 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:43,998 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:43,998 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,408 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001005', 'color': 'OLIVEGREEN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,408 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,408 [    INFO] Filter value: 0
-2025-07-22 11:24:40,519 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,955 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:43,998 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,408 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001005', 'color': 'OLIVEGREEN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,408 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,408 [    INFO] Filter value: 0
-2025-07-22 11:24:40,519 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,955 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:43,999 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:43,999 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:44,000 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,404 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003002', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,404 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,404 [    INFO] Filter value: 0
-2025-07-22 11:24:40,591 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,778 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,000 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,404 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003002', 'color': 'DARKBLUEDENIM', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,404 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,404 [    INFO] Filter value: 0
-2025-07-22 11:24:40,591 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,778 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,001 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:44,001 [    INFO] Processing result for task with look_name: 클래식 캐주얼 데이트 룩
-2025-07-22 11:24:44,002 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,425 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BROWN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,425 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,425 [    INFO] Filter value: 0
-2025-07-22 11:24:40,768 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,002 [    INFO] No items found or error for 클래식 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,425 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BROWN', 'style_name': '캐주얼 스타일', 'look_name': '클래식 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,425 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,425 [    INFO] Filter value: 0
-2025-07-22 11:24:40,768 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,003 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,003 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,003 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,457 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002001', 'color': 'KHAKI', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,458 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,458 [    INFO] Filter value: 0
-2025-07-22 11:24:40,427 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,676 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,003 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,457 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002001', 'color': 'KHAKI', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,458 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,458 [    INFO] Filter value: 0
-2025-07-22 11:24:40,427 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,676 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,004 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,004 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,005 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,441 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001006', 'color': 'BURGUNDY', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,441 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,442 [    INFO] Filter value: 0
-2025-07-22 11:24:40,841 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,972 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,005 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,441 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001006', 'color': 'BURGUNDY', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,441 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,442 [    INFO] Filter value: 0
-2025-07-22 11:24:40,841 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,972 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,006 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,006 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,007 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,407 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003007', 'color': 'DARKBEIGE', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,407 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,407 [    INFO] Filter value: 0
-2025-07-22 11:24:40,794 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,007 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,407 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003007', 'color': 'DARKBEIGE', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,407 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,407 [    INFO] Filter value: 0
-2025-07-22 11:24:40,794 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,940 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,007 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,007 [    INFO] Processing result for task with look_name: 모던 캐주얼 데이트 룩
-2025-07-22 11:24:44,008 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,368 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'DARKBROWN', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,368 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,368 [    INFO] Filter value: 0
-2025-07-22 11:24:39,796 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,424 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,008 [    INFO] No items found or error for 모던 캐주얼 데이트 룩: Subprocess failed: 2025-07-22 11:24:37,368 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'DARKBROWN', 'style_name': '캐주얼 스타일', 'look_name': '모던 캐주얼 데이트 룩'}
-2025-07-22 11:24:37,368 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,368 [    INFO] Filter value: 0
-2025-07-22 11:24:39,796 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,424 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,008 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,008 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,009 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,420 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002022', 'color': 'DARKGREY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,420 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,420 [    INFO] Filter value: 0
-2025-07-22 11:24:40,665 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,899 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,009 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,420 [    INFO] Starting crawling for item: {'category_id': '002', 'item_code': '002022', 'color': 'DARKGREY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,420 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,420 [    INFO] Filter value: 0
-2025-07-22 11:24:40,665 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,899 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,010 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,010 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,010 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,446 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001010', 'color': 'IVORY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,446 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,446 [    INFO] Filter value: 0
-2025-07-22 11:24:40,341 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,956 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,010 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,446 [    INFO] Starting crawling for item: {'category_id': '001', 'item_code': '001010', 'color': 'IVORY', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,446 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,446 [    INFO] Filter value: 0
-2025-07-22 11:24:40,341 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,956 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,012 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,012 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,012 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,436 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,694 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,891 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,012 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,436 [    INFO] Starting crawling for item: {'category_id': '003', 'item_code': '003004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,694 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:42,891 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,013 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,013 [    INFO] Processing result for task with look_name: 편안한 활동성 캐주얼 룩
-2025-07-22 11:24:44,014 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,437 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,978 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,043 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,014 [    INFO] No items found or error for 편안한 활동성 캐주얼 룩: Subprocess failed: 2025-07-22 11:24:37,437 [    INFO] Starting crawling for item: {'category_id': '103', 'item_code': '103004', 'color': 'BLACK', 'style_name': '캐주얼 스타일', 'look_name': '편안한 활동성 캐주얼 룩'}
-2025-07-22 11:24:37,437 [    INFO] User style data: {'budget': 750000, 'occasion': '데이트', 'height': 182, 'gender': '남', 'top_size': 'L', 'bottom_size': 28, 'shoe_size': 235, 'body_feature': ['하체가 발달한 편'], 'preferred_styles': ['캐주얼']}
-2025-07-22 11:24:37,437 [    INFO] Filter value: 0
-2025-07-22 11:24:40,978 [   ERROR] 크롤링 중 오류 발생: '캐주얼 스타일'
-2025-07-22 11:24:43,043 [    INFO] 브라우저 종료 및 크롤링 완료
-2025-07-22 11:24:44,015 [    INFO] Final result: 3 look_info objects
-2025-07-22 11:24:44,015 [    INFO] Final result: 3 look_info objects
-Final result: 3 look_info objects
-INFO:     127.0.0.1:54376 - "POST /crawling/analyze-item?user_id=1&filter=0 HTTP/1.1" 200 OK
-
-React 터미널 로그 :
-GET /styling-summary 200 in 20ms
- GET /styling-results 200 in 23ms
+}
+server {
+    if ($host = myshoppingfairy.p-e.kr) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot

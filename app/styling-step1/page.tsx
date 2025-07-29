@@ -2,59 +2,61 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import { Header } from "@/components/ui/Header";
-import { Footer } from '@/components/ui/Footer';
-import { OptimizedTextarea } from "@/components/OptimizedTextarea"; // Import the new component
+import { Header } from "@/components/ui/Header"
+import { Footer } from '@/components/ui/Footer'
+import { OptimizedTextarea } from "@/components/OptimizedTextarea" // Import the new component
 import { User, ArrowLeft, Loader2 } from "lucide-react"
 import { useStyling, Gender } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext'
-import { useModal } from "@/app/context/ModalContext";
-import { useStyleData } from '@/app/context/StyleDataContext'; // Add this import
+import { useModal } from "@/app/context/ModalContext"
+import { useStyleData } from '@/app/context/StyleDataContext' // Add this import
 
-const heightOptions = Array.from({ length: 61 }, (_, i) => 140 + i);
+const heightOptions = Array.from({ length: 61 }, (_, i) => 140 + i)
 
 export default function StylingStep1() {
-  const { stylingData, setStylingData } = useStyling();
-  const { openModal } = useModal();
-  const { clearRecommendations } = useStyleData(); // Add this line
+  const { stylingData, setStylingData } = useStyling()
+  const { openModal } = useModal()
+  const { clearRecommendations } = useStyleData() // Add this line
   
   const router = useRouter()
   const [height, setHeight] = useState<number | ''>(stylingData.height || '')
   const [gender, setGender] = useState<string | null>(stylingData.gender || null)
-  const isButtonDisabled = height === '' || gender === null;
-  const [isPersonalColorLoading, setIsPersonalColorLoading] = useState(true); // 퍼스널 컬러 로딩 상태
-  const [isStylingDataLoading, setIsStylingDataLoading] = useState(true); // 스타일링 데이터 로딩 상태
-  const [hasRedirected, setHasRedirected] = useState(false); // 무한 루프 방지를 위한 상태 추가
-  const mountedRef = useRef(false); // API 호출이 한 번만 실행되도록 하는 Ref
+  const isButtonDisabled = height === '' || gender === null
+  const [isPersonalColorLoading, setIsPersonalColorLoading] = useState(true) // 퍼스널 컬러 로딩 상태
+  const [isStylingDataLoading, setIsStylingDataLoading] = useState(true) // 스타일링 데이터 로딩 상태
+  const [hasRedirected, setHasRedirected] = useState(false) // 무한 루프 방지를 위한 상태 추가
+  const mountedRef = useRef(false) // API 호출이 한 번만 실행되도록 하는 Ref
 
-  const { userId } = useAuth(); // userId 가져오기
+  const { userId } = useAuth() // userId 가져오기
 
   useEffect(() => {
     if (!userId) {
-      router.push("/login");
-      return;
+      router.push("/login")
+      return
     }
 
     // 이미 리다이렉트가 시작되었으면 더 이상 진행하지 않음
     if (hasRedirected) {
-      return;
+      return
     }
 
     // 컴포넌트가 처음 마운트될 때만 API 호출
     if (!mountedRef.current) {
-      mountedRef.current = true; // 마운트되었음을 표시
+      mountedRef.current = true // 마운트되었음을 표시
       const fetchPersonalColor = async () => {
+        // stylingData에 personalColor 정보가 이미 있다면 API 호출을 건너뜁니다.
+        if (stylingData.personalColor && stylingData.description && stylingData.recommendedColors && stylingData.colorNames) {
+          setIsPersonalColorLoading(false);
+          return;
+        }
+
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info_personal?user_id=${userId}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info_personal?user_id=${userId}`)
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json()
             if (data && data.personal_color_name) {
               setStylingData(prevData => ({
                 ...prevData,
@@ -62,34 +64,34 @@ export default function StylingStep1() {
                 description: data.description,
                 recommendedColors: data.recommended_colors,
                 colorNames: data.color_names,
-              }));
+              }))
             } else {
-              openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'));
-              setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+              openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'))
+              setHasRedirected(true) // 리다이렉트 시작 플래그 설정
             }
           } else if (response.status === 404) {
-            openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'));
-            setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+            openModal('알림', '퍼스널 컬러 진단이 필요합니다.', () => router.push('/personal-color-diagnosis'))
+            setHasRedirected(true) // 리다이렉트 시작 플래그 설정
           } else {
-            const errorData = await response.json();
-            console.error("Failed to fetch personal color:", errorData);
-            openModal('오류', '퍼스널 컬러 정보를 불러오는 데 실패했습니다.', () => router.push('/personal-color-diagnosis'));
-            setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+            const errorData = await response.json()
+            console.error("Failed to fetch personal color:", errorData)
+            openModal('오류', '퍼스널 컬러 정보를 불러오는 데 실패했습니다.', () => router.push('/personal-color-diagnosis'))
+            setHasRedirected(true) // 리다이렉트 시작 플래그 설정
           }
         } catch (error) {
-          console.error("Error fetching personal color:", error);
-          openModal('오류', '퍼스널 컬러 정보를 불러오는 중 오류가 발생했습니다.', () => router.push('/personal-color-diagnosis'));
-          setHasRedirected(true); // 리다이렉트 시작 플래그 설정
+          console.error("Error fetching personal color:", error)
+          openModal('오류', '퍼스널 컬러 정보를 불러오는 중 오류가 발생했습니다.', () => router.push('/personal-color-diagnosis'))
+          setHasRedirected(true) // 리다이렉트 시작 플래그 설정
         } finally {
-          setIsPersonalColorLoading(false);
+          setIsPersonalColorLoading(false)
         }
-      };
+      }
 
       const fetchStylingSummary = async () => {
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`)
           if (response.ok) {
-            const data = await response.json();
+            const data = await response.json()
             // API 응답 필드명과 StylingData 인터페이스 필드명 매핑
             setStylingData(prevData => ({
               ...prevData,
@@ -103,46 +105,46 @@ export default function StylingStep1() {
               body_feature: data.body_feature || [],
               preferred_styles: data.preferred_styles || [],
               user_situation: data.user_situation || [],
-            }));
+            }))
           } else if (response.status === 404) {
-            console.log("Styling summary not found for user. This is normal for new users.");
+            console.log("Styling summary not found for user. This is normal for new users.")
             // 데이터가 없으면 StylingContext의 해당 필드들을 기본값으로 유지
           } else {
-            const errorData = await response.json();
-            console.error("Failed to fetch styling summary:", errorData);
-            openModal('오류', '스타일링 요약 정보를 불러오는 데 실패했습니다.');
+            const errorData = await response.json()
+            console.error("Failed to fetch styling summary:", errorData)
+            openModal('오류', '스타일링 요약 정보를 불러오는 데 실패했습니다.')
           }
         } catch (error) {
-          console.error("Error fetching styling summary:", error);
-          openModal('오류', '스타일링 요약 정보를 불러오는 중 오류가 발생했습니다.');
+          console.error("Error fetching styling summary:", error)
+          openModal('오류', '스타일링 요약 정보를 불러오는 중 오류가 발생했습니다.')
         } finally {
-          setIsStylingDataLoading(false);
+          setIsStylingDataLoading(false)
         }
-      };
+      }
 
-      fetchPersonalColor();
-      fetchStylingSummary();
+      fetchPersonalColor()
+      fetchStylingSummary()
     }
 
-    clearRecommendations();
-    console.log("StylingStep1: clearRecommendations called.");
-  }, [userId, router, setStylingData, hasRedirected, openModal, clearRecommendations]);
+    clearRecommendations()
+    console.log("StylingStep1: clearRecommendations called.")
+  }, [userId, router, setStylingData, hasRedirected, openModal, clearRecommendations])
 
   useEffect(() => {
     if (stylingData.height) {
-      setHeight(stylingData.height);
+      setHeight(stylingData.height)
     }
     if (stylingData.gender) {
-      setGender(stylingData.gender);
+      setGender(stylingData.gender)
     }
-  }, [stylingData.height, stylingData.gender]);
+  }, [stylingData.height, stylingData.gender])
 
   const handleMemoSave = (value: string) => {
     setStylingData(prevData => ({
       ...prevData,
       occasion: value,
-    }));
-  };
+    }))
+  }
 
   if (isPersonalColorLoading || isStylingDataLoading) {
     return (
@@ -150,20 +152,20 @@ export default function StylingStep1() {
         <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
         <p className="ml-4 text-lg">퍼스널 컬러, 사용자 정보를 불러오는 중...</p>
       </div>
-    );
+    )
   }
 
   const handleNextStep = () => {
     if (isButtonDisabled) { // 유효성 검사
-      openModal('알림', '키와 성별을 모두 입력해주세요.');
-      return;
+      openModal('알림', '키와 성별을 모두 입력해주세요.')
+      return
     }
     setStylingData(prevData => ({ // setStylingData를 사용해서 새로운 데이터 추가.
       ...prevData, // 이전 단계(퍼스널 컬러)에서 저장된 데이터를 그대로 유지
       height: height,
       gender: gender,
-    }));
-    router.push('/styling-step2'); // 다음 페이지로 이동
+    }))
+    router.push('/styling-step2') // 다음 페이지로 이동
   }
 
   const handleBackToDashboard = () => {

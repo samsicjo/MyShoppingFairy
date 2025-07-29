@@ -1,14 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { OutfitImageCarousel } from '@/components/OutfitImageCarousel';
-import { useStyling } from '@/app/context/StylingContext';
-import { useStyleData, Look } from '@/app/context/StyleDataContext';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Heart, Loader2, Share2 } from 'lucide-react';
-import { useAuth } from '@/app/context/AuthContext';
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { OutfitImageCarousel } from '@/components/OutfitImageCarousel'
+import { useStyling } from '@/app/context/StylingContext'
+import { useStyleData, Look } from '@/app/context/StyleDataContext'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Heart, Loader2, Share2 } from 'lucide-react'
+import { useAuth } from '@/app/context/AuthContext'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,159 +20,159 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function RecommendationsClient() {
-  const { stylingData } = useStyling();
-  const { recommendations, isLoading, error, fetchRecommendations } = useStyleData();
-  const { userId } = useAuth();
-  const router = useRouter();
+  const { stylingData } = useStyling()
+  const { recommendations, isLoading, error, fetchRecommendations } = useStyleData()
+  const { userId } = useAuth()
+  const router = useRouter()
 
-  const [isMounted, setIsMounted] = useState(false);
-  const [likedLooks, setLikedLooks] = useState<Array<{ look_name: string; look_id: number; }>>([]);
-  const [savingLooks, setSavingLooks] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false)
+  const [likedLooks, setLikedLooks] = useState<Array<{ look_name: string; look_id: number }>>([])
+  const [savingLooks, setSavingLooks] = useState<string[]>([])
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: '', message: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalContent, setModalContent] = useState({ title: '', message: '' })
 
   const openModal = (title: string, message: string) => {
-    setModalContent({ title, message });
-    setIsModalOpen(true);
-  };
+    setModalContent({ title, message })
+    setIsModalOpen(true)
+  }
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
-    const savedLooks = localStorage.getItem('savedLooks');
+    const savedLooks = localStorage.getItem('savedLooks')
     if (savedLooks) {
       try {
-        const parsedLooks = JSON.parse(savedLooks);
+        const parsedLooks = JSON.parse(savedLooks)
         if (Array.isArray(parsedLooks) && parsedLooks.every(item => typeof item === 'object' && item !== null && 'look_name' in item && 'look_id' in item)) {
-          setLikedLooks(parsedLooks);
+          setLikedLooks(parsedLooks)
         } else {
-          console.warn("Saved looks data format is invalid or old, clearing.");
-          setLikedLooks([]);
+          console.warn("Saved looks data format is invalid or old, clearing.")
+          setLikedLooks([])
         }
       } catch (e) {
-        console.error("Failed to parse saved looks from localStorage", e);
-        setLikedLooks([]);
+        console.error("Failed to parse saved looks from localStorage", e)
+        setLikedLooks([])
       }
     }
     // Trigger fetchRecommendations on mount
-    fetchRecommendations();
-  }, [fetchRecommendations]); // Add fetchRecommendations to dependency array
+    fetchRecommendations()
+  }, [fetchRecommendations]) // Add fetchRecommendations to dependency array
 
   const toggleLike = async (look: Look) => {
-    const lookName = look.look_name;
-    const isLiked = likedLooks.some(item => item.look_name === lookName);
+    const lookName = look.look_name
+    const isLiked = likedLooks.some(item => item.look_name === lookName)
 
     if (savingLooks.includes(lookName)) {
-      return;
+      return
     }
 
     if (isLiked) {
-      const itemToRemove = likedLooks.find(item => item.look_name === lookName);
+      const itemToRemove = likedLooks.find(item => item.look_name === lookName)
       if (itemToRemove) {
-        const newLikedLooks = likedLooks.filter((item) => item.look_name !== lookName);
-        setLikedLooks(newLikedLooks);
-        localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks));
-        openModal('알림', `${lookName}이(가) 찜 목록에서 제거되었습니다.`);
-        deleteLookFromDb(itemToRemove.look_id);
+        const newLikedLooks = likedLooks.filter((item) => item.look_name !== lookName)
+        setLikedLooks(newLikedLooks)
+        localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks))
+        openModal('알림', `${lookName}이(가) 찜 목록에서 제거되었습니다.`)
+        deleteLookFromDb(itemToRemove.look_id)
       }
     } else {
-      setSavingLooks(prev => [...prev, lookName]);
+      setSavingLooks(prev => [...prev, lookName])
       try {
-        const savedLookId = await saveLookToDb(look);
-        const newLikedLooks = [...likedLooks, { look_name: lookName, look_id: savedLookId }];
-        setLikedLooks(newLikedLooks);
-        localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks));
-        openModal('성공', "룩이 성공적으로 저장되었습니다!");
+        const savedLookId = await saveLookToDb(look)
+        const newLikedLooks = [...likedLooks, { look_name: lookName, look_id: savedLookId }]
+        setLikedLooks(newLikedLooks)
+        localStorage.setItem('savedLooks', JSON.stringify(newLikedLooks))
+        openModal('성공', "룩이 성공적으로 저장되었습니다!")
       } catch (error) {
-        console.error("룩 저장 오류:", error);
-        openModal('오류', `룩 저장 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
+        console.error("룩 저장 오류:", error)
+        openModal('오류', `룩 저장 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
       } finally {
-        setSavingLooks(prev => prev.filter(name => name !== lookName));
+        setSavingLooks(prev => prev.filter(name => name !== lookName))
       }
     }
-  };
+  }
 
   const saveLookToDb = async (look: Look): Promise<number> => {
     if (!userId) {
-      openModal("오류", "로그인이 필요합니다.");
-      throw new Error("User not logged in");
+      openModal("오류", "로그인이 필요합니다.")
+      throw new Error("User not logged in")
     }
 
     console.log("API 요청!!!!!!!!!!!!!!!!!!!!!")
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/create?user_id=${userId}`, {
+    const response = await fetch(`http://127.0.0.1:8000/users/looks/create?user_id=${userId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(look),
-    });
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      let errorMessage = '룩 저장에 실패했습니다.';
+      const errorData = await response.json()
+      let errorMessage = '룩 저장에 실패했습니다.'
       if (errorData && errorData.detail) {
         if (Array.isArray(errorData.detail)) {
-          errorMessage = errorData.detail.map((err: any) => err.msg).join(', ');
+          errorMessage = errorData.detail.map((err: any) => err.msg).join(', ')
         } else if (typeof errorData.detail === 'string') {
-          errorMessage = errorData.detail;
+          errorMessage = errorData.detail
         } else {
-          errorMessage = JSON.stringify(errorData.detail);
+          errorMessage = JSON.stringify(errorData.detail)
         }
       }
-      throw new Error(errorMessage);
+      throw new Error(errorMessage)
     }
 
-    const responseData = await response.json();
+    const responseData = await response.json()
     console.log('responseData : ', responseData)
     console.log('responseData.id : ', responseData.id)
     console.log(typeof(responseData.id))
     const savedLookId = responseData.id
     
     if (typeof savedLookId === 'number') {
-      return savedLookId;
+      return savedLookId
     } else {
-      throw new Error("저장된 룩의 ID를 받지 못했습니다.");
+      throw new Error("저장된 룩의 ID를 받지 못했습니다.")
     }
-  };
+  }
 
   const deleteLookFromDb = async (lookId: number) => {
     if (!userId) {
-      openModal("오류", "로그인이 필요합니다.");
-      return;
+      openModal("오류", "로그인이 필요합니다.")
+      return
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${lookId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/looks/${lookId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        let errorMessage = '룩 삭제에 실패했습니다.';
+        const errorData = await response.json()
+        let errorMessage = '룩 삭제에 실패했습니다.'
         if (errorData && errorData.detail) {
           if (Array.isArray(errorData.detail)) {
-            errorMessage = errorData.detail.map((err: any) => err.msg).join(', ');
+            errorMessage = errorData.detail.map((err: any) => err.msg).join(', ')
           } else if (typeof errorData.detail === 'string') {
-            errorMessage = errorData.detail;
+            errorMessage = errorData.detail
           } else {
-            errorMessage = JSON.stringify(errorData.detail);
+            errorMessage = JSON.stringify(errorData.detail)
           }
         }
-        throw new Error(errorMessage);
+        throw new Error(errorMessage)
       }
 
-      console.log(`Look ${lookId} deleted successfully from DB.`);
+      console.log(`Look ${lookId} deleted successfully from DB.`)
     } catch (error) {
-      console.error("룩 삭제 오류:", error);
-      openModal('오류', `룩 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`);
+      console.error("룩 삭제 오류:", error)
+      openModal('오류', `룩 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -180,7 +180,7 @@ export default function RecommendationsClient() {
         <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
         <p className="ml-4 text-lg">추천 코디를 불러오는 중입니다...</p>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -189,7 +189,7 @@ export default function RecommendationsClient() {
         <p className="text-red-500 text-lg">오류: {error}</p>
         <Button onClick={() => fetchRecommendations()} className="mt-4">다시 시도하기</Button>
       </div>
-    );
+    )
   }
 
   return (
@@ -206,7 +206,7 @@ export default function RecommendationsClient() {
                 <div className="relative">
                   <div className="absolute top-3 left-3 z-10"><div className="bg-white rounded-full px-2 py-1 text-xs font-bold text-gray-900">#{index + 1}</div></div>
                   <div className="absolute top-3 right-3 z-10">
-                    <Button variant="ghost" size="icon" className={`hover:text-red-500 bg-white/80 hover:bg-white/90 rounded-full w-8 h-8 ${likedLooks.some(item => item.look_name === look.look_name) ? 'text-red-500' : 'text-gray-400'}`} onClick={(e) => { e.stopPropagation(); toggleLike(look); }}>
+                    <Button variant="ghost" size="icon" className={`hover:text-red-500 bg-white/80 hover:bg-white/90 rounded-full w-8 h-8 ${likedLooks.some(item => item.look_name === look.look_name) ? 'text-red-500' : 'text-gray-400'}`} onClick={(e) => { e.stopPropagation(); toggleLike(look) }}>
                       <Heart className={`h-4 w-4 ${likedLooks.some(item => item.look_name === look.look_name) ? 'fill-current' : ''}`} />
                     </Button>
                   </div>
@@ -231,7 +231,10 @@ export default function RecommendationsClient() {
                         `hover:text-red-500 hover:border-red-500 rounded-lg px-3 py-1.5 h-auto
                         ${likedLooks.some(item => item.look_name === look.look_name) ? 
                         'text-red-500 border-red-500' : 'text-gray-600 border-gray-200'}`}
-                        onClick={(e) => { e.stopPropagation(); toggleLike(look); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(look) }
+                        }
                         disabled={savingLooks.includes(look.look_name)}>
                         {savingLooks.includes(look.look_name) ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Heart className={`h-4 w-4 mr-1 ${likedLooks.some(item => item.look_name === look.look_name) ? 'fill-current' : ''}`} />}
                         {likedLooks.some(item => item.look_name === look.look_name) ? '저장됨' : (savingLooks.includes(look.look_name) ? '저장중...' : '저장하기')}
@@ -259,5 +262,5 @@ export default function RecommendationsClient() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }
