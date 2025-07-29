@@ -26,7 +26,7 @@ export function NavigationButtons() {
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
                 <Palette className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#82696B] transition-colors duration-300">
                 퍼스널컬러 진단
               </h3>
               <p className="text-[#82696B] group-hover:text-gray-700 transition-colors duration-300">
@@ -42,7 +42,7 @@ export function NavigationButtons() {
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
                 <Shirt className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#82696B] transition-colors duration-300">
                 스타일링 추천
               </h3>
               <p className="text-[#82696B] group-hover:text-gray-700 transition-colors duration-300">
@@ -58,7 +58,7 @@ export function NavigationButtons() {
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
                 <Heart className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#82696B] transition-colors duration-300">
                 찜한 아이템
               </h3>
               <p className="text-[#82696B] group-hover:text-gray-700 transition-colors duration-300">
@@ -70,11 +70,11 @@ export function NavigationButtons() {
       </section>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-purple-100 p-4">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-[#82696B] p-4">
         <div className="flex justify-around">
           <button
             onClick={() => handleNavigation("/personal-color-diagnosis")}
-            className="flex flex-col items-center space-y-1 text-purple-600"
+            className="flex flex-col items-center space-y-1 text-[#82696B]"
             style={{ height: '40px', width: '55.2px' }}
           >
             <Palette className="h-5 w-5" />
@@ -82,7 +82,7 @@ export function NavigationButtons() {
           </button>
           <button
             onClick={() => handleNavigation("/styling-step1")}
-            className="flex flex-col items-center space-y-1 text-purple-600"
+            className="flex flex-col items-center space-y-1 text-[#82696B]"
             style={{ height: '40px', width: '55.2px' }}
           >
             <Shirt className="h-5 w-5" />
@@ -90,7 +90,7 @@ export function NavigationButtons() {
           </button>
           <button
             onClick={() => handleNavigation("/my-page?tab=favorites")}
-            className="flex flex-col items-center space-y-1 text-purple-600"
+            className="flex flex-col items-center space-y-1 text-[#82696B]"
             style={{ height: '40px', width: '55.2px' }}
           >
             <Heart className="h-5 w-5" />

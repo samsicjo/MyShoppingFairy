@@ -82,7 +82,7 @@ export default function PersonalColorImageUpload() {
         method: 'POST',
         body: formData,
       })
-
+      console.log(response)
       if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.personal_color_analysis || 'AI 분석 실패')
@@ -99,10 +99,9 @@ export default function PersonalColorImageUpload() {
         console.warn("personal_color_analysis is not valid JSON. Treating as plain personal color name.", responseData.personal_color_analysis)
         analysisResult = {
           personalColor: responseData.personal_color_analysis, // 단순 문자열을 personalColor로 사용
-          description: "분석 결과 설명이 제공되지 않았습니다.", // 기본 설명
           recommendedColors: [], // 빈 배열
           colorNames: [], // 빈 배열
-          confidence: 0, // 기본값
+          confidence: 0, // 기본값 test. test
         }
       }
 
