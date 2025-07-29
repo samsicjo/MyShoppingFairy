@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_login/`, {
+      const response = await fetch(`http://127.0.0.1:8000/users/user_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,8 +41,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || '로그인 실패')
+        let errorMessage = '로그인 실패'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.detail || '로그인 실패'
+        } catch (parseError) {
+          // JSON 파싱 실패 시 응답 텍스트 확인
+          const responseText = await response.text()
+          console.error('Response is not JSON:', responseText)
+          errorMessage = `서버 응답 오류 (${response.status}): ${response.statusText}`
+        }
+        throw new Error(errorMessage)
       }
       console.log(response.body)
       const data = await response.json()
