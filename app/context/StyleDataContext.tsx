@@ -82,7 +82,7 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     setError(null)
 
     try {
-      console.log(`StyleDataContext: Fetching from ${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=0`)
+      console.log(`StyleDataContext: Fetching from ${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=1`)
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 500000) // 200 seconds timeout
 

@@ -21,13 +21,14 @@ import {
 
 export default function RecommendationsClient() {
   const { stylingData } = useStyling()
-  const { recommendations, isLoading, error, fetchRecommendations } = useStyleData()
+  const { recommendations, isLoading, error, fetchRecommendations, resetFetchAttempt } = useStyleData()
   const { userId } = useAuth()
   const router = useRouter()
 
   const [isMounted, setIsMounted] = useState(false)
   const [likedLooks, setLikedLooks] = useState<Array<{ look_name: string; look_id: number }>>([])
   const [savingLooks, setSavingLooks] = useState<string[]>([])
+  const [isRetrying, setIsRetrying] = useState(false) // New state for retry loading
   
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState({ title: '', message: '' })
@@ -174,22 +175,29 @@ export default function RecommendationsClient() {
     }
   }
 
-  if (isLoading) {
+  const handleRetry = async () => {
+    setIsRetrying(true); // Show loading immediately
+    resetFetchAttempt(); // Reset the fetch attempt flag in StyleDataContext
+    await fetchRecommendations(); // Call the function from context
+    setIsRetrying(false); // Hide loading after fetch completes
+  };
+
+  if (isLoading || isRetrying) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
         <p className="ml-4 text-lg">추천 코디를 불러오는 중입니다...</p>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[200px]">
         <p className="text-red-500 text-lg">오류: {error}</p>
-        <Button onClick={() => fetchRecommendations()} className="mt-4">다시 시도하기</Button>
+        <Button onClick={handleRetry} className="mt-4">다시 시도하기</Button>
       </div>
-    )
+    );
   }
 
   return (

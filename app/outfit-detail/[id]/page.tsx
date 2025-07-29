@@ -191,7 +191,7 @@ export default function OutfitDetail() {
                               className="px-3 py-2 text-xs sm:text-sm border-gray-300 text-gray-600 hover:bg-gray-50 rounded-full flex-shrink-0"
                               disabled={isFetchingPreview && modalForProductId === String(item.product_id)}
                             >
-                              {isFetchingPreview && modalForProductId === String(item.product_id) ? '로딩 중...' : '미리보기'}
+                              {isFetchingPreview && modalForProductId === String(item.product_id) ? '로딩 중...' : '착용샷'}
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-3xl p-0">
