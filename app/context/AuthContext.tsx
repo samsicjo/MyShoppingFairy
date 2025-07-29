@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_login/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
