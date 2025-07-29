@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { OutfitImageCarousel } from '@/components/OutfitImageCarousel'
 import { useStyling } from '@/app/context/StylingContext'
 import { useStyleData, Look } from '@/app/context/StyleDataContext'
@@ -24,6 +24,7 @@ export default function RecommendationsClient() {
   const { recommendations, isLoading, error, fetchRecommendations, resetFetchAttempt } = useStyleData()
   const { userId } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [isMounted, setIsMounted] = useState(false)
   const [likedLooks, setLikedLooks] = useState<Array<{ look_name: string; look_id: number }>>([])
@@ -59,7 +60,8 @@ export default function RecommendationsClient() {
       }
     }
     // Trigger fetchRecommendations on mount
-    fetchRecommendations()
+    const filter = searchParams.get('filter');
+    fetchRecommendations(filter)
   }, [fetchRecommendations]) // Add fetchRecommendations to dependency array
 
   const toggleLike = async (look: Look) => {
@@ -178,7 +180,8 @@ export default function RecommendationsClient() {
   const handleRetry = async () => {
     setIsRetrying(true); // Show loading immediately
     resetFetchAttempt(); // Reset the fetch attempt flag in StyleDataContext
-    await fetchRecommendations(); // Call the function from context
+    const filter = searchParams.get('filter');
+    await fetchRecommendations(filter); // Call the function from context
     setIsRetrying(false); // Hide loading after fetch completes
   };
 

@@ -14,7 +14,8 @@ import { OutfitImageCarousel } from "@/components/OutfitImageCarousel"
 import { Header } from '@/components/ui/Header'
 import { User, Settings, Heart, ShoppingBag, Shield, Eye, Trash2, Loader2 } from "lucide-react"
 import { Item, Look } from "../context/StyleDataContext"
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+//`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_login`
 interface MyPageUserProfile {
   username: string
   name: string
@@ -59,7 +60,7 @@ export default function MyPage() {
   const [isLoadingOutfits, setIsLoadingOutfits] = useState(true) // Add loading state
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(true) // Add loading state for favorites
   const router = useRouter()
-  const { userId } = useAuth()
+  const { userId, logout } = useAuth()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -70,7 +71,7 @@ export default function MyPage() {
       }
       try {
         // Fetch user profile
-        const userResponse = await fetch(`http://127.0.0.1:8000/users/user_info?user_id=${userId}`)
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info?user_id=${userId}`)
         let userData = null
         if (userResponse.ok) {
           userData = await userResponse.json()
@@ -79,7 +80,7 @@ export default function MyPage() {
         }
 
         // Fetch styling data
-        const stylingResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_info?user_id=${userId}`)
+        const stylingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_info?user_id=${userId}`)
         let stylingData = null
         if (stylingResponse.ok) {
           stylingData = await stylingResponse.json()
@@ -114,7 +115,7 @@ export default function MyPage() {
 
         // Fetch favorite items
         setIsLoadingFavorites(true) // Set loading to true before fetch
-        const favoritesResponse = await fetch(`http://127.0.0.1:8000/users/favorites?user_id=${userId}`)
+        const favoritesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites?user_id=${userId}`)
         if (favoritesResponse.ok) {
           const favoritesData = await favoritesResponse.json()
           console.log(favoritesData)
@@ -127,7 +128,7 @@ export default function MyPage() {
 
         // Fetch favorite looks
         setIsLoadingOutfits(true) // Set loading to true before fetch
-        const looksResponse = await fetch(`http://127.0.0.1:8000/users/looks?user_id=${userId}`)
+        const looksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks?user_id=${userId}`)
         if (looksResponse.ok) {
           const looksData = await looksResponse.json()
           console.log("Fetched looks:", looksData.looks)
@@ -157,7 +158,7 @@ export default function MyPage() {
 
     try {
       // Update user profile
-      const userUpdateResponse = await fetch(`http://127.0.0.1:8000/users/user_update?user_id=${userId}`, {
+      const userUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +174,7 @@ export default function MyPage() {
       }
 
       // Update styling data
-      const stylingUpdateResponse = await fetch(`http://127.0.0.1:8000/users/styling_summary_update?user_id=${userId}`, {
+      const stylingUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/styling_summary_update?user_id=${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +212,7 @@ export default function MyPage() {
 
   const handleDeleteOutfit = async (look_id: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/looks/${look_id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/looks/${look_id}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -226,7 +227,7 @@ export default function MyPage() {
 
   const handleDeleteFavorite = async (productId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/users/favorites/?product_id=${productId}&user_id=${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/favorites/?product_id=${productId}&user_id=${userId}`, {
         method: "DELETE",
       })
       if (response.ok) {
@@ -238,6 +239,27 @@ export default function MyPage() {
       console.error("Error deleting favorite item:", error)
     }
   }
+
+  const handleDeleteAccount = async () => {
+    if (!userId) return;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_delete?user_id=${userId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // 계정 삭제 성공
+        logout();
+      } else {
+        // 계정 삭제 실패
+        console.log('계정 삭제 중 오류 발생.');
+      }
+    } catch (error) {
+      console.error('계정 삭제 중 오류 발생:', error);
+      console.log('계정 삭제 중 오류 발생.');
+    }
+  };
 
   const occasionLabels: { [key: string]: string } = {
     work: "출근/업무",
@@ -635,13 +657,29 @@ export default function MyPage() {
                         <Shield className="h-4 w-4 mr-2" />
                         개인정보 처리방침
                       </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        계정 삭제
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            계정 삭제
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>정말 계정을 삭제하시겠습니까?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              이 작업은 되돌릴 수 없습니다. 계정을 삭제하면 모든 프로필 정보, 저장된 코디, 찜한 아이템이 영구적으로 사라집니다.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>취소</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">삭제</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </CardContent>

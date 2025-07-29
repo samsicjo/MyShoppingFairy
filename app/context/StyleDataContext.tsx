@@ -32,7 +32,7 @@ interface StyleDataContextType {
   isLoading: boolean
   isInitializing: boolean
   error: string | null
-  fetchRecommendations: () => Promise<void>
+  fetchRecommendations: (filter: string | null) => Promise<void>
   clearRecommendations: () => void
   resetFetchAttempt: () => void // Add this line
 }
@@ -62,7 +62,7 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     console.log("StyleDataContext: Reset fetch attempt flag.")
   }
 
-  const fetchRecommendations = useCallback(async () => {
+  const fetchRecommendations = useCallback(async (filter: string | null) => {
     if (hasFetchBeenAttempted) {
       console.log("StyleDataContext: Fetch already attempted, aborting.")
       return
@@ -81,12 +81,14 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true)
     setError(null)
 
+    const filterValue = filter || '0'; // Set default filter value
+
     try {
-      console.log(`StyleDataContext: Fetching from ${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=1`)
+      console.log(`StyleDataContext: Fetching from ${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=${filterValue}`)
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 500000) // 200 seconds timeout
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=0`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/crawling/analyze-item?user_id=${userId}&filter=${filterValue}`, {
         method: 'POST',
         signal: controller.signal,
       })
