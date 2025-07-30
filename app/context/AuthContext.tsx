@@ -70,6 +70,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem('userInfo')
+    sessionStorage.removeItem('stylingData') // StylingContext 데이터 삭제
+    localStorage.removeItem('personalColorAnalysis') // 퍼스널 컬러 분석 결과 삭제
+    localStorage.removeItem('selectedPersonalColor') // 선택된 퍼스널 컬러 삭제
     setIsLoggedIn(false)
     setUserId(null)
     router.push('/') // 로그아웃 후 홈으로 이동

@@ -171,7 +171,7 @@ export default function OutfitDetail() {
                       className="w-15 h-15 object-cover rounded-lg bg-white"
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 ">
                     <h4 className="font-semibold text-gray-900 text-base mb-1">{item.product_name}</h4>
                     <p className="text-sm font-medium text-gray-800 mb-4">₩{item.price.toLocaleString()}</p>
                     <div className="flex flex-wrap gap-2 sm:flex-nowrap">
@@ -197,7 +197,7 @@ export default function OutfitDetail() {
                               {isFetchingPreview && modalForProductId === String(item.product_id) ? '로딩 중...' : '착용샷'}
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-3xl p-0">
+                          <DialogContent className="max-w-3xl p-0 min-h-[400px]">
                             <DialogTitle className="sr-only">미리보기 이미지</DialogTitle>
                             <DialogDescription className="sr-only">미리보기 이미지를 보여주는 모달입니다.</DialogDescription>
                             {isFetchingPreview && (

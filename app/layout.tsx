@@ -7,6 +7,7 @@ import { ModalProvider } from "./context/ModalContext"
 
 import { StylingProvider } from "./context/StylingContext"
 import { StyleDataProvider } from "./context/StyleDataContext"
+import AuthStylingSync from "./context/AuthStylingSync"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -32,6 +33,7 @@ export default function RootLayout({
               <StyleDataProvider>
                 <StylingProvider>
                   {children}
+                  <AuthStylingSync />
                 </StylingProvider>
               </StyleDataProvider>
             </FavoriteProvider>

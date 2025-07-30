@@ -63,6 +63,14 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const fetchRecommendations = useCallback(async (filter: string | null) => {
+    // recommendations 배열에 이미 데이터가 있다면 API 호출을 건너뜁니다.
+    if (recommendations.length > 0) {
+      console.log("StyleDataContext: Recommendations already exist, skipping fetch.");
+      setIsLoading(false);
+      setIsInitializing(false);
+      return;
+    }
+
     console.log("StyleDataContext: fetchRecommendations called.")
 
     if (userId === null) {

@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useState, useContext, ReactNode } from 'react'
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react'
+import { useAuth } from '@/app/context/AuthContext'
 
 export enum Gender{
     Male = "남",
@@ -96,6 +97,7 @@ interface StylingData {
 interface StylingContextType {
     stylingData: StylingData
     setStylingData: React.Dispatch<React.SetStateAction<StylingData>>
+    clearStylingData: () => void
 }
 
 // 3. Context 생성 (초기값 설정)
@@ -103,6 +105,8 @@ const StylingContext = createContext<StylingContextType | undefined>(undefined)
 
 // 4. Context를 제공할 Provider 컴포넌트 생성
 export function StylingProvider({ children }: { children: ReactNode }) {
+    const { userId } = useAuth(); // userId 가져오기
+    const lastResetUserIdRef = React.useRef<number | null>(null); // 마지막으로 리셋된 userId를 추적
     const [stylingData, setStylingData] = useState<StylingData>(() => {
         if (typeof window !== 'undefined') {
             const savedStylingData = sessionStorage.getItem('stylingData')
@@ -124,6 +128,14 @@ export function StylingProvider({ children }: { children: ReactNode }) {
         return {}
     })
 
+    const clearStylingData = React.useCallback(() => {
+        setStylingData({});
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('stylingData');
+        }
+        console.log("StylingContext: stylingData cleared.");
+    }, []);
+
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
             console.log("StylingContext: Saving stylingData to sessionStorage:", stylingData)
@@ -131,8 +143,10 @@ export function StylingProvider({ children }: { children: ReactNode }) {
         }
     }, [stylingData])
 
+    const value = React.useMemo(() => ({ stylingData, setStylingData, clearStylingData }), [stylingData, setStylingData, clearStylingData]);
+
     return (
-        <StylingContext.Provider value={{ stylingData, setStylingData }}>
+        <StylingContext.Provider value={value}>
         {children}
     </StylingContext.Provider>
     )

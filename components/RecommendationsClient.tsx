@@ -25,7 +25,7 @@ import {
 
 export default function RecommendationsClient() {
   const { stylingData } = useStyling()
-  const { recommendations, isLoading, error, fetchRecommendations, resetFetchAttempt } = useStyleData()
+  const { recommendations, isLoading, error, fetchRecommendations, resetFetchAttempt, isInitializing } = useStyleData()
   const { userId } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -71,13 +71,13 @@ export default function RecommendationsClient() {
       }
     }
 
-    // Trigger fetchRecommendations on mount only once
-    if (!hasFetchedOnMount.current) {
+    // Only fetch if not initializing AND recommendations are empty AND it's the first fetch attempt for this mount
+    if (!isInitializing && recommendations.length === 0 && !hasFetchedOnMount.current) {
       const filter = searchParams.get('filter');
       fetchRecommendations(filter);
       hasFetchedOnMount.current = true; // Mark as fetched
     }
-  }, [fetchRecommendations, searchParams]); // searchParams는 filter 값을 가져오기 위해 필요
+  }, [fetchRecommendations, isInitializing, recommendations.length, searchParams]); // searchParams는 filter 값을 가져오기 위해 필요
 
   const toggleLike = async (look: Look) => {
     const lookName = look.look_name
@@ -202,7 +202,7 @@ export default function RecommendationsClient() {
 
   if (isLoading || isRetrying) {
     return (
-      <div className="flex justify-center items-center min-h-[200px]">
+      <div className="flex justify-center items-center min-h-[400px]">
         <CustomLoader className="h-16 w-16" />
         <p className="ml-4 text-lg">추천 코디를 불러오는 중입니다...</p>
       </div>

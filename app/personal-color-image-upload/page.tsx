@@ -111,7 +111,7 @@ export default function PersonalColorImageUpload() {
       
       if (!isValidPersonalColorType(analysisResult.personalColor)) {
         console.log('유효하지 않은 퍼스널 컬러 타입:', analysisResult.personalColor)
-        throw new Error('오류가 발생했습니다. 다시 시도해주세요.')
+        throw new Error('유효하지 않은 사진입니다. 다른 사진으로 시도해주세요.')
       }
 
       setResult(analysisResult)
