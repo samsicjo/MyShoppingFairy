@@ -228,8 +228,7 @@ export default function SignupPage() {
                     type="button"
                     onClick={handleUsernameCheck}
                     disabled={usernameCheckStatus === 'checking' || !formData.username}
-                    className="h-14 px-4 py-2 text-white rounded-full text-sm"
-                    style={{ backgroundColor: '#E8B5B8' }}
+                    className="h-14 px-4 py-2 text-white rounded-full text-sm bg-[#E8B5B8] hover:bg-[#d9a3a7] border-[#E8B5B8]"
                   >
                     {usernameCheckStatus === 'checking' ? '확인 중...' : '아이디 확인'}
                   </Button>
@@ -378,8 +377,7 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 disabled={isLoading || !isFormValid()}
-                className="w-full h-14 text-white font-medium rounded-full transition-all duration-300 mt-8"
-                style={{ backgroundColor: '#E8B5B8' }}
+                className="w-full h-14 text-white font-medium rounded-full transition-all duration-300 mt-8 bg-[#E8B5B8] hover:bg-[#d9a3a7] disabled:bg-[#E8B5B8] disabled:opacity-50"
               >
                 {isLoading ? "회원가입 중..." : "회원가입"}
               </Button>
