@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { OutfitImageCarousel } from "@/components/OutfitImageCarousel"
 import { Header } from '@/components/ui/Header'
-import { User, Settings, Heart, ShoppingBag, Shield, Eye, Trash2, Loader2 } from "lucide-react"
+import { User, Settings, Heart, ShoppingBag, Shield, Eye, Trash2 } from "lucide-react"
+import { CustomLoader } from "@/components/ui/CustomLoader"
 import { Item, Look } from "../context/StyleDataContext"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 //`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_login`
@@ -527,7 +528,7 @@ export default function MyPage() {
                 <CardContent>
                   {isLoadingOutfits ? (
                     <div className="text-center py-12">
-                      <Loader2 className="h-16 w-16 text-purple-600 mx-auto mb-4 animate-spin" />
+                      <CustomLoader className="h-16 w-16 mx-auto mb-4" />
                       <p className="text-gray-500 text-lg">저장된 코디 불러오는 중...</p>
                     </div>
                   ) : savedOutfits.length === 0 ? (
@@ -579,7 +580,7 @@ export default function MyPage() {
                 <CardContent>
                   {isLoadingFavorites ? (
                     <div className="text-center py-12">
-                      <Loader2 className="h-16 w-16 text-purple-600 mx-auto mb-4 animate-spin" />
+                      <CustomLoader className="h-16 w-16 mx-auto mb-4" />
                       <p className="text-gray-500 text-lg">찜한 아이템 불러오는 중...</p>
                     </div>
                   ) : favoriteItems.length === 0 ? (

@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Header } from "@/components/ui/Header"
 import { Footer } from '@/components/ui/Footer'
 import { OptimizedTextarea } from "@/components/OptimizedTextarea" // Import the new component
-import { User, ArrowLeft, Loader2 } from "lucide-react"
+import { User, ArrowLeft } from "lucide-react"
+import { CustomLoader } from "@/components/ui/CustomLoader"
 import { useStyling, Gender } from '../context/StylingContext'
 import { useAuth } from '@/app/context/AuthContext'
 import { useModal } from "@/app/context/ModalContext"
@@ -149,8 +150,7 @@ export default function StylingStep1() {
   if (isPersonalColorLoading || isStylingDataLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
-        <p className="ml-4 text-lg">퍼스널 컬러, 사용자 정보를 불러오는 중...</p>
+        <CustomLoader className="h-16 w-16" />
       </div>
     )
   }

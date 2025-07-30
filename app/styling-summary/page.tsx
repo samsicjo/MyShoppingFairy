@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header"
 import { Footer } from '@/components/ui/Footer'
-import { Check, User, DollarSign, Heart, Edit, Database, Loader2, Palette } from "lucide-react"
+import { Check, User, DollarSign, Heart, Edit, Database, Palette } from "lucide-react"
+import { CustomLoader } from "@/components/ui/CustomLoader"
 import { useAuth } from "@/app/context/AuthContext"
 import { useModal } from "@/app/context/ModalContext"
 import { getFlexibleColorPalette } from "@/components/data/personalColorData"
@@ -414,7 +415,7 @@ export default function StylingSummary() {
               className="px-8 py-3 bg-[#E8B5B8] hover:bg-[#CE8CA5] text-white font-medium rounded-full transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <CustomLoader className="h-4 w-4 mr-2" />
               ) : (
                 <Database className="h-4 w-4 mr-2" />
               )}

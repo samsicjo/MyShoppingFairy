@@ -1,13 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { OutfitImageCarousel } from '@/components/OutfitImageCarousel'
 import { useStyling } from '@/app/context/StylingContext'
 import { useStyleData, Look } from '@/app/context/StyleDataContext'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Heart, Loader2, Share2 } from 'lucide-react'
+import { Heart, Share2 } from 'lucide-react'
+import { CustomLoader } from '@/components/ui/CustomLoader'
 import { useAuth } from '@/app/context/AuthContext'
 import {
   AlertDialog,
@@ -30,6 +31,7 @@ export default function RecommendationsClient() {
   const [likedLooks, setLikedLooks] = useState<Array<{ look_name: string; look_id: number }>>([])
   const [savingLooks, setSavingLooks] = useState<string[]>([])
   const [isRetrying, setIsRetrying] = useState(false) // New state for retry loading
+  const hasFetchedOnMount = useRef(false); // Ref to track if fetch has happened on mount
   
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState({ title: '', message: '' })
@@ -59,10 +61,14 @@ export default function RecommendationsClient() {
         setLikedLooks([])
       }
     }
-    // Trigger fetchRecommendations on mount
-    const filter = searchParams.get('filter');
-    fetchRecommendations(filter)
-  }, [fetchRecommendations]) // Add fetchRecommendations to dependency array
+
+    // Trigger fetchRecommendations on mount only once
+    if (!hasFetchedOnMount.current) {
+      const filter = searchParams.get('filter');
+      fetchRecommendations(filter);
+      hasFetchedOnMount.current = true; // Mark as fetched
+    }
+  }, [fetchRecommendations, searchParams]); // searchParams는 filter 값을 가져오기 위해 필요
 
   const toggleLike = async (look: Look) => {
     const lookName = look.look_name
@@ -188,7 +194,7 @@ export default function RecommendationsClient() {
   if (isLoading || isRetrying) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
-        <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
+        <CustomLoader className="h-16 w-16" />
         <p className="ml-4 text-lg">추천 코디를 불러오는 중입니다...</p>
       </div>
     );
@@ -247,7 +253,7 @@ export default function RecommendationsClient() {
                           toggleLike(look) }
                         }
                         disabled={savingLooks.includes(look.look_name)}>
-                        {savingLooks.includes(look.look_name) ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Heart className={`h-4 w-4 mr-1 ${likedLooks.some(item => item.look_name === look.look_name) ? 'fill-current' : ''}`} />}
+                        {savingLooks.includes(look.look_name) ? <CustomLoader className="h-4 w-4 mr-1" /> : <Heart className={`h-4 w-4 mr-1 ${likedLooks.some(item => item.look_name === look.look_name) ? 'fill-current' : ''}`} />}
                         {likedLooks.some(item => item.look_name === look.look_name) ? '저장됨' : (savingLooks.includes(look.look_name) ? '저장중...' : '저장하기')}
                     </Button>
                     <Button variant="outline" size="sm" className="text-gray-600 border-gray-200 hover:text-purple-600 hover:border-purple-600 rounded-lg px-2 py-1.5 h-auto bg-transparent" onClick={(e) => e.stopPropagation()}><Share2 className="h-4 w-4" /></Button>
