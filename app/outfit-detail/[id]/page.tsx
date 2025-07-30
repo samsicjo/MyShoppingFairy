@@ -7,7 +7,8 @@ import { useStyleData, Look, Item } from '@/app/context/StyleDataContext'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/ui/Header'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { CustomLoader } from '@/components/ui/CustomLoader'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import Image from 'next/image'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -89,10 +90,12 @@ export default function OutfitDetail() {
 
   if (isLoading) {
     return (
+      
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="h-16 w-16 animate-spin text-purple-600" />
-        <p className="ml-4 text-lg">코디 정보를 불러오는 중...</p>
+        <CustomLoader className="h-16 w-16" />
+        <p className="ml-4 text-lg">코디 정보를 불러오는 중...</p>  
       </div>
+    
     )
   }
 
@@ -198,9 +201,9 @@ export default function OutfitDetail() {
                             <DialogTitle className="sr-only">미리보기 이미지</DialogTitle>
                             <DialogDescription className="sr-only">미리보기 이미지를 보여주는 모달입니다.</DialogDescription>
                             {isFetchingPreview && (
-                              <div className="flex justify-center items-center h-64">
-                                <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-                              </div>
+                              <div className="flex justify-center items-center h-full">
+                    <CustomLoader className="h-8 w-8" />
+                  </div>
                             )}
                             {previewError && (
                               <div className="p-4 text-center text-red-500">

@@ -9,14 +9,14 @@ export function InteractiveButtons() {
   
 
   return (
-    <div className="absolute inset-0 flex flex-col justify-end items-end text-right p-8 pr-6 pb-12">
+    <div className="absolute inset-0 flex flex-col justify-end items-center md:items-end text-center md:text-right p-8 pr-6 pb-12">
       <h1 className="text-3xl font-bold text-[#171212] mb-3 drop-shadow-lg">
         Find Your Perfect Style
       </h1>
       <p className="text-base text-[#171212]/90 mb-6 drop-shadow-md max-w-md">
         AI가 찾아주는 당신만의 완벽한 스타일
       </p>
-      <div className="flex gap-4">
+      <div className="flex w-full max-w-xs flex-col gap-4 sm:max-w-none sm:flex-row sm:w-auto">
         <Button
           onClick={() => handleNavigation('/personal-color-diagnosis')}
           className="bg-[#F8B8D2] hover:bg-[#f5a6c6] text-white hover:text-[#171212] px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"

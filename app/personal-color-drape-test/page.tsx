@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header"
 import { Footer } from '@/components/ui/Footer'
-import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Loader2, Palette, Trophy, ArrowDown } from "lucide-react"
+import { Upload, ArrowLeft, ArrowRight, Camera, RotateCcw, Lightbulb, Palette, Trophy, ArrowDown } from "lucide-react"
+import { CustomLoader } from "@/components/ui/CustomLoader"
 import { colorCategories } from "@/components/data/personalColorData"
 import { useStyling } from "@/app/context/StylingContext"
 
@@ -266,7 +267,7 @@ export default function PersonalColorDrapeTest() {
                         >
                           {isProcessing ? (
                             <div className="w-full h-full bg-gray-200 flex items-center justify-center animate-pulse">
-                              <Loader2 className="h-12 w-12 text-gray-500 animate-spin" />
+                              <CustomLoader className="h-12 w-12 text-gray-500" />
                               <p className="text-gray-500 text-sm ml-2">얼굴 추출 중...</p>
                             </div>
                           ) : currentDisplayImage ? (
@@ -469,7 +470,7 @@ export default function PersonalColorDrapeTest() {
           <div className="flex gap-4">
             <Button
               onClick={handleComplete}
-              className="flex items-center px-8 py-3 bg-[#E8B5B8] hover:bg-[#2a2a2a] text-white"
+              className="flex items-center px-8 py-3 bg-[#E8B5B8] hover:bg-[#FFF9EE] text-[#171212]"
             >
               완료
               <ArrowRight className="h-4 w-4 ml-2" />

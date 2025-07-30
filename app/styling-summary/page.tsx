@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/ui/Header"
 import { Footer } from '@/components/ui/Footer'
-import { Check, User, DollarSign, Heart, Edit, Database, Loader2, Palette } from "lucide-react"
+import { Check, User, DollarSign, Heart, Edit, Database, Palette } from "lucide-react"
+import { CustomLoader } from "@/components/ui/CustomLoader"
 import { useAuth } from "@/app/context/AuthContext"
 import { useModal } from "@/app/context/ModalContext"
 import { getFlexibleColorPalette } from "@/components/data/personalColorData"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 export default function StylingSummary() {
   const { stylingData, setStylingData } = useStyling()
@@ -20,6 +23,7 @@ export default function StylingSummary() {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const [usePersonalColor, setUsePersonalColor] = useState(true)
 
   React.useEffect(() => {
     setIsClient(true)
@@ -114,7 +118,8 @@ export default function StylingSummary() {
         body_feature: savedData.body_feature,
         preferred_styles: savedData.preferred_styles,
       }))
-      router.push("/styling-results")
+      const filterQuery = usePersonalColor ? 'filter=1' : 'filter=0';
+      router.push(`/styling-results?${filterQuery}`)
     }
   }
 
@@ -165,7 +170,7 @@ export default function StylingSummary() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="text-lg font-medium text-gray-700 mb-3">추천 색상</h5>
+                    <h5 className="text-lg font-medium text-[#171212] mb-3">추천 색상</h5>
                     <div className="flex flex-wrap gap-3">
                       {(() => {
                         if (!stylingData.personalColor) {
@@ -209,18 +214,18 @@ export default function StylingSummary() {
 
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <span className="text-lg font-medium text-gray-700">키</span>
+                      <span className="text-lg font-medium text-[#171212]">키</span>
                       <p className="text-lg font-semibold text-gray-900">{stylingData.height || "-"}</p>
                     </div>
                     <div>
-                      <span className="text-lg font-medium text-gray-700">성별</span>
+                      <span className="text-lg font-medium text-[#171212]">성별</span>
                       <p className="text-lg font-semibold text-gray-900">{stylingData.gender || "-"}</p>
                     </div>
                   </div>
 
                   {stylingData.occasion && (
                     <div className="mt-4">
-                      <span className="text-sm font-medium text-gray-700 block mb-2">스타일링 요청사항</span>
+                      <span className="text-sm font-medium text-[#171212] block mb-2">스타일링 요청사항</span>
                       <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{stylingData.occasion}</p>
                     </div>
                   )}
@@ -240,12 +245,12 @@ export default function StylingSummary() {
 
                   <div className="space-y-4">
                     <div>
-                      <span className="text-lg font-medium text-gray-700">예산</span>
+                      <span className="text-lg font-medium text-[#171212]">예산</span>
                       <p className="text-2xl font-bold text-[#171212]">{Number(stylingData.budget) / 10000 || 0}만원</p>
                     </div>
 
                     <div>
-                      <span className="text-lg font-medium text-gray-700 block mb-2">사이즈 정보</span>
+                      <span className="text-lg font-medium text-[#171212] block mb-2">사이즈 정보</span>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="text-center bg-gray-50 p-3 rounded-lg">
                           <span className="text-xs text-gray-500 block">상의</span>
@@ -263,7 +268,7 @@ export default function StylingSummary() {
                     </div>
 
                     <div>
-                      <span className="text-lg font-medium text-gray-700 block mb-2">주요 스타일 상황</span>
+                      <span className="text-lg font-medium text-[#171212] block mb-2">주요 스타일 상황</span>
                       <div className="flex flex-wrap gap-2">
                         {(Array.isArray(stylingData.user_situation) ? stylingData.user_situation : []).map((user_situation) => (
                           <Badge key={user_situation} variant="secondary" className="bg-[#FFF9EE] text-[#171212] shadow-xl pointer-events-none">
@@ -275,7 +280,7 @@ export default function StylingSummary() {
 
                     {stylingData.body_feature && stylingData.body_feature.length > 0 && (
                       <div>
-                        <span className="text-lg font-medium text-gray-700 block mb-2">체형 특징</span>
+                        <span className="text-lg font-medium text-[#171212] block mb-2">체형 특징</span>
                         <div className="flex flex-wrap gap-2">
                           {stylingData.body_feature.map((bodyType) => (
                             <Badge key={bodyType} variant="outline" className="bg-[#FFF9EE] text-[#171212] shadow-xl">
@@ -379,23 +384,44 @@ export default function StylingSummary() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-12">
+        <div className="flex justify-between items-center mt-12">
           <Button variant="outline" onClick={handleEdit} className="px-8 py-3 bg-[#F5F2F2] border-[#F5F2F2] text-[#171212] hover:bg-[#d8a5a8] hover:text-[#171212] font-medium rounded-full transition-colors duration-200">
             <Edit className="h-4 w-4 mr-2" />
             수정하기
           </Button>
-          <Button
-            onClick={handleStartAnalysis}
-            disabled={isSaving}
-            className="px-8 py-3 bg-[#E8B5B8] hover:bg-[#CE8CA5] text-white font-medium rounded-full transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Database className="h-4 w-4 mr-2" />
-            )}
-            {isSaving ? "분석 중..." : "분석 시작하기"}
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="personal-color-checkbox" 
+                checked={usePersonalColor}
+                onCheckedChange={() => setUsePersonalColor(!usePersonalColor)}
+                className="hidden" // Hide the default checkbox
+              />
+              <Label 
+                htmlFor="personal-color-checkbox"
+                className={`flex items-center px-8 py-3 font-medium rounded-full transition-colors duration-200 cursor-pointer \
+                  ${usePersonalColor 
+                    ? 'bg-[#E8B5B8] text-white'
+                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`
+                }
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                  퍼스널 컬러 기반으로 검색
+              </Label>
+            </div>
+            <Button
+              onClick={handleStartAnalysis}
+              disabled={isSaving}
+              className="px-8 py-3 bg-[#E8B5B8] hover:bg-[#CE8CA5] text-white font-medium rounded-full transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {isSaving ? (
+                <CustomLoader className="h-4 w-4 mr-2" />
+              ) : (
+                <Database className="h-4 w-4 mr-2" />
+              )}
+              {isSaving ? "분석 중..." : "분석 시작하기"}
+            </Button>
+          </div>
         </div>
       </div>
       {/* Footer */}
