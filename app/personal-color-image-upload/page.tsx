@@ -263,19 +263,21 @@ export default function PersonalColorImageUpload() {
                 <div className="relative border-2 border-solid border-[#E3DEDE]">
                   {/* 업로드 영역 */}
                   <div className="relative p-8 md:p-10">
-                    <div className="flex justify-between items-center mb-6">
-                      <div className="text-center flex-1">
+                    <div className="relative items-center mb-6">
+                      <div className="text-center">
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">업로드된 이미지</h3>
                         <p className="text-gray-600">이미지가 선명하게 업로드되었습니다</p>
                       </div>
-                      <Button
-                        onClick={resetUpload}
-                        variant="outline"
-                        className="border-[#F8B8D2] text-[#F8B8D2] hover:bg-[#F8B8D2]/10"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        다시 업로드
-                      </Button>
+                      <div className="absolute top-0 right-0">
+                        <Button
+                          onClick={resetUpload}
+                          variant="outline"
+                          className="border-[#F8B8D2] text-[#F8B8D2] hover:bg-[#F8B8D2]/10"
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          다시 업로드
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="relative mb-8">

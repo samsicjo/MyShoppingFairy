@@ -470,7 +470,7 @@ export default function PersonalColorDrapeTest() {
           <div className="flex gap-4">
             <Button
               onClick={handleComplete}
-              className="flex items-center px-8 py-3 bg-[#E8B5B8] hover:bg-[#2a2a2a] text-white"
+              className="flex items-center px-8 py-3 bg-[#E8B5B8] hover:bg-[#FFF9EE] text-[#171212]"
             >
               완료
               <ArrowRight className="h-4 w-4 ml-2" />

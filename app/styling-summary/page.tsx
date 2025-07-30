@@ -170,7 +170,7 @@ export default function StylingSummary() {
                   </div>
 
                   <div className="mb-4">
-                    <h5 className="text-lg font-medium text-gray-700 mb-3">추천 색상</h5>
+                    <h5 className="text-lg font-medium text-[#171212] mb-3">추천 색상</h5>
                     <div className="flex flex-wrap gap-3">
                       {(() => {
                         if (!stylingData.personalColor) {
@@ -214,18 +214,18 @@ export default function StylingSummary() {
 
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <span className="text-lg font-medium text-gray-700">키</span>
+                      <span className="text-lg font-medium text-[#171212]">키</span>
                       <p className="text-lg font-semibold text-gray-900">{stylingData.height || "-"}</p>
                     </div>
                     <div>
-                      <span className="text-lg font-medium text-gray-700">성별</span>
+                      <span className="text-lg font-medium text-[#171212]">성별</span>
                       <p className="text-lg font-semibold text-gray-900">{stylingData.gender || "-"}</p>
                     </div>
                   </div>
 
                   {stylingData.occasion && (
                     <div className="mt-4">
-                      <span className="text-sm font-medium text-gray-700 block mb-2">스타일링 요청사항</span>
+                      <span className="text-sm font-medium text-[#171212] block mb-2">스타일링 요청사항</span>
                       <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{stylingData.occasion}</p>
                     </div>
                   )}
@@ -245,12 +245,12 @@ export default function StylingSummary() {
 
                   <div className="space-y-4">
                     <div>
-                      <span className="text-lg font-medium text-gray-700">예산</span>
+                      <span className="text-lg font-medium text-[#171212]">예산</span>
                       <p className="text-2xl font-bold text-[#171212]">{Number(stylingData.budget) / 10000 || 0}만원</p>
                     </div>
 
                     <div>
-                      <span className="text-lg font-medium text-gray-700 block mb-2">사이즈 정보</span>
+                      <span className="text-lg font-medium text-[#171212] block mb-2">사이즈 정보</span>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="text-center bg-gray-50 p-3 rounded-lg">
                           <span className="text-xs text-gray-500 block">상의</span>
@@ -268,7 +268,7 @@ export default function StylingSummary() {
                     </div>
 
                     <div>
-                      <span className="text-lg font-medium text-gray-700 block mb-2">주요 스타일 상황</span>
+                      <span className="text-lg font-medium text-[#171212] block mb-2">주요 스타일 상황</span>
                       <div className="flex flex-wrap gap-2">
                         {(Array.isArray(stylingData.user_situation) ? stylingData.user_situation : []).map((user_situation) => (
                           <Badge key={user_situation} variant="secondary" className="bg-[#FFF9EE] text-[#171212] shadow-xl pointer-events-none">
@@ -280,7 +280,7 @@ export default function StylingSummary() {
 
                     {stylingData.body_feature && stylingData.body_feature.length > 0 && (
                       <div>
-                        <span className="text-lg font-medium text-gray-700 block mb-2">체형 특징</span>
+                        <span className="text-lg font-medium text-[#171212] block mb-2">체형 특징</span>
                         <div className="flex flex-wrap gap-2">
                           {stylingData.body_feature.map((bodyType) => (
                             <Badge key={bodyType} variant="outline" className="bg-[#FFF9EE] text-[#171212] shadow-xl">

@@ -215,7 +215,7 @@ export default function StylingStep2() {
                 {situationOptions.map((situation) => (
                   <div
                     key={situation.id}
-                    className="flex items-center p-3 rounded-lg border border-[#E3DEE0] bg-white hover:border-gray-300 transition-colors"
+                    className="flex items-center p-3 rounded-lg bg-white hover:border-gray-300 transition-colors"
                   >
                     <Checkbox
                       id={situation.id}
@@ -319,7 +319,7 @@ export default function StylingStep2() {
                 {bodyTypeOptions.map((bodyType) => (
                   <div
                     key={bodyType.id}
-                    className="flex items-center p-3 rounded-lg border border-[#E3DEE0] bg-white hover:border-gray-300 transition-colors"
+                    className="flex items-center p-3 rounded-lg bg-white hover:border-gray-300 transition-colors"
                   >
                     <Checkbox
                       id={bodyType.id}
