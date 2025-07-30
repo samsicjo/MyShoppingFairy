@@ -58,6 +58,7 @@ export default function StylingStep1() {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/user_info_personal?user_id=${userId}`)
           if (response.ok) {
             const data = await response.json()
+            console.log('personal data : ', data)
             if (data && data.personal_color_name) {
               setStylingData(prevData => ({
                 ...prevData,
