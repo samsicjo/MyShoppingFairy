@@ -310,13 +310,9 @@ export default function MyPage() {
           <div className="lg:w-64">
             <div className="bg-gray-50 rounded-2xl p-6">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-orange-200 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                  <img
-                    src="/api/placeholder/80/80"
-                    alt="프로필"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              <div className="w-20 h-20 bg-orange-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="w-10 h-10 text-gray-600" />
+              </div>
                 <h2 className="text-xl font-bold text-gray-900 mb-2">{userProfile.name || "최삼식"}</h2>
                 <p className="text-gray-600 text-sm">{userProfile.email}</p>
               </div>
