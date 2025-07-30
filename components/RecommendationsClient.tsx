@@ -202,7 +202,7 @@ export default function RecommendationsClient() {
 
   if (isLoading || isRetrying) {
     return (
-      <div className="flex justify-center items-center min-h-[200px]">
+      <div className="flex justify-center items-center min-h-[400px]">
         <CustomLoader className="h-16 w-16" />
         <p className="ml-4 text-lg">추천 코디를 불러오는 중입니다...</p>
       </div>
