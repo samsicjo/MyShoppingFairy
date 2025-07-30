@@ -63,12 +63,6 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const fetchRecommendations = useCallback(async (filter: string | null) => {
-    if (hasFetchBeenAttempted) {
-      console.log("StyleDataContext: Fetch already attempted, aborting.")
-      return
-    }
-    setHasFetchBeenAttempted(true) // Lock fetching immediately
-
     console.log("StyleDataContext: fetchRecommendations called.")
 
     if (userId === null) {
@@ -118,7 +112,7 @@ export const StyleDataProvider = ({ children }: { children: ReactNode }) => {
       console.log("StyleDataContext: fetchRecommendations finished.")
       console.log('StyleDataContext finally recommendations : ', recommendations)
     }
-  }, [userId, hasFetchBeenAttempted])
+  }, [userId])
 
   useEffect(() => {
     console.log("StyleDataContext: Initial useEffect for sessionStorage load.")

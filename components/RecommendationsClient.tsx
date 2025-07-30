@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Heart, Share2 } from 'lucide-react'
 import { CustomLoader } from '@/components/ui/CustomLoader'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { useAuth } from '@/app/context/AuthContext'
 import {
   AlertDialog,
@@ -18,6 +20,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogCancel
 } from "@/components/ui/alert-dialog"
 
 export default function RecommendationsClient() {
@@ -35,6 +38,12 @@ export default function RecommendationsClient() {
   
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState({ title: '', message: '' })
+  const [isPersonalColorFilterOn, setIsPersonalColorFilterOn] = useState<boolean>(() => {
+    const filter = searchParams.get('filter');
+    return filter === '1';
+  });
+  const [showConfirmSwitchModal, setShowConfirmSwitchModal] = useState(false);
+  const [pendingSwitchChange, setPendingSwitchChange] = useState<boolean | null>(null);
 
   const openModal = (title: string, message: string) => {
     setModalContent({ title, message })
@@ -213,10 +222,24 @@ export default function RecommendationsClient() {
     <div id="all-styles" className="space-y-8 mt-8">
       <Card className="border-gray-200 shadow-lg">
         <CardContent className="p-8">
-          <div className="mb-6">
+          <div className="mb-6 flex justify-between items-center">
             <h4 className="text-2xl font-bold text-gray-900 mb-2">맞춤 코디 추천</h4>
-            <p className="text-gray-600">당신을 위한 스타일 코디 {recommendations.length}가지를 추천해드려요</p>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="personal-color-filter" className="text-gray-600 text-sm">
+                {isPersonalColorFilterOn ? '퍼스널 컬러 기반 검색' : '스타일만 검색'}
+              </Label>
+              <Switch
+                id="personal-color-filter"
+                checked={isPersonalColorFilterOn}
+                onCheckedChange={(checked) => {
+                  setPendingSwitchChange(checked);
+                  setShowConfirmSwitchModal(true);
+                }}
+                className="data-[state=checked]:bg-[#E8B5B8]"
+              />
+            </div>
           </div>
+          <p className="text-gray-600">당신을 위한 스타일 코디 {recommendations.length}가지를 추천해드려요</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recommendations.map((look: Look, index: number) => (
               <Card key={look.look_name} className="overflow-hidden hover:shadow-lg transition-shadow bg-white cursor-pointer border-gray-200" onClick={() => router.push(`/outfit-detail/${encodeURIComponent(look.look_name)}?from=styling-results`)}>
@@ -275,6 +298,36 @@ export default function RecommendationsClient() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setIsModalOpen(false)}>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showConfirmSwitchModal} onOpenChange={setShowConfirmSwitchModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>설정 변경 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              설정을 변경하면 추천 코디를 다시 불러옵니다. 설정을 변경하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={async () => {
+              if (pendingSwitchChange !== null) {
+                setIsPersonalColorFilterOn(pendingSwitchChange);
+                const newFilterValue = pendingSwitchChange ? '1' : '0';
+
+                // 1. fetchAttempt 플래그 초기화
+                resetFetchAttempt();
+
+                // 2. 새로운 filter 값으로 fetchRecommendations 호출
+                await fetchRecommendations(newFilterValue);
+              }
+              setShowConfirmSwitchModal(false);
+            }}>확인</AlertDialogAction>
+            <AlertDialogCancel onClick={() => {
+              setPendingSwitchChange(null);
+              setShowConfirmSwitchModal(false);
+            }}>취소</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
