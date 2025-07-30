@@ -257,7 +257,7 @@ export default function StylingResultsClientWrapper(props: StylingResultsClientW
               {/* 이미지 영역 */}
               {/* <div className="flex justify-center"> */}
               <div
-                className="relative rounded-2xl shadow-xl overflow-hidden"
+                className="relative rounded-2xl shadow-xl overflow-hidden mx-auto"
                 style={{
                   width: '100%',
                   maxWidth: '400px',
