@@ -1,0 +1,10 @@
+class user_style_summary(BaseModel):
+    budget: int
+    occasion: str
+    height: int
+    gender: str
+    top_size: str
+    bottom_size: int
+    shoe_size: int
+    body_feature: List[str]
+    preferred_styles: List[str]
