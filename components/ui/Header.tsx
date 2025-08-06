@@ -109,7 +109,7 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="p-2 rounded-md text-purple-600 hover:bg-purple-100 transition-colors"
+              className="p-2 rounded-md text-[#E8B5B8] hover:bg-[#E3DEDE] transition-colors"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -130,25 +130,25 @@ export const Header = React.memo(({ activePage }: HeaderProps) => {
                 router.push("/")
                 setMobileMenuOpen(false)
               }}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'home' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'home' ? 'bg-[#E8B5B8] text-[#82696B]' : 'text-gray-600 hover:bg-[#E3DEDE]'}`}
             >
               홈
             </button>
             <button
               onClick={() => handleProtectedNavigation("/personal-color-diagnosis")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'personal-color' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'personal-color' ? 'bg-[#E8B5B8] text-[#82696B]' : 'text-gray-600 hover:bg-[#E3DEDE]'}`}
             >
               퍼스널컬러
             </button>
             <button
               onClick={() => handleProtectedNavigation("/styling-step1")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'styling' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'styling' ? 'bg-[#E8B5B8] text-[#82696B]' : 'text-gray-600 hover:bg-[#E3DEDE]'}`}
             >
               스타일링
             </button>
             <button
               onClick={() => handleProtectedNavigation("/my-page")}
-              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'my-page' ? 'bg-purple-50 text-[#82696B]' : 'text-gray-600 hover:bg-purple-50'}`}
+              className={`block w-full text-left py-3 px-4 rounded-md ${activePage === 'my-page' ? 'bg-[#E8B5B8] text-[#82696B]' : 'text-gray-600 hover:bg-[#E3DEDE]'}`}
             >
               마이페이지
             </button>
