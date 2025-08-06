@@ -263,12 +263,12 @@ export default function PersonalColorImageUpload() {
                 <div className="relative border-2 border-solid border-[#E3DEDE]">
                   {/* 업로드 영역 */}
                   <div className="relative p-8 md:p-10">
-                    <div className="relative items-center mb-6">
-                      <div className="text-center">
+                    <div className="relative mb-6">
+                      <div className="text-center mb-4 md:mb-0">
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">업로드된 이미지</h3>
                         <p className="text-gray-600">이미지가 선명하게 업로드되었습니다</p>
                       </div>
-                      <div className="absolute top-0 right-0">
+                      <div className="md:absolute md:top-1/2 md:-translate-y-1/2 md:right-0 flex justify-center">
                         <Button
                           onClick={resetUpload}
                           variant="outline"
